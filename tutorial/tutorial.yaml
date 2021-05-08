@@ -1,0 +1,96 @@
+# general
+
+# Two folders will be used during the training: 'root'/process and 'root'/'run_name'
+# run_name contains logfiles and saved models
+# process contains processed data sets
+# if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
+root: tutorial-results
+run_name: example-run
+seed: 0                                                                           # random number seed for numpy and torch
+restart: false                                                                    # set True for a restarted run
+append: false                                                                     # set True if a restarted run should append to the previous log file
+default_dtype: float32                                                            # type of float, e.g. float32 and float64
+
+# network
+compile_model: False                                                              # whether to compile the constructed model to TorchScript
+num_basis: 8                                                                      # number of basis functions
+r_max: 4.0                                                                        # cutoff radius
+irreps_edge_sh: 0e + 1o                                                           # irreps of the spherical harmonics used for edges. If a single integer, indicates the full SH up to L_max=that_integer
+conv_to_output_hidden_irreps_out: 8x0e                                            # irreps used in hidden layer of output block
+chemical_embedding_irreps_out: 8x0e                                               # irreps of the chemical feature embedding
+feature_irreps_hidden: 8x0o + 8x0e + 8x1o + 8x1e                                  # irreps used for hidden features, here we go up to lmax=2, with even and odd parities
+BesselBasis_trainable: true                                                       # set true to train the bessel weights
+nonlinearity_type: gate                                                           # may be 'gate' or 'norm', 'gate' is recommended
+num_layers: 3                                                                     # number of interaction blocks, we found 5-6 to work best
+resnet: false                                                                     # set True to make interaction block a resnet-style update
+PolynomialCutoff_p: 6                                                             # p-value used in polynomial cutoff function
+invariant_layers: 1                                                               # number of radial layers, we found it important to keep this small, 1 or 2
+invariant_neurons: 8                                                              # number of hidden neurons in radial function, again keep this small for MD applications, 8 - 32, smaller is faster
+avg_num_neighbors: null                                                           # number of neighbors to divide by, None => no normalization.
+use_sc: true                                                                      # use self-connection or not, usually gives big improvement
+
+# data set
+# the keys used need to be stated at least once in key_mapping, npz_fixed_field_keys or npz_keys
+# key_mapping is used to map the key in the npz file to the NequIP default values (see data/_key.py)
+# all arrays are expected to have the shape of (nframe, natom, ?) except the fixed fields
+dataset: npz                                                                       # type of data set, can be npz or ase
+dataset_url: http://quantum-machine.org/gdml/data/npz/benzene_ccsdt_t-train.zip             # url to download the npz. optional
+dataset_file_name: ./tutorial_data/benzene_ccsd_t-train.npz                          # path to data set file
+key_mapping:
+  z: atomic_numbers                                                                # atomic species, integers
+  E: total_energy                                                                  # total potential eneriges to train to
+  F: forces                                                                        # atomic forces to train to
+  R: pos                                                                           # raw atomic positions
+npz_fixed_field_keys:                                                              # fields that are repeated across different examples
+  - atomic_numbers
+
+# logging
+wandb: false                                                                       # we recommend using wandb for logging, we'll turn it off here as it's optional
+                                                                                   # if False, a new wandb run will be generated
+verbose: info                                                                      # the same as python logging, e.g. warning, info, debug, error. case insensitive
+log_batch_freq: 5                                                                  # batch frequency, how often to print training errors withinin the same epoch
+log_epoch_freq: 1                                                                  # epoch frequency, how often to print and save the model
+
+# training
+n_train: 25                                                                        # number of training data
+n_val: 10                                                                          # number of validation data
+learning_rate: 0.01                                                                # learning rate, we found 0.01 to work best - this is often one of the most important hyperparameters to tune
+batch_size: 1                                                                      # batch size, we found it important to keep this small for most applications 
+max_epochs: 25                                                                # stop training after _ number of epochs
+train_val_split: random                                                            # can be random or sequential. if sequential, first n_train elements are training, next n_val are val, else random 
+shuffle: true                                                                      # If true, the data loader will shuffle the data
+metrics_key: loss                                                                  # metrics used for scheduling and saving best model. Options: loss, or anything that appears in the validation batch step header, such as f_mae, f_rmse, e_mae, e_rmse
+use_ema: False                                                                     # if true, use exponential moving average on weights for val/test
+ema_decay: 0.999                                                                  # ema weight, commonly set to 0.999
+ema_use_num_updates: True                                                          # whether to use number of updates when computing averages
+
+# loss function
+loss_coeffs:                                                                       # different weights to use in a weighted loss functions
+  forces: 100                                                                      # for MD applications, we recommed a force weight of 1
+  total_energy: 1                                                               # and an energy weight of 0., this usually gives the best errors in the forces
+
+
+# output metrics
+metrics_components:
+  - - forces                               # key 
+    - rmse                                 # "rmse" or "mse"
+  - - forces
+    - mae
+  - - total_energy
+    - mae
+
+# optimizer, may be any optimizer defined in torch.optim
+# the name `optimizer_name`is case sensitive
+optimizer_name: Adam                                                               # default optimizer is Adam in the amsgrad mode
+optimizer_amsgrad: true
+optimizer_betas: !!python/tuple
+  - 0.9
+  - 0.999
+optimizer_eps: 1.0e-08
+optimizer_weight_decay: 0
+
+# lr scheduler, currently only supports the two options listed below, if you need more please file an issue
+# first: on-plateau
+lr_scheduler_name: ReduceLROnPlateau
+lr_scheduler_patience: 100
+lr_scheduler_factor: 0.5
