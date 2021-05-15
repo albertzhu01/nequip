@@ -237,6 +237,8 @@ class Trainer:
         ema_use_num_updates=True,
         exclude_keys: list = [],
         batch_size: int = 5,
+        clip_gradients: bool = False,
+        max_gradient_norm: float = 10.,
         shuffle: bool = True,
         n_train: Optional[int] = None,
         n_val: Optional[int] = None,
@@ -719,6 +721,10 @@ class Trainer:
             loss, loss_contrib = self.loss(pred=out, ref=data_unscaled)
             # see https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html#use-parameter-grad-none-instead-of-model-zero-grad-or-optimizer-zero-grad
             self.optim.zero_grad(set_to_none=True)
+
+            if self.clip_gradients:
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_gradient_norm)
+
             loss.backward()
             self.optim.step()
 

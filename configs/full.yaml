@@ -87,6 +87,10 @@ use_ema: false                                                                  
 ema_decay: 0.999                                                                   # ema weight, commonly set to 0.999
 ema_use_num_updates: true                                                          # whether to use number of updates when computing averages
 
+# gradient clipping
+clip_gradients: false
+max_gradient_norm: 10.
+
 # early stopping based on metrics values. 
 # LR, wall and any keys printed in the log file can be used. 
 # The key can start with Training or Validation. If not defined, the validation value will be used.
