@@ -34,8 +34,10 @@ class AtomwiseLinear(GraphModuleMixin, torch.nn.Module):
         out_field: Optional[str] = None,
         irreps_in=None,
         irreps_out=None,
+        store_features=False,
     ):
         super().__init__()
+        self.store_features = store_features
         self.field = field
         out_field = out_field if out_field is not None else field
         self.out_field = out_field
@@ -53,6 +55,8 @@ class AtomwiseLinear(GraphModuleMixin, torch.nn.Module):
 
     def forward(self, data: AtomicDataDict.Type) -> AtomicDataDict.Type:
         data[self.out_field] = self.linear(data[self.field])
+        if self.store_features:
+            data['feature_vectors'] = data[self.field]
         return data
 
 

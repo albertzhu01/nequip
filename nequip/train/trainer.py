@@ -708,6 +708,10 @@ class Trainer:
         # We make a shallow copy of the input dict in case the model modifies it
         input_data = data_unscaled.copy()
         out = self.model(input_data)
+        if validation:
+            np.savez('features_val_batch' + str(self.ibatch + 1), out['feature_vectors'].detach().numpy())
+        else:
+            np.savez('features_train_batch' + str(self.ibatch + 1), out['feature_vectors'].detach().numpy())
         del input_data
 
         # If we're in evaluation mode (i.e. validation), then
