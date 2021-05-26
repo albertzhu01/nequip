@@ -14,12 +14,12 @@ for i in range(len(train_features) // 2, len(train_features)):
     plt.plot(train_features[i])
 plt.show()
 
-# val_features = np.concatenate((val1['arr_0'], val2['arr_0']), axis=0)
-# for i in range(len(val_features) // 2):
-#     plt.plot(val_features[i])
-# plt.show()
-#
-# for i in range(len(val_features) // 2, len(val_features)):
-#     plt.plot(val_features[i])
-# plt.show()
+val_features = np.concatenate((val1['arr_0'], val2['arr_0']), axis=0)
+for i in range(len(val_features) // 2):
+    plt.plot(val_features[i])
+plt.show()
+
+for i in range(len(val_features) // 2, len(val_features)):
+    plt.plot(val_features[i])
+plt.show()
 
