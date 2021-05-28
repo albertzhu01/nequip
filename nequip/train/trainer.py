@@ -12,7 +12,8 @@ import inspect
 import logging
 import yaml
 from copy import deepcopy
-from os.path import isfile
+from os import remove
+from os.path import isfile, exists
 from time import perf_counter
 from typing import Optional, Union
 
@@ -680,6 +681,10 @@ class Trainer:
 
         self.final_log()
 
+        if exists("results\\aspirin\\example-run\\trainer.pth"):
+            remove("results\\aspirin\\example-run\\trainer.pth")
+        if exists("results\\aspirin\\example-run\\last_model.pth"):
+            remove("results\\aspirin\\example-run\\last_model.pth")
         self.save(self.trainer_save_path)
 
     def batch_step(self, data, validation=False):
@@ -708,10 +713,10 @@ class Trainer:
         # We make a shallow copy of the input dict in case the model modifies it
         input_data = data_unscaled.copy()
         out = self.model(input_data)
-        if validation:
-            np.savez('features_val_batch' + str(self.ibatch + 1), out['feature_vectors'].detach().numpy())
-        else:
-            np.savez('features_train_batch' + str(self.ibatch + 1), out['feature_vectors'].detach().numpy())
+        if validation and self.ibatch == 9:
+            np.savez('feats_v_batch10_epoch' + str(self.iepoch + 1), out['feature_vectors'].detach().numpy())
+        elif self.ibatch == 19:
+            np.savez('feats_t_batch20_epoch' + str(self.iepoch + 1), out['feature_vectors'].detach().numpy())
         del input_data
 
         # If we're in evaluation mode (i.e. validation), then
@@ -898,6 +903,8 @@ class Trainer:
 
             with cm:
                 with atomic_write(self.best_model_path) as save_path:
+                    if exists("results\\aspirin\\example-run\\best_model.pth"):
+                        remove("results\\aspirin\\example-run\\best_model.pth")
                     if hasattr(self.model, "save"):
                         self.model.save(save_path)
                     else:
@@ -908,6 +915,10 @@ class Trainer:
             )
 
         if (self.iepoch + 1) % self.log_epoch_freq == 0:
+            if exists("results\\aspirin\\example-run\\trainer.pth"):
+                remove("results\\aspirin\\example-run\\trainer.pth")
+            if exists("results\\aspirin\\example-run\\last_model.pth"):
+                remove("results\\aspirin\\example-run\\last_model.pth")
             self.save(self.trainer_save_path)
 
     def init_log(self):
