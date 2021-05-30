@@ -48,7 +48,7 @@ atomic_numbers = [6, 6, 6, 6, 6, 6, 6, 8, 8, 8, 6, 6, 8, 1, 1, 1, 1, 1, 1, 1, 1]
 # print(avg_data_C1)
 
 data_C1_all_epochs = []
-for i in 1, 3, 7, 10:
+for i in 1, 5, 10:
     epoch_data = np.load('C:/Users/alber/nequip/nequip/scripts/training_features/feats_v_epoch' + str(i) + '.npz')
     tmp_data = np.empty((1, 240))
     for key in epoch_data.files:
@@ -61,10 +61,13 @@ for i in 1, 3, 7, 10:
 data_C1_all_epochs = np.array(data_C1_all_epochs)
 print(data_C1_all_epochs.shape)
 
-df_C1_all_epochs = pd.DataFrame(data_C1_all_epochs, index=(1, 3, 7, 10))
+df_C1_all_epochs = pd.DataFrame(data_C1_all_epochs, index=['Epoch 1', 'Epoch 5', 'Epoch 10'])
 df_C1_all_epochs = df_C1_all_epochs.transpose()
 print(df_C1_all_epochs)
 
 df_C1_all_epochs.plot(kind='line', alpha=0.6)
 plt.legend(loc='lower right')
+plt.title('Carbon1 Training Validation Features (50-Atom Average)')
+plt.xlabel('Feature Index')
+plt.ylabel('Feature Value')
 plt.show()
