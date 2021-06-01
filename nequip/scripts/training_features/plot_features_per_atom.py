@@ -1,12 +1,11 @@
 import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm
 import numpy as np
 import pandas as pd
 import seaborn as sns
 
 atomic_numbers = [6, 6, 6, 6, 6, 6, 6, 8, 8, 8, 6, 6, 8, 1, 1, 1, 1, 1, 1, 1, 1]
 
-# Code for creating 2d histograms per epoch
+# --- Code for creating 2d histograms per epoch. Uncomment one of lines 10-45 OR lines 51-88 --- #
 # data_C1 = np.empty((1, 240))
 # epoch1_v = np.load('C:/Users/alber/nequip/nequip/scripts/training_features/feats_v_epoch10.npz')
 #
@@ -44,8 +43,12 @@ atomic_numbers = [6, 6, 6, 6, 6, 6, 6, 8, 8, 8, 6, 6, 8, 1, 1, 1, 1, 1, 1, 1, 1]
 #
 # plt.show()
 
-# Code for creating line plots
+
+# --- Code for creating line plots of averages --- #
+
 data_C1_all_epochs = []
+
+# - Code for creating line plots for multiple epochs. Uncomment one of lines 52-60 OR lines 63-73 - #
 # for i in 1, 5, 10:
 #     epoch_data = np.load('C:/Users/alber/nequip/nequip/scripts/training_features/feats_v_epoch' + str(i) + '.npz')
 #     tmp_data = np.empty((1, 240))
@@ -56,6 +59,7 @@ data_C1_all_epochs = []
 #     avg_data_C1 = np.average(tmp_data, axis=0)
 #     data_C1_all_epochs.append(avg_data_C1)
 
+# - Code for creating line plots for one epoch. Uncomment one of lines 52-60 OR lines 63-73 - #
 epoch_data = np.load('C:/Users/alber/nequip/nequip/scripts/training_features/feats_v_epoch10.npz')
 tmp_data = np.empty((1, 240))
 for key in epoch_data.files:
@@ -68,6 +72,7 @@ tmp_data = tmp_data[1:]
 avg_data_C1 = np.average(tmp_data, axis=0)
 data_C1_all_epochs.append(avg_data_C1)
 
+# - Create line plot of the dataframe - #
 data_C1_all_epochs = np.array(data_C1_all_epochs)
 print(data_C1_all_epochs.shape)
 
