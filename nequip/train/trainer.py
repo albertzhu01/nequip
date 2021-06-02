@@ -713,12 +713,13 @@ class Trainer:
         # We make a shallow copy of the input dict in case the model modifies it
         input_data = data_unscaled.copy()
         out = self.model(input_data)
-        if validation:
-            np.savez('training_features\\feats_v_epoch' + str(self.iepoch + 1) + '_batch' + str(self.ibatch + 1),
-                     out['feature_vectors'].detach().numpy())
-        else:
-            np.savez('training_features\\feats_t_epoch' + str(self.iepoch + 1) + '_batch' + str(self.ibatch + 1),
-                     out['feature_vectors'].detach().numpy())
+        if (self.iepoch + 1) % 5 == 0:
+            if validation:
+                np.savez('aspirin_train_50_epochs\\feats_v_epoch' + str(self.iepoch + 1) + '_batch' + str(self.ibatch + 1),
+                         out['feature_vectors'].detach().numpy())
+            else:
+                np.savez('aspirin_train_50_epochs\\feats_t_epoch' + str(self.iepoch + 1) + '_batch' + str(self.ibatch + 1),
+                         out['feature_vectors'].detach().numpy())
         del input_data
 
         # If we're in evaluation mode (i.e. validation), then
