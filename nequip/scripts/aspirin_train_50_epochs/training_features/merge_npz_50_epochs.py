@@ -8,8 +8,8 @@ num_batches_v = 10
 
 for i in range(4, num_epochs, 5):
     for j in range(num_batches_t):
-        tmp_data = np.load('C:/Users/alber/nequip/nequip/scripts/aspirin_train_50_epochs/feats_t_epoch'
-                           + str(i + 1) + '_batch' + str(j + 1) + '.npz')
+        tmp_data = np.load('C:/Users/alber/nequip/nequip/scripts/aspirin_train_50_epochs/training_features/' +
+                           'feats_t_epoch' + str(i + 1) + '_batch' + str(j + 1) + '.npz')
         raw_data.append(tmp_data['arr_0'])
 
     np.savez('feats_t_epoch' + str(i + 1) + '.npz',
