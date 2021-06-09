@@ -5,15 +5,22 @@ import seaborn as sns
 
 atomic_numbers = [6, 6, 6, 6, 6, 6, 6, 8, 8, 8, 6, 6, 8, 1, 1, 1, 1, 1, 1, 1, 1]
 
+sns.set(rc={'axes.facecolor': 'ffffcc',
+            'figure.facecolor': 'white',
+            'axes.edgecolor': 'black',
+            'axes.grid': False,
+            'xtick.bottom': True,
+            'ytick.left': True})
+
 # --- Code for creating 2d histograms per epoch. Uncomment one of lines 10-45 OR lines 51-88 --- #
 data_C1 = np.empty((1, 240))
-epoch1_v = np.load('C:/Users/alber/nequip/nequip/scripts/aspirin_train_50_epochs/feats_v_epoch50.npz')
+epoch1_v = np.load('C:/Users/alber/nequip/nequip/scripts/aspirin_train_50_epochs/training_features/feats_v_epoch50.npz')
 
 for key in epoch1_v.files:
     data_C1 = np.concatenate((data_C1, epoch1_v[key][0:105:21]))
-    data_C1 = np.concatenate((data_C1, epoch1_v[key][1:105:21]))
-    data_C1 = np.concatenate((data_C1, epoch1_v[key][2:105:21]))
-    data_C1 = np.concatenate((data_C1, epoch1_v[key][3:105:21]))
+    # data_C1 = np.concatenate((data_C1, epoch1_v[key][1:105:21]))
+    # data_C1 = np.concatenate((data_C1, epoch1_v[key][2:105:21]))
+    # data_C1 = np.concatenate((data_C1, epoch1_v[key][3:105:21]))
 
 data_C1 = data_C1[1:]
 print(data_C1.shape)
@@ -33,17 +40,20 @@ index = index.tolist()
 df_C1 = pd.DataFrame(stack_data, index=index, columns=['Feature Value'])
 print(df_C1)
 
+f, ax = plt.subplots(figsize=(19, 9.5))
+
 feature_plot = sns.histplot(df_C1,
                             x=df_C1.index,
                             y='Feature Value',
-                            binwidth=(1, 0.01),
+                            binwidth=(1, 0.05),
                             cbar=True,
                             vmin=0,
-                            vmax=200
+                            vmax=50,
+                            cmap='YlOrRd'
                             )
 feature_plot.set(ylim=(-1, 1))
 
-plt.title('Carbons 1, 2, 3, 4 Features Epoch 50')
+plt.title('Carbon 1 Features Epoch 50')
 plt.xlabel('Feature Index')
 
 plt.show()
