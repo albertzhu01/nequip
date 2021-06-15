@@ -425,7 +425,7 @@ class Trainer:
             if hasattr(self.model, "save"):
                 self.model.save(write_to)
             else:
-                torch.save(self.model, write_to)
+                torch.save(self.model.state_dict(), write_to)
         logger.debug(f"Saved last model to to {self.last_model_path}")
 
         return filename
