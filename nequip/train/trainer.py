@@ -681,10 +681,10 @@ class Trainer:
 
         self.final_log()
 
-        # if exists("results\\aspirin\\example-run\\trainer.pth"):
-        #     remove("results\\aspirin\\example-run\\trainer.pth")
-        # if exists("results\\aspirin\\example-run\\last_model.pth"):
-        #     remove("results\\aspirin\\example-run\\last_model.pth")
+        if exists("results\\aspirin\\example-run\\trainer.pth"):
+            remove("results\\aspirin\\example-run\\trainer.pth")
+        if exists("results\\aspirin\\example-run\\last_model.pth"):
+            remove("results\\aspirin\\example-run\\last_model.pth")
         self.save(self.trainer_save_path)
 
     def batch_step(self, data, validation=False):
@@ -902,11 +902,11 @@ class Trainer:
 
             with cm:
                 with atomic_write(self.best_model_path) as save_path:
-                    # if exists("results\\aspirin\\example-run\\best_model.pth"):
-                    #     remove("results\\aspirin\\example-run\\best_model.pth")
                     if hasattr(self.model, "save"):
                         self.model.save(save_path)
                     else:
+                        if exists("results\\aspirin\\example-run\\best_model.pth"):
+                            remove("results\\aspirin\\example-run\\best_model.pth")
                         torch.save(self.model, save_path)
 
             self.logger.info(
@@ -914,10 +914,10 @@ class Trainer:
             )
 
         if (self.iepoch + 1) % self.log_epoch_freq == 0:
-            # if exists("results\\aspirin\\example-run\\trainer.pth"):
-            #     remove("results\\aspirin\\example-run\\trainer.pth")
-            # if exists("results\\aspirin\\example-run\\last_model.pth"):
-            #     remove("results\\aspirin\\example-run\\last_model.pth")
+            if exists("results\\aspirin\\example-run\\trainer.pth"):
+                remove("results\\aspirin\\example-run\\trainer.pth")
+            if exists("results\\aspirin\\example-run\\last_model.pth"):
+                remove("results\\aspirin\\example-run\\last_model.pth")
             self.save(self.trainer_save_path)
 
     def init_log(self):

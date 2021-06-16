@@ -10,7 +10,7 @@ import pandas as pd
 
 atoms = read("C:/Users/alber/nequip/nequip/scripts/aspirin.xyz")
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model_path = "/nequip/scripts/aspirin_1_epoch/results/aspirin/example-run/deployed.pth"
+model_path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run/deployed.pth"
 model, metadata = deploy.load_deployed_model(model_path=model_path, device="cpu")
 r_max = float(metadata[nequip.scripts.deploy.R_MAX_KEY])
 data = AtomicData.from_ase(atoms=atoms, r_max=r_max)
