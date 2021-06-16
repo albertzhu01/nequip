@@ -1,26 +1,22 @@
 import numpy as np
 import torch
+import nequip
+from ase.io import read
 from nequip.data import AtomicData, AtomicDataDict
-from nequip.utils import Config
-from nequip.models import ForceModel
+from nequip.scripts import deploy
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
-aspirin_data = np.load("C:/Users/alber/nequip/nequip/scripts/benchmark_data/aspirin_ccsd-test.npz")
+atoms = read("C:/Users/alber/nequip/nequip/scripts/aspirin.xyz")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model_path = "/nequip/scripts/aspirin_1_epoch/results/aspirin/example-run/deployed.pth"
+model, metadata = deploy.load_deployed_model(model_path=model_path, device="cpu")
+r_max = float(metadata[nequip.scripts.deploy.R_MAX_KEY])
+data = AtomicData.from_ase(atoms=atoms, r_max=r_max)
+out = model(AtomicData.to_AtomicDataDict(data))
 
-r = aspirin_data['R'][-1]
+hidden_features = out['feature_vectors'].detach().cpu().numpy()
 
-model_path = "C:/Users/alber/nequip/nequip/scripts/results/aspirin/example-run/best_model.pth"
-config = Config.from_file("C:/Users/alber/nequip/configs/example.yaml")
-final_model = ForceModel(**dict(config))
-final_model.load_state_dict(torch.load(model_path))
-final_model.eval()
-
-data = AtomicData.from_points(
-    pos=r,
-    r_max=4.0,
-    **{AtomicDataDict.ATOMIC_NUMBERS_KEY:
-           torch.Tensor(torch.from_numpy(aspirin_data['z'].astype(np.float32))).to(torch.int64)}
-)
-
-pred = final_model(AtomicData.to_AtomicDataDict(data))['feature_vectors']
-
-print(pred)
+plt.plot(hidden_features[0])
+plt.show()

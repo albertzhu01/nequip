@@ -681,10 +681,10 @@ class Trainer:
 
         self.final_log()
 
-        if exists("results\\aspirin\\example-run\\trainer.pth"):
-            remove("results\\aspirin\\example-run\\trainer.pth")
-        if exists("results\\aspirin\\example-run\\last_model.pth"):
-            remove("results\\aspirin\\example-run\\last_model.pth")
+        # if exists("results\\aspirin\\example-run\\trainer.pth"):
+        #     remove("results\\aspirin\\example-run\\trainer.pth")
+        # if exists("results\\aspirin\\example-run\\last_model.pth"):
+        #     remove("results\\aspirin\\example-run\\last_model.pth")
         self.save(self.trainer_save_path)
 
     def batch_step(self, data, validation=False):
@@ -713,13 +713,9 @@ class Trainer:
         # We make a shallow copy of the input dict in case the model modifies it
         input_data = data_unscaled.copy()
         out = self.model(input_data)
-        if (self.iepoch + 1) % 5 == 0:
-            if validation:
-                np.savez('aspirin_train_50_epochs\\feats_v_epoch' + str(self.iepoch + 1) + '_batch' + str(self.ibatch + 1),
-                         out['feature_vectors'].detach().numpy())
-            else:
-                np.savez('aspirin_train_50_epochs\\feats_t_epoch' + str(self.iepoch + 1) + '_batch' + str(self.ibatch + 1),
-                         out['feature_vectors'].detach().numpy())
+        # if validation and ((self.iepoch + 1) % 5 == 0 or self.iepoch == 0):
+        #     np.savez(f'aspirin_train2_50_epochs\\feats2_v_epoch{self.iepoch + 1}_batch{self.ibatch + 1}',
+        #              out['out_block_hidden'].detach().numpy())
         del input_data
 
         # If we're in evaluation mode (i.e. validation), then
@@ -906,8 +902,8 @@ class Trainer:
 
             with cm:
                 with atomic_write(self.best_model_path) as save_path:
-                    if exists("results\\aspirin\\example-run\\best_model.pth"):
-                        remove("results\\aspirin\\example-run\\best_model.pth")
+                    # if exists("results\\aspirin\\example-run\\best_model.pth"):
+                    #     remove("results\\aspirin\\example-run\\best_model.pth")
                     if hasattr(self.model, "save"):
                         self.model.save(save_path)
                     else:
@@ -918,10 +914,10 @@ class Trainer:
             )
 
         if (self.iepoch + 1) % self.log_epoch_freq == 0:
-            if exists("results\\aspirin\\example-run\\trainer.pth"):
-                remove("results\\aspirin\\example-run\\trainer.pth")
-            if exists("results\\aspirin\\example-run\\last_model.pth"):
-                remove("results\\aspirin\\example-run\\last_model.pth")
+            # if exists("results\\aspirin\\example-run\\trainer.pth"):
+            #     remove("results\\aspirin\\example-run\\trainer.pth")
+            # if exists("results\\aspirin\\example-run\\last_model.pth"):
+            #     remove("results\\aspirin\\example-run\\last_model.pth")
             self.save(self.trainer_save_path)
 
     def init_log(self):
