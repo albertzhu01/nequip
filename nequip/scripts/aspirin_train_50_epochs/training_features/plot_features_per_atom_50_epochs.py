@@ -5,7 +5,7 @@ import seaborn as sns
 
 atomic_numbers = [6, 6, 6, 6, 6, 6, 6, 8, 8, 8, 6, 6, 8, 1, 1, 1, 1, 1, 1, 1, 1]
 
-sns.set(rc={'axes.facecolor': 'ffffcc',
+sns.set(rc={'axes.facecolor': 'ffffd9',
             'figure.facecolor': 'white',
             'axes.edgecolor': 'black',
             'axes.grid': False,
@@ -15,6 +15,17 @@ sns.set(rc={'axes.facecolor': 'ffffcc',
 # --- Code for creating 2d histograms per epoch. Uncomment one of lines 10-45 OR lines 51-88 --- #
 data_C1 = np.empty((1, 240))
 epoch1_v = np.load('C:/Users/alber/nequip/nequip/scripts/aspirin_train_50_epochs/training_features/feats_v_epoch50.npz')
+
+# largest = 0
+# smallest = 0
+# for key in epoch1_v.files:
+#     if np.amax(epoch1_v[key]) > largest:
+#         largest = np.amax(epoch1_v[key])
+#     if np.amin(epoch1_v[key]) < smallest:
+#         smallest = np.amin(epoch1_v[key])
+#
+# print(largest)
+# print(smallest)
 
 for key in epoch1_v.files:
     data_C1 = np.concatenate((data_C1, epoch1_v[key][0:105:21]))
@@ -40,7 +51,7 @@ index = index.tolist()
 df_C1 = pd.DataFrame(stack_data, index=index, columns=['Feature Value'])
 print(df_C1)
 
-f, ax = plt.subplots(figsize=(19, 9.5))
+f, ax = plt.subplots(figsize=(22, 9.6))
 
 feature_plot = sns.histplot(df_C1,
                             x=df_C1.index,
@@ -49,9 +60,11 @@ feature_plot = sns.histplot(df_C1,
                             cbar=True,
                             vmin=0,
                             vmax=50,
-                            cmap='YlOrRd'
+                            cmap='YlGnBu'
                             )
-feature_plot.set(ylim=(-1, 1))
+feature_plot.set(xticks=list(range(0, 250, 10)),
+                 ylim=(-1.5, 1.5),
+                 yticks=np.arange(-1.5, 1.6, 0.3).tolist())
 
 plt.title('Carbon 1 Features Epoch 50')
 plt.xlabel('Feature Index')
