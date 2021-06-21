@@ -5,7 +5,7 @@ import seaborn as sns
 
 atomic_numbers = [6, 6, 6, 6, 6, 6, 6, 8, 8, 8, 6, 6, 8, 1, 1, 1, 1, 1, 1, 1, 1]
 
-sns.set(rc={'axes.facecolor': 'ffffd9',
+sns.set(rc={'axes.facecolor': 'ffffff',
             'figure.facecolor': 'white',
             'axes.edgecolor': 'black',
             'axes.grid': False,
@@ -56,11 +56,11 @@ f, ax = plt.subplots(figsize=(22, 9.6))
 feature_plot = sns.histplot(df_C1,
                             x=df_C1.index,
                             y='Feature Value',
-                            binwidth=(1, 0.05),
+                            binwidth=(1, 0.03),
                             cbar=True,
                             vmin=0,
                             vmax=50,
-                            cmap='YlGnBu'
+                            cmap='viridis'
                             )
 feature_plot.set(xticks=list(range(0, 250, 10)),
                  ylim=(-1.5, 1.5),
