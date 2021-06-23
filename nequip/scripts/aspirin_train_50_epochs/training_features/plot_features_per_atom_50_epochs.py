@@ -28,7 +28,7 @@ epoch1_v = np.load('C:/Users/alber/nequip/nequip/scripts/aspirin_train_50_epochs
 # print(smallest)
 
 for key in epoch1_v.files:
-    data_C1 = np.concatenate((data_C1, epoch1_v[key][0:105:21]))
+    data_C1 = np.concatenate((data_C1, epoch1_v[key][20:105:21]))
     # data_C1 = np.concatenate((data_C1, epoch1_v[key][1:105:21]))
     # data_C1 = np.concatenate((data_C1, epoch1_v[key][2:105:21]))
     # data_C1 = np.concatenate((data_C1, epoch1_v[key][3:105:21]))
@@ -59,17 +59,19 @@ feature_plot = sns.histplot(df_C1,
                             binwidth=(1, 0.03),
                             cbar=True,
                             vmin=0,
-                            vmax=50,
+                            vmax=31,
                             cmap='viridis'
                             )
 feature_plot.set(xticks=list(range(0, 250, 10)),
                  ylim=(-1.5, 1.5),
                  yticks=np.arange(-1.5, 1.6, 0.3).tolist())
 
-plt.title('Carbon 1 Features Epoch 50')
+plt.title('Hydrogen 8 Features Epoch 50')
 plt.xlabel('Feature Index')
 
 plt.show()
+
+# Redos: C1, C3, O1, O2
 
 
 # --- Code for creating line plots of averages --- #
