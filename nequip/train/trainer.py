@@ -713,8 +713,8 @@ class Trainer:
         # We make a shallow copy of the input dict in case the model modifies it
         input_data = data_unscaled.copy()
         out = self.model(input_data)
-        if validation and (self.iepoch + 1) % 1000 == 0:
-            np.savez(f'aspirin_train_5000_epochs\\feats_v_epoch{self.iepoch + 1}_batch{self.ibatch + 1}',
+        if validation and (self.iepoch + 1) % 500 == 0:
+            np.savez(f'feats_v_epoch{self.iepoch + 1}_batch{self.ibatch + 1}',
                      out['feature_vectors'].detach().cpu().numpy())
         del input_data
 
