@@ -75,6 +75,8 @@ plt.savefig('C1_epoch2000_features.png')
 
 # Redos: C1, C3, O1, O2
 
+# Redos: C1, C3, O1, O2
+
 
 # --- Code for creating line plots of averages --- #
 
