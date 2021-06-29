@@ -14,7 +14,7 @@ sns.set(rc={'axes.facecolor': 'ffffff',
 
 # --- Code for creating 2d histograms per epoch. Uncomment one of lines 10-45 OR lines 51-88 --- #
 data_C1 = np.empty((1, 240))
-epoch1_v = np.load('C:/Users/alber/nequip/nequip/scripts/aspirin_train_50_epochs/training_features/feats_v_epoch50.npz')
+epoch1_v = np.load('/n/home10/axzhu/nequip/feats_v_epoch2000.npz')
 
 # largest = 0
 # smallest = 0
@@ -34,7 +34,7 @@ for key in epoch1_v.files:
     # data_C1 = np.concatenate((data_C1, epoch1_v[key][3:105:21]))
 
 data_C1 = data_C1[1:]
-print(data_C1.shape)
+# print(data_C1.shape)
 
 stack_data = np.array([])
 for i in range(len(data_C1)):
@@ -49,7 +49,7 @@ for i in range(rows):
 # index = index.tolist()
 
 df_C1 = pd.DataFrame(stack_data, index=index, columns=['Feature Value'])
-print(df_C1)
+# print(df_C1)
 
 f, ax = plt.subplots(figsize=(22, 9.6))
 
@@ -68,8 +68,12 @@ feature_plot.set(xticks=list(range(0, 250, 10)),
 
 plt.title('Carbon 1 Features Epoch 50')
 plt.xlabel('Feature Index')
+plt.savefig('C1_epoch2000_features.png')
+# plt.show()
 
-plt.show()
+# Redos: C1, C3, O1, O2
+
+# Redos: C1, C3, O1, O2
 
 # Redos: C1, C3, O1, O2
 
