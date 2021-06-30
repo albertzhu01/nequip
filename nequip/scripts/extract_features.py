@@ -4,9 +4,9 @@ from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
-path = "results/aspirin/minimal"
+path = "/n/home10/axzhu/nequip/results_062521/aspirin/example-run"
 
-model = torch.load(path + "/best_model.pth")
+model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 
 
 # Find the sequential graph net (the bulk of the model):
