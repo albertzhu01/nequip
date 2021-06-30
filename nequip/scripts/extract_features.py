@@ -1,10 +1,11 @@
 import torch
 
 from nequip.utils import Config, dataset_from_config
-from nequip.data import AtomicDataDict, AtomicData
+from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
-path = "/n/home10/axzhu/nequip/results_062521/aspirin/example-run"
+# path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
+path = "/n/home10/axzhu/results/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 
@@ -39,9 +40,17 @@ sgn.insert_from_parameters(
 config = Config.from_file(path + "/config_final.yaml")
 dataset = dataset_from_config(config)
 
-# ...
-data = dataset.get(0)
-out = sgn(AtomicData.to_AtomicDataDict(data))
+# Load trainer and get training data indexes
+trainer = torch.load(path + '/trainer.pth', map_location='cpu')
+train_idxs = trainer['train_idcs']
 
-assert "saved" in out
-print(out['saved'].shape)
+# Create list of training data AtomicData objects
+data_list = [dataset.get(idx.item()) for idx in train_idxs]
+print(len(data_list))
+
+# Evaluate model on batch of training data
+c = Collater.for_dataset(dataset)
+batch = c.collate(data_list)
+out = model(AtomicData.to_AtomicDataDict(batch))
+assert AtomicDataDict.NODE_FEATURES_KEY in out
+print(out[AtomicDataDict.NODE_FEATURES_KEY].shape)
