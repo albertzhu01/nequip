@@ -3,6 +3,7 @@ import numpy as np
 from sklearn import mixture
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
@@ -58,21 +59,73 @@ batch = c.collate(data_list)
 out = model(AtomicData.to_AtomicDataDict(batch))
 assert AtomicDataDict.NODE_FEATURES_KEY in out
 features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-print(features.shape)
 
-n_components = np.arange(1, 20)
-models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
+# Plot features
+tot_atoms, feature_length = features.shape
+num_atoms = tot_atoms // len(data_list)
+aspirin_atoms = [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7",
+        "O1",
+        "O2",
+        "O3",
+        "C8",
+        "C9",
+        "O4",
+        "H1",
+        "H2",
+        "H3",
+        "H4",
+        "H5",
+        "H6",
+        "H7",
+        "H8",
+    ]
+for atom in range(num_atoms):
+    atom_features = features[atom:tot_atoms:num_atoms]
+    atom_features = atom_features.flatten()
+    index = np.tile(np.arange(feature_length), len(data_list))
+    df_atom_features = pd.DataFrame(atom_features, index=index, columns=["Feature Value"])
+    plt.subplots(figsize=(19, 9.5))
+    feature_plot = sns.histplot(
+        df_atom_features,
+        x=df_atom_features.index,
+        y=df_atom_features.columns[0],
+        binwidth=(1, 0.1),
+        cbar=True,
+        vmin=0,
+        vmax=100,
+        cmap="viridis",
+    )
+    feature_plot.set(xticks=np.arange(16))
+
+    plt.title(
+        f"{aspirin_atoms[atom]} Training Features Epoch 1220 (Aspirin)"
+    )
+    plt.xlabel("Feature Index")
+    plt.savefig(
+        f"{aspirin_atoms[atom]}_epoch1220_features"
+    )
+
+# Train GMM on training features
+# n_components = np.arange(1, 20)
+# models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
 # aics = [model.fit(features).aic(features) for model in models]
-bics = [model.fit(features).bic(features) for model in models]
+# bics = [model.fit(features).bic(features) for model in models]
 # plt.plot(n_components, aics, label='AIC')
 # plt.plot(n_components, bics, label='BIC')
 # plt.savefig("aspirin_GMM_aics_bics.png")
 
-gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
-gmm.fit(features)
-print(gmm.converged_)
+# gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
+# gmm.fit(features)
+# print(gmm.converged_)
 
-probs = gmm.predict_proba(features[:21]).transpose()
-f, ax = plt.subplots(figsize=(19, 9.5))
-prob_plot = sns.heatmap(probs)
-plt.savefig("aspirin_GMM_prob_train_minbic.png")
+# probs = gmm.predict_proba(features[:21]).transpose()
+# f, ax = plt.subplots(figsize=(19, 9.5))
+# prob_plot = sns.heatmap(probs)
+# plt.savefig("aspirin_GMM_prob_train_minbic.png")
