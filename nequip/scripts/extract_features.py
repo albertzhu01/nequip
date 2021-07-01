@@ -56,10 +56,11 @@ c = Collater.for_dataset(dataset, exclude_keys=[])
 batch = c.collate(data_list)
 out = model(AtomicData.to_AtomicDataDict(batch))
 assert AtomicDataDict.NODE_FEATURES_KEY in out
-print(out[AtomicDataDict.NODE_FEATURES_KEY].shape)
+features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+print(features.shape)
 
 n_components = np.arange(1, 100)
 models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
-aics = [model.fit(out).aic(out) for model in models]
+aics = [model.fit(features).aic(features) for model in models]
 plt.plot(n_components, aics)
 plt.savefig("aspirin_GMM_aics.png")
