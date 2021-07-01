@@ -2,6 +2,7 @@ import torch
 import numpy as np
 from sklearn import mixture
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
@@ -70,4 +71,6 @@ gmm.fit(features)
 print(gmm.converged_)
 
 probs = gmm.predict_proba(features[:21])
-print(probs.round(4))
+f, ax = plt.subplots(figsize=(19, 9.5))
+prob_plot = sns.heatmap(probs)
+plt.savefig("aspirin_GMM_prob_training.png")
