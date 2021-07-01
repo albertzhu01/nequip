@@ -1,4 +1,7 @@
 import torch
+import numpy as np
+from sklearn.mixture import GMM
+import matplotlib.pyplot as plt
 
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
@@ -54,3 +57,9 @@ batch = c.collate(data_list)
 out = model(AtomicData.to_AtomicDataDict(batch))
 assert AtomicDataDict.NODE_FEATURES_KEY in out
 print(out[AtomicDataDict.NODE_FEATURES_KEY].shape)
+
+n_components = np.arange(1, 100)
+models = [GMM(n, covariance_type='full', random_state=0) for n in n_components]
+aics = [model.fit(out).aic(out) for model in models]
+plt.plot(n_components, aics)
+plt.savefig("aspirin_GMM_aics.png")
