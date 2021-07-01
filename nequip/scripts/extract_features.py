@@ -5,7 +5,7 @@ from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/results/aspirin/example-run"
+path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 
@@ -49,7 +49,7 @@ data_list = [dataset.get(idx.item()) for idx in train_idxs]
 print(len(data_list))
 
 # Evaluate model on batch of training data
-c = Collater.for_dataset(dataset)
+c = Collater.for_dataset(dataset, exclude_keys=[])
 batch = c.collate(data_list)
 out = model(AtomicData.to_AtomicDataDict(batch))
 assert AtomicDataDict.NODE_FEATURES_KEY in out
