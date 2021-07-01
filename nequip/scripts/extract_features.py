@@ -96,20 +96,20 @@ for atom in range(num_atoms):
         df_atom_features,
         x=df_atom_features.index,
         y=df_atom_features.columns[0],
-        binwidth=(1, 0.1),
+        bins=(np.arange(-0.5, 15.6, 1), np.arange(-0.45, 0.45, 0.05)),
         cbar=True,
         vmin=0,
         vmax=100,
         cmap="viridis",
     )
-    feature_plot.set(xticks=np.arange(16))
+    feature_plot.set(xticks=np.arange(16), ylim=(-0.45, 0.45), yticks=np.arange(-0.45, 0.45, 0.05))
 
     plt.title(
         f"{aspirin_atoms[atom]} Training Features Epoch 1220 (Aspirin)"
     )
     plt.xlabel("Feature Index")
     plt.savefig(
-        f"{aspirin_atoms[atom]}_epoch1220_features"
+        f"{aspirin_atoms[atom]}_aspirin_features"
     )
 
 # Train GMM on training features
