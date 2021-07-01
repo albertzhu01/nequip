@@ -62,17 +62,17 @@ print(features.shape)
 
 n_components = np.arange(1, 200)
 models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
-aics = [model.fit(features).aic(features) for model in models]
+# aics = [model.fit(features).aic(features) for model in models]
 bics = [model.fit(features).bic(features) for model in models]
-plt.plot(n_components, aics, label='AIC')
-plt.plot(n_components, bics, label='BIC')
-plt.savefig("aspirin_GMM_aics_bics.png")
+# plt.plot(n_components, aics, label='AIC')
+# plt.plot(n_components, bics, label='BIC')
+# plt.savefig("aspirin_GMM_aics_bics.png")
 
-# gmm = mixture.GaussianMixture(n_components=96, covariance_type='full', random_state=0)
-# gmm.fit(features)
-# print(gmm.converged_)
-#
-# probs = gmm.predict_proba(features[:21])
-# f, ax = plt.subplots(figsize=(19, 9.5))
-# prob_plot = sns.heatmap(probs)
-# plt.savefig("aspirin_GMM_prob_training.png")
+gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
+gmm.fit(features)
+print(gmm.converged_)
+
+probs = gmm.predict_proba(features[:21]).transpose()
+f, ax = plt.subplots(figsize=(19, 9.5))
+prob_plot = sns.heatmap(probs)
+plt.savefig("aspirin_GMM_prob_train_minbic.png")
