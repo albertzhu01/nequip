@@ -1,11 +1,14 @@
 import torch
+import numpy as np
+from sklearn.mixture import GMM
+import matplotlib.pyplot as plt
 
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
-# path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/results/aspirin/example-run"
+path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
+path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth")
 
@@ -49,8 +52,13 @@ data_list = [dataset.get(idx.item()) for idx in train_idxs]
 print(len(data_list))
 
 # Evaluate model on batch of training data
-c = Collater.for_dataset(dataset)
+c = Collater.for_dataset(dataset, exclude_keys=[])
 batch = c.collate(data_list)
 out = model(AtomicData.to_AtomicDataDict(batch))
 assert AtomicDataDict.NODE_FEATURES_KEY in out
 print(out[AtomicDataDict.NODE_FEATURES_KEY].shape)
+
+n_components = np.arange(1, 100)
+models = [GMM(n, covariance_type='full', random_state=0) for n in n_components]
+aics = [model.fit(out).aic(out) for model in models]
+plt.plot(n_components, aics)
