@@ -60,7 +60,7 @@ assert AtomicDataDict.NODE_FEATURES_KEY in out
 features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 print(features.shape)
 
-n_components = np.arange(1, 200)
+n_components = np.arange(1, 20)
 models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
 # aics = [model.fit(features).aic(features) for model in models]
 bics = [model.fit(features).bic(features) for model in models]
