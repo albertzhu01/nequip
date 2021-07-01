@@ -56,7 +56,7 @@ c = Collater.for_dataset(dataset, exclude_keys=[])
 batch = c.collate(data_list)
 out = model(AtomicData.to_AtomicDataDict(batch))
 assert AtomicDataDict.NODE_FEATURES_KEY in out
-features = out[AtomicDataDict.NODE_FEATURES_KEY]
+features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 print(features.shape)
 
 n_components = np.arange(1, 100)
@@ -64,3 +64,10 @@ models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random
 aics = [model.fit(features).aic(features) for model in models]
 plt.plot(n_components, aics)
 plt.savefig("aspirin_GMM_aics.png")
+
+gmm = mixture.GaussianMixture(n_components=96, covariance_type='full', random_state=0)
+gmm.fit(features)
+print(gmm.converged_)
+
+probs = gmm.predict_proba(features[:21])
+print(probs.round(4))
