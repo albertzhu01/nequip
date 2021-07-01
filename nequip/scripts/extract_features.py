@@ -2,6 +2,7 @@ import torch
 import numpy as np
 from sklearn import mixture
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
@@ -62,12 +63,14 @@ print(features.shape)
 n_components = np.arange(1, 100)
 models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
 aics = [model.fit(features).aic(features) for model in models]
-plt.plot(n_components, aics)
-plt.savefig("aspirin_GMM_aics.png")
+# plt.plot(n_components, aics)
+# plt.savefig("aspirin_GMM_aics.png")
 
 gmm = mixture.GaussianMixture(n_components=96, covariance_type='full', random_state=0)
 gmm.fit(features)
 print(gmm.converged_)
 
 probs = gmm.predict_proba(features[:21])
-print(probs.round(4))
+f, ax = plt.subplots(figsize=(19, 9.5))
+prob_plot = sns.heatmap(probs)
+plt.savefig("aspirin_GMM_prob_training.png")
