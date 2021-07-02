@@ -147,7 +147,7 @@ print(gmm.converged_)
 # Get probability of worst test data point
 worst_test = dataset.get(52)
 out_worst = model(AtomicData.to_AtomicDataDict(worst_test))
-probs = gmm.predict_proba(out_worst[AtomicDataDict.NODE_FEATURES_KEY]).transpose()
+probs = gmm.predict_proba(out_worst[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()).transpose()
 f, ax = plt.subplots(figsize=(19, 9.5))
 prob_plot = sns.heatmap(probs)
 plt.savefig("aspirin_GMM_prob_worst_data.png")
