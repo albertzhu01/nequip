@@ -137,11 +137,11 @@ actual_energy = torch.cat(energy_list).view(len(test_data_list), -1)
 print(f"Actual energy shape: {actual_energy.shape}")
 print(f"Predicted energy shape: {pred_energy.shape}")
 
-energy_diff = actual_energy.unsqueeze(1) - pred_energy
+energy_diff = np.subtract(actual_energy.detach().numpy(), pred_energy.detach().numpy())
 print(energy_diff.shape)
-max_diff_idx = torch.argmax(torch.abs(energy_diff))
+max_diff_idx = np.argmax(np.absolute(energy_diff))
 print(max_diff_idx)
-max_diff_test_idx = test_idxs[max_diff_idx.item()]
+max_diff_test_idx = test_idxs[max_diff_idx]
 print(max_diff_test_idx)
 
 # probs = gmm.predict_proba(features[:21]).transpose()
