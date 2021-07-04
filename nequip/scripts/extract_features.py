@@ -16,34 +16,35 @@ model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 
 
 # Find the sequential graph net (the bulk of the model):
-def find_first_of_type(m: torch.nn.Module, kls) -> torch.nn.Module:
-    if isinstance(m, kls):
-        return m
-    else:
-        for child in m.children():
-            tmp = find_first_of_type(child, kls)
-            if tmp is not None:
-                return tmp
-    return None
-
-
-sgn = find_first_of_type(model, SequentialGraphNetwork)
+# def find_first_of_type(m: torch.nn.Module, kls) -> torch.nn.Module:
+#     if isinstance(m, kls):
+#         return m
+#     else:
+#         for child in m.children():
+#             tmp = find_first_of_type(child, kls)
+#             if tmp is not None:
+#                 return tmp
+#     return None
+#
+#
+# sgn = find_first_of_type(model, SequentialGraphNetwork)
 
 # Now insert a SaveForOutput
-insert_after = "layer5_convnet"  # change this
-sgn.insert_from_parameters(
-    after=insert_after,
-    name="feature_extractor",
-    shared_params=dict(
-        field=AtomicDataDict.NODE_FEATURES_KEY,
-        out_field="saved"
-    ),
-    builder=SaveForOutput
-)
+# insert_after = "layer5_convnet"  # change this
+# sgn.insert_from_parameters(
+#     after=insert_after,
+#     name="feature_extractor",
+#     shared_params=dict(
+#         field=AtomicDataDict.NODE_FEATURES_KEY,
+#         out_field="saved"
+#     ),
+#     builder=SaveForOutput
+# )
 
 # Load a config file
 config = Config.from_file(path + "/config_final.yaml")
 dataset = dataset_from_config(config)
+# print(len(dataset))
 
 # Load trainer and get training data indexes and set up Collater
 trainer = torch.load(path + '/trainer.pth', map_location='cpu')
@@ -51,21 +52,34 @@ train_idxs = trainer['train_idcs']
 c = Collater.for_dataset(dataset, exclude_keys=[])
 
 # Evaluate on actual test data
-test_list = [dataset.get(idx) for idx in range(len(dataset))]
-test_data_batch = c.collate(test_list)
-test_out = model(AtomicData.to_AtomicDataDict(test_data_batch))
-pred_energy = test_out[AtomicDataDict.TOTAL_ENERGY_KEY]
-energy_list = [atomic_data.total_energy for atomic_data in test_list]
-actual_energy = torch.cat(energy_list).view(len(test_list), -1)
-print(f"Actual energy shape: {actual_energy.shape}")
-print(f"Predicted energy shape: {pred_energy.shape}")
+test_data = np.load(config.dataset_file_name)
+r = test_data['R']
+actual_energies = test_data['E']
 
-energy_diff = np.absolute(np.subtract(actual_energy.detach().numpy(), pred_energy.detach().numpy()))
+pred_energies = []
+for i in range(actual_energies.size):
+    test_atomic_data = AtomicData.from_points(
+        pos=r[i],
+        r_max=config['r_max'],
+        **{AtomicDataDict.ATOMIC_NUMBERS_KEY:
+            torch.Tensor(torch.from_numpy(test_data['z'].astype(np.float32))).to(torch.int64)}
+    )
+    pred_energy = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.TOTAL_ENERGY_KEY]
+    pred_energies.append(pred_energy)
+
+pred_energies = np.array(pred_energies).reshape(500, 1)
+print(f"Actual energy shape: {actual_energies.shape}")
+print(f"Predicted energy shape: {pred_energies.shape}")
+
+energy_diff = np.absolute(np.subtract(actual_energies, pred_energies))
 print(energy_diff.shape)
 max_diff_idx = np.argmax(energy_diff)
 print(max_diff_idx)
 plt.plot(energy_diff.flatten())
 plt.savefig("real_test_energy_deviations.png")
+# print(f"max: {np.amax(test_data['E'])} and min: {np.amin(test_data['E'])}")
+# for atomic_data in test_list[0:10]:
+#     print(atomic_data.total_energy)
 
 # Create list of training data AtomicData objects
 # data_list = [dataset.get(idx.item()) for idx in train_idxs]
