@@ -44,7 +44,7 @@ model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 # Load a config file
 config = Config.from_file(path + "/config_final.yaml")
 dataset = dataset_from_config(config)
-# print(len(dataset))
+print(len(dataset))
 
 # Load trainer and get training data indexes and set up Collater
 trainer = torch.load(path + '/trainer.pth', map_location='cpu')
@@ -75,7 +75,7 @@ c = Collater.for_dataset(dataset, exclude_keys=[])
 # energy_diff = np.absolute(np.subtract(actual_energies, pred_energies))
 # print(energy_diff.shape)
 # max_diff_idx = np.argmax(energy_diff)
-# print(max_diff_idx)
+# print(max_diff_idx)    # 455
 # plt.plot(energy_diff)
 # plt.savefig("real_test_energy_deviations.png")
 
