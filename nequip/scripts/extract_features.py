@@ -52,44 +52,41 @@ train_idxs = trainer['train_idcs']
 c = Collater.for_dataset(dataset, exclude_keys=[])
 
 # Evaluate on actual test data
-test_data = np.load(config.dataset_file_name)
-r = test_data['R']
-actual_energies = test_data['E']
-
-pred_energies = []
-for i in range(actual_energies.size):
-    test_atomic_data = AtomicData.from_points(
-        pos=r[i],
-        r_max=config['r_max'],
-        **{AtomicDataDict.ATOMIC_NUMBERS_KEY:
-            torch.Tensor(torch.from_numpy(test_data['z'].astype(np.float32))).to(torch.int64)}
-    )
-    pred_energy = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.TOTAL_ENERGY_KEY]
-    pred_energies.append(pred_energy.item())
-
-pred_energies = np.array(pred_energies)
-actual_energies = actual_energies.flatten()
-print(f"Actual energy shape: {actual_energies.shape}")
-print(f"Predicted energy shape: {pred_energies.shape}")
-
-energy_diff = np.absolute(np.subtract(actual_energies, pred_energies))
-print(energy_diff.shape)
-max_diff_idx = np.argmax(energy_diff)
-print(max_diff_idx)
-plt.plot(energy_diff)
-plt.savefig("real_test_energy_deviations.png")
-# print(f"max: {np.amax(test_data['E'])} and min: {np.amin(test_data['E'])}")
-# for atomic_data in test_list[0:10]:
-#     print(atomic_data.total_energy)
+# test_data = np.load(config.dataset_file_name)
+# r = test_data['R']
+# actual_energies = test_data['E']
+#
+# pred_energies = []
+# for i in range(actual_energies.size):
+#     test_atomic_data = AtomicData.from_points(
+#         pos=r[i],
+#         r_max=config['r_max'],
+#         **{AtomicDataDict.ATOMIC_NUMBERS_KEY:
+#             torch.Tensor(torch.from_numpy(test_data['z'].astype(np.float32))).to(torch.int64)}
+#     )
+#     pred_energy = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.TOTAL_ENERGY_KEY]
+#     pred_energies.append(pred_energy.item())
+#
+# pred_energies = np.array(pred_energies)
+# actual_energies = actual_energies.flatten()
+# print(f"Actual energy shape: {actual_energies.shape}")
+# print(f"Predicted energy shape: {pred_energies.shape}")
+#
+# energy_diff = np.absolute(np.subtract(actual_energies, pred_energies))
+# print(energy_diff.shape)
+# max_diff_idx = np.argmax(energy_diff)
+# print(max_diff_idx)
+# plt.plot(energy_diff)
+# plt.savefig("real_test_energy_deviations.png")
 
 # Create list of training data AtomicData objects
-# data_list = [dataset.get(idx.item()) for idx in train_idxs]
+data_list = [dataset.get(idx.item()) for idx in train_idxs]
 
 # Evaluate model on batch of training data
-# batch = c.collate(data_list)
-# out = model(AtomicData.to_AtomicDataDict(batch))
-# assert AtomicDataDict.NODE_FEATURES_KEY in out
-# features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+batch = c.collate(data_list)
+out = model(AtomicData.to_AtomicDataDict(batch))
+assert AtomicDataDict.NODE_FEATURES_KEY in out
+features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 
 # Plot features
 # tot_atoms, feature_length = features.shape
@@ -145,18 +142,18 @@ plt.savefig("real_test_energy_deviations.png")
 
 # Train GMM on training features
 # Determine optimal number of components using Bayesian inference criterion (BIC)
-# n_components = np.arange(1, 20)
-# models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
+n_components = np.arange(1, 20)
+models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
 # aics = [model.fit(features).aic(features) for model in models]
-# bics = [model.fit(features).bic(features) for model in models]
+bics = [model.fit(features).bic(features) for model in models]
 # plt.plot(n_components, aics, label='AIC')
 # plt.plot(n_components, bics, label='BIC')
 # plt.savefig("aspirin_GMM_aics_bics.png")
 
 # Train GMM using optimal number of components
-# gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
-# gmm.fit(features)
-# print(gmm.converged_)
+gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
+gmm.fit(features)
+print(gmm.converged_)
 
 # Evaluate model on test data
 # test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
@@ -185,3 +182,18 @@ plt.savefig("real_test_energy_deviations.png")
 # f, ax = plt.subplots(figsize=(19, 9.5))
 # prob_plot = sns.heatmap(probs)
 # plt.savefig("aspirin_GMM_prob_worst_data.png")
+
+# Get probability of actual worst test data point
+test_data = np.load(config.dataset_file_name)
+r = test_data['R'][455]
+test_atomic_data = AtomicData.from_points(
+    pos=r,
+    r_max=config['r_max'],
+    **{AtomicDataDict.ATOMIC_NUMBERS_KEY:
+        torch.Tensor(torch.from_numpy(test_data['z'].astype(np.float32))).to(torch.int64)}
+)
+pred_feature = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.NODE_FEATURES_KEY]
+prob = gmm.predict_proba(pred_feature.detach().numpy()).transpose()
+f, ax = plt.subplots(figsize=(19, 9.5))
+prob_plot = sns.heatmap(prob)
+plt.savefig("aspirin_GMM_prob_worst_test.png")
