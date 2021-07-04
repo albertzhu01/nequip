@@ -51,7 +51,7 @@ train_idxs = trainer['train_idcs']
 c = Collater.for_dataset(dataset, exclude_keys=[])
 
 # Evaluate on actual test data
-test_list = [dataset.get(idx.item()) for idx in range(len(dataset))]
+test_list = [dataset.get(idx) for idx in range(len(dataset))]
 test_data_batch = c.collate(test_list)
 test_out = model(AtomicData.to_AtomicDataDict(test_data_batch))
 pred_energy = test_out[AtomicDataDict.TOTAL_ENERGY_KEY]
