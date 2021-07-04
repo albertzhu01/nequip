@@ -9,8 +9,8 @@ from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
-# path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
+path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
+# path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 
@@ -186,6 +186,9 @@ print(gmm.converged_)
 # Get probability of actual worst test data point
 test_data = np.load(config.dataset_file_name)
 r = test_data['R'][455]
+print(r)
+r[13] = np.array([-2.02, -3.36, 1.44])
+print(r)
 test_atomic_data = AtomicData.from_points(
     pos=r,
     r_max=config['r_max'],
@@ -196,4 +199,4 @@ pred_feature = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataD
 prob = gmm.predict_proba(pred_feature.detach().numpy()).transpose()
 f, ax = plt.subplots(figsize=(19, 9.5))
 prob_plot = sns.heatmap(prob)
-plt.savefig("aspirin_GMM_prob_worst_test.png")
+plt.savefig("aspirin_GMM_2x_O-H_len.png")
