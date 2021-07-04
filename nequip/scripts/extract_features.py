@@ -50,11 +50,28 @@ trainer = torch.load(path + '/trainer.pth', map_location='cpu')
 train_idxs = trainer['train_idcs']
 c = Collater.for_dataset(dataset, exclude_keys=[])
 
+# Evaluate on actual test data
+test_list = [dataset.get(idx.item()) for idx in range(len(dataset))]
+test_data_batch = c.collate(test_list)
+test_out = model(AtomicData.to_AtomicDataDict(test_data_batch))
+pred_energy = test_out[AtomicDataDict.TOTAL_ENERGY_KEY]
+energy_list = [atomic_data.total_energy for atomic_data in test_list]
+actual_energy = torch.cat(energy_list).view(len(test_list), -1)
+print(f"Actual energy shape: {actual_energy.shape}")
+print(f"Predicted energy shape: {pred_energy.shape}")
+
+energy_diff = np.absolute(np.subtract(actual_energy.detach().numpy(), pred_energy.detach().numpy()))
+print(energy_diff.shape)
+max_diff_idx = np.argmax(energy_diff)
+print(max_diff_idx)
+plt.plot(energy_diff.flatten())
+plt.savefig("real_test_energy_deviations.png")
+
 # Create list of training data AtomicData objects
-data_list = [dataset.get(idx.item()) for idx in train_idxs]
+# data_list = [dataset.get(idx.item()) for idx in train_idxs]
 
 # Evaluate model on batch of training data
-batch = c.collate(data_list)
+# batch = c.collate(data_list)
 # out = model(AtomicData.to_AtomicDataDict(batch))
 # assert AtomicDataDict.NODE_FEATURES_KEY in out
 # features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
@@ -127,24 +144,24 @@ batch = c.collate(data_list)
 # print(gmm.converged_)
 
 # Evaluate model on test data
-test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
-test_data_list = [dataset.get(idx) for idx in test_idxs]
-test_batch = c.collate(test_data_list)
-test_out = model(AtomicData.to_AtomicDataDict(test_batch))
-pred_energy = test_out[AtomicDataDict.TOTAL_ENERGY_KEY]
-energy_list = [atomic_data.total_energy for atomic_data in test_data_list]
-actual_energy = torch.cat(energy_list).view(len(test_data_list), -1)
-print(f"Actual energy shape: {actual_energy.shape}")
-print(f"Predicted energy shape: {pred_energy.shape}")
-
-energy_diff = np.absolute(np.subtract(actual_energy.detach().numpy(), pred_energy.detach().numpy()))
-print(energy_diff.shape)
-max_diff_idx = np.argmax(energy_diff)
-print(max_diff_idx)
-max_diff_test_idx = test_idxs[max_diff_idx]
-print(max_diff_test_idx)    # 52
-plt.plot(energy_diff.flatten())
-plt.savefig("energy_deviations_draft.png")
+# test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
+# test_data_list = [dataset.get(idx) for idx in test_idxs]
+# test_batch = c.collate(test_data_list)
+# test_out = model(AtomicData.to_AtomicDataDict(test_batch))
+# pred_energy = test_out[AtomicDataDict.TOTAL_ENERGY_KEY]
+# energy_list = [atomic_data.total_energy for atomic_data in test_data_list]
+# actual_energy = torch.cat(energy_list).view(len(test_data_list), -1)
+# print(f"Actual energy shape: {actual_energy.shape}")
+# print(f"Predicted energy shape: {pred_energy.shape}")
+#
+# energy_diff = np.absolute(np.subtract(actual_energy.detach().numpy(), pred_energy.detach().numpy()))
+# print(energy_diff.shape)
+# max_diff_idx = np.argmax(energy_diff)
+# print(max_diff_idx)
+# max_diff_test_idx = test_idxs[max_diff_idx]
+# print(max_diff_test_idx)    # 52
+# plt.plot(energy_diff.flatten())
+# plt.savefig("energy_deviations_draft.png")
 
 # Get probability of worst test data point
 # worst_test = dataset.get(52)
