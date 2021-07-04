@@ -143,7 +143,7 @@ max_diff_idx = np.argmax(energy_diff)
 print(max_diff_idx)
 max_diff_test_idx = test_idxs[max_diff_idx]
 print(max_diff_test_idx)    # 52
-plt.plot(np.flatten(energy_diff))
+plt.plot(energy_diff.flatten())
 plt.savefig("energy_deviations_draft.png")
 
 # Get probability of worst test data point
