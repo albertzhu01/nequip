@@ -65,9 +65,10 @@ for i in range(actual_energies.size):
             torch.Tensor(torch.from_numpy(test_data['z'].astype(np.float32))).to(torch.int64)}
     )
     pred_energy = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.TOTAL_ENERGY_KEY]
-    pred_energies.append(pred_energy)
+    pred_energies.append(pred_energy.item())
 
-pred_energies = np.array(pred_energies).reshape(500, 1)
+pred_energies = np.array(pred_energies)
+actual_energies = actual_energies.flatten()
 print(f"Actual energy shape: {actual_energies.shape}")
 print(f"Predicted energy shape: {pred_energies.shape}")
 
@@ -75,7 +76,7 @@ energy_diff = np.absolute(np.subtract(actual_energies, pred_energies))
 print(energy_diff.shape)
 max_diff_idx = np.argmax(energy_diff)
 print(max_diff_idx)
-plt.plot(energy_diff.flatten())
+plt.plot(energy_diff)
 plt.savefig("real_test_energy_deviations.png")
 # print(f"max: {np.amax(test_data['E'])} and min: {np.amin(test_data['E'])}")
 # for atomic_data in test_list[0:10]:
