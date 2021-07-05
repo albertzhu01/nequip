@@ -10,8 +10,8 @@ from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
-path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-# path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
+# path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
+path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 
@@ -197,11 +197,13 @@ test_atomic_data = AtomicData.from_points(
         torch.Tensor(torch.from_numpy(test_data['z'].astype(np.float32))).to(torch.int64)}
 )
 # view(test_atomic_data.to_ase())
-pred_feature = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.NODE_FEATURES_KEY]
+pred_feature = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 c6 = pred_feature[5]
+print(c6.shape)
 plt.subplots(figsize=(19, 9.5))
 c6_plot = sns.histplot(
-    c6, bins=(np.arange(-0.5, 15.6, 1), np.arange(-0.45, 0.45, 0.05)),
+    c6,
+    bins=(np.arange(-0.5, 15.6, 1), np.arange(-0.45, 0.45, 0.05)),
     cbar=True,
     vmin=0,
     vmax=100,
