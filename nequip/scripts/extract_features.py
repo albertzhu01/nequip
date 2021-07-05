@@ -200,9 +200,12 @@ test_atomic_data = AtomicData.from_points(
 pred_feature = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 c6 = pred_feature[5]
 print(c6.shape)
+df_c6 = pd.DataFrame(c6, index=np.arange(len(c6)), columns=['Feature Value'])
 plt.subplots(figsize=(19, 9.5))
 c6_plot = sns.histplot(
-    c6,
+    df_c6,
+    x=df_c6.index,
+    y=df_c6.columns[0],
     bins=(np.arange(-0.5, 15.6, 1), np.arange(-0.45, 0.45, 0.05)),
     cbar=True,
     vmin=0,
