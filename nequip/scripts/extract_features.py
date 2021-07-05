@@ -4,13 +4,14 @@ from sklearn import mixture
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from ase.visualize import view
 
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
-# path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
+path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
+# path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 
@@ -83,10 +84,10 @@ c = Collater.for_dataset(dataset, exclude_keys=[])
 data_list = [dataset.get(idx.item()) for idx in train_idxs]
 
 # Evaluate model on batch of training data
-batch = c.collate(data_list)
-out = model(AtomicData.to_AtomicDataDict(batch))
-assert AtomicDataDict.NODE_FEATURES_KEY in out
-features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+# batch = c.collate(data_list)
+# out = model(AtomicData.to_AtomicDataDict(batch))
+# assert AtomicDataDict.NODE_FEATURES_KEY in out
+# features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 
 # Plot features
 # tot_atoms, feature_length = features.shape
@@ -142,18 +143,18 @@ features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 
 # Train GMM on training features
 # Determine optimal number of components using Bayesian inference criterion (BIC)
-n_components = np.arange(1, 20)
-models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
+# n_components = np.arange(1, 20)
+# models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
 # aics = [model.fit(features).aic(features) for model in models]
-bics = [model.fit(features).bic(features) for model in models]
+# bics = [model.fit(features).bic(features) for model in models]
 # plt.plot(n_components, aics, label='AIC')
 # plt.plot(n_components, bics, label='BIC')
 # plt.savefig("aspirin_GMM_aics_bics.png")
 
 # Train GMM using optimal number of components
-gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
-gmm.fit(features)
-print(gmm.converged_)
+# gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
+# gmm.fit(features)
+# print(gmm.converged_)
 
 # Evaluate model on test data
 # test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
@@ -183,7 +184,7 @@ print(gmm.converged_)
 # prob_plot = sns.heatmap(probs)
 # plt.savefig("aspirin_GMM_prob_worst_data.png")
 
-# Get probability of actual worst test data point
+# Get probability of actual worst test data point (and plot the features for C6)
 test_data = np.load(config.dataset_file_name)
 r = test_data['R'][455]
 print(r)
@@ -195,8 +196,27 @@ test_atomic_data = AtomicData.from_points(
     **{AtomicDataDict.ATOMIC_NUMBERS_KEY:
         torch.Tensor(torch.from_numpy(test_data['z'].astype(np.float32))).to(torch.int64)}
 )
+# view(test_atomic_data.to_ase())
 pred_feature = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.NODE_FEATURES_KEY]
-prob = gmm.predict_proba(pred_feature.detach().numpy()).transpose()
-f, ax = plt.subplots(figsize=(19, 9.5))
-prob_plot = sns.heatmap(prob)
-plt.savefig("aspirin_GMM_2x_O-H_len.png")
+c6 = pred_feature[5]
+plt.subplots(figsize=(19, 9.5))
+c6_plot = sns.histplot(
+    c6, bins=(np.arange(-0.5, 15.6, 1), np.arange(-0.45, 0.45, 0.05)),
+    cbar=True,
+    vmin=0,
+    vmax=100,
+    cmap="viridis"
+)
+c6_plot.set(xticks=np.arange(16), ylim=(-0.45, 0.45), yticks=np.arange(-0.45, 0.45, 0.05))
+
+plt.title(
+    f"C6 Features for Aspirin with 2x O-H Bond Length"
+)
+plt.xlabel("Feature Index")
+plt.savefig(
+    f"C6_2x_O-H_len_featues.png"
+)
+# prob = gmm.predict_proba(pred_feature.detach().numpy()).transpose()
+# f, ax = plt.subplots(figsize=(19, 9.5))
+# prob_plot = sns.heatmap(prob)
+# plt.savefig("aspirin_GMM_2x_O-H_len.png")
