@@ -5,16 +5,19 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from ase.visualize import view
+from sklearn.metrics import mean_absolute_error
 
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
+f, ax = plt.subplots(figsize=(19, 9.5))
+
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
 path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
-
+model.eval()
 
 # Find the sequential graph net (the bulk of the model):
 # def find_first_of_type(m: torch.nn.Module, kls) -> torch.nn.Module:
@@ -84,10 +87,20 @@ c = Collater.for_dataset(dataset, exclude_keys=[])
 data_list = [dataset.get(idx.item()) for idx in train_idxs]
 
 # Evaluate model on batch of training data
-# batch = c.collate(data_list)
-# out = model(AtomicData.to_AtomicDataDict(batch))
-# assert AtomicDataDict.NODE_FEATURES_KEY in out
-# features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+batch = c.collate(data_list)
+out = model(AtomicData.to_AtomicDataDict(batch))
+assert AtomicDataDict.NODE_FEATURES_KEY in out
+features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+pred_forces = out[AtomicDataDict.FORCE_KEY].detach().numpy()
+actual_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in data_list])
+print(f"pred_forces shape: {pred_forces.shape}")
+print(f"actual_forces shape: {actual_forces.shape}")
+force_maes = []
+for i in range(len(pred_forces)):
+    force_maes.append(mean_absolute_error(pred_forces[i], force_maes[i]))
+force_maes = np.array(force_maes)
+force_maes_plot = sns.heatmap(force_maes)
+plt.savefig("aspirin_train_force_maes.png")
 
 # Plot features
 # tot_atoms, feature_length = features.shape
@@ -120,7 +133,6 @@ data_list = [dataset.get(idx.item()) for idx in train_idxs]
 #     atom_features = atom_features.flatten()
 #     index = np.tile(np.arange(feature_length), len(data_list))
 #     df_atom_features = pd.DataFrame(atom_features, index=index, columns=["Feature Value"])
-#     plt.subplots(figsize=(19, 9.5))
 #     feature_plot = sns.histplot(
 #         df_atom_features,
 #         x=df_atom_features.index,
@@ -143,18 +155,18 @@ data_list = [dataset.get(idx.item()) for idx in train_idxs]
 
 # Train GMM on training features
 # Determine optimal number of components using Bayesian inference criterion (BIC)
-# n_components = np.arange(1, 20)
-# models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
+n_components = np.arange(1, 20)
+models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
 # aics = [model.fit(features).aic(features) for model in models]
-# bics = [model.fit(features).bic(features) for model in models]
+bics = [model.fit(features).bic(features) for model in models]
 # plt.plot(n_components, aics, label='AIC')
 # plt.plot(n_components, bics, label='BIC')
 # plt.savefig("aspirin_GMM_aics_bics.png")
 
 # Train GMM using optimal number of components
-# gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
-# gmm.fit(features)
-# print(gmm.converged_)
+gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
+gmm.fit(features)
+print(gmm.converged_)
 
 # Evaluate model on test data
 # test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
@@ -179,49 +191,48 @@ data_list = [dataset.get(idx.item()) for idx in train_idxs]
 # Get probability of worst test data point
 # worst_test = dataset.get(52)
 # out_worst = model(AtomicData.to_AtomicDataDict(worst_test))
-# probs = gmm.predict_proba(out_worst[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()).transpose()
-# f, ax = plt.subplots(figsize=(19, 9.5))
-# prob_plot = sns.heatmap(probs)
-# plt.savefig("aspirin_GMM_prob_worst_data.png")
+log_probs = gmm.score_samples(features[0:21, :]).transpose()
+probs = np.exp(log_probs)
+prob_plot = sns.heatmap(probs)
+plt.savefig("aspirin_GMM_score_train.png")
 
 # Get probability of actual worst test data point (and plot the features for C6)
-test_data = np.load(config.dataset_file_name)
-r = test_data['R'][455]
-print(r)
-r[13] = np.array([-2.02, -3.36, 1.44])
-print(r)
-test_atomic_data = AtomicData.from_points(
-    pos=r,
-    r_max=config['r_max'],
-    **{AtomicDataDict.ATOMIC_NUMBERS_KEY:
-        torch.Tensor(torch.from_numpy(test_data['z'].astype(np.float32))).to(torch.int64)}
-)
+# test_data = np.load(config.dataset_file_name)
+# r = test_data['R'][455]
+# print(r)
+# r[13] = np.array([-2.02, -3.36, 1.44])
+# print(r)
+# test_atomic_data = AtomicData.from_points(
+#     pos=r,
+#     r_max=config['r_max'],
+#     **{AtomicDataDict.ATOMIC_NUMBERS_KEY:
+#         torch.Tensor(torch.from_numpy(test_data['z'].astype(np.float32))).to(torch.int64)}
+# )
 # view(test_atomic_data.to_ase())
-pred_feature = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-c6 = pred_feature[5]
-print(c6.shape)
-df_c6 = pd.DataFrame(c6, index=np.arange(len(c6)), columns=['Feature Value'])
-plt.subplots(figsize=(19, 9.5))
-c6_plot = sns.histplot(
-    df_c6,
-    x=df_c6.index,
-    y=df_c6.columns[0],
-    bins=(np.arange(-0.5, 15.6, 1), np.arange(-0.45, 0.45, 0.05)),
-    cbar=True,
-    vmin=0,
-    vmax=100,
-    cmap="viridis"
-)
-c6_plot.set(xticks=np.arange(16), ylim=(-0.45, 0.45), yticks=np.arange(-0.45, 0.45, 0.05))
-
-plt.title(
-    f"C6 Features for Aspirin with 2x O-H Bond Length"
-)
-plt.xlabel("Feature Index")
-plt.savefig(
-    f"C6_2x_O-H_len_featues.png"
-)
+# pred_feature = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+# c6 = pred_feature[5]
+# print(c6.shape)
+# df_c6 = pd.DataFrame(c6, index=np.arange(len(c6)), columns=['Feature Value'])
+# plt.subplots(figsize=(19, 9.5))
+# c6_plot = sns.histplot(
+#     df_c6,
+#     x=df_c6.index,
+#     y=df_c6.columns[0],
+#     bins=(np.arange(-0.5, 15.6, 1), np.arange(-0.45, 0.45, 0.05)),
+#     cbar=True,
+#     vmin=0,
+#     vmax=100,
+#     cmap="viridis"
+# )
+# c6_plot.set(xticks=np.arange(16), ylim=(-0.45, 0.45), yticks=np.arange(-0.45, 0.45, 0.05))
+#
+# plt.title(
+#     f"C6 Features for Aspirin with 2x O-H Bond Length"
+# )
+# plt.xlabel("Feature Index")
+# plt.savefig(
+#     f"C6_2x_O-H_len_featues.png"
+# )
 # prob = gmm.predict_proba(pred_feature.detach().numpy()).transpose()
-# f, ax = plt.subplots(figsize=(19, 9.5))
 # prob_plot = sns.heatmap(prob)
 # plt.savefig("aspirin_GMM_2x_O-H_len.png")
