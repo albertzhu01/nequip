@@ -92,14 +92,18 @@ out = model(AtomicData.to_AtomicDataDict(batch))
 assert AtomicDataDict.NODE_FEATURES_KEY in out
 features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 pred_forces = out[AtomicDataDict.FORCE_KEY].detach().numpy()
-actual_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in data_list])
+a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in data_list])
+actual_forces = a_forces.reshape(-1, a_forces.shape[-1])
 print(f"pred_forces shape: {pred_forces.shape}")
 print(f"actual_forces shape: {actual_forces.shape}")
 force_maes = []
 for i in range(len(pred_forces)):
-    force_maes.append(mean_absolute_error(pred_forces[i], force_maes[i]))
+    force_maes.append(mean_absolute_error(pred_forces[i], actual_forces[i]))
 force_maes = np.array(force_maes)
-force_maes_plot = sns.heatmap(force_maes)
+plt.plot(force_maes)
+plt.title("Atomic Force MAE Values for 100 Training Points")
+plt.xlabel("Atom Index")
+plt.ylabel("Atomic Force MAE")
 plt.savefig("aspirin_train_force_maes.png")
 
 # Plot features
@@ -191,10 +195,10 @@ print(gmm.converged_)
 # Get probability of worst test data point
 # worst_test = dataset.get(52)
 # out_worst = model(AtomicData.to_AtomicDataDict(worst_test))
-log_probs = gmm.score_samples(features[0:21, :]).transpose()
-probs = np.exp(log_probs)
-prob_plot = sns.heatmap(probs)
-plt.savefig("aspirin_GMM_score_train.png")
+# log_probs = gmm.score_samples(features[0:21, :]).transpose()
+# probs = np.exp(log_probs)
+# prob_plot = sns.heatmap(probs)
+# plt.savefig("aspirin_GMM_score_train.png")
 
 # Get probability of actual worst test data point (and plot the features for C6)
 # test_data = np.load(config.dataset_file_name)
