@@ -87,28 +87,28 @@ c = Collater.for_dataset(dataset, exclude_keys=[])
 data_list = [dataset.get(idx.item()) for idx in train_idxs]
 
 # Evaluate model on batch of training data
-batch = c.collate(data_list)
-out = model(AtomicData.to_AtomicDataDict(batch))
-assert AtomicDataDict.NODE_FEATURES_KEY in out
-features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-pred_forces = out[AtomicDataDict.FORCE_KEY].detach().numpy()
-a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in data_list])
-actual_forces = a_forces.reshape(-1, a_forces.shape[-1])
-print(f"pred_forces shape: {pred_forces.shape}")
-print(f"actual_forces shape: {actual_forces.shape}")
-force_maes = []
-for i in range(len(pred_forces)):
-    force_maes.append(mean_absolute_error(pred_forces[i], actual_forces[i]))
-force_maes = np.array(force_maes)
+# batch = c.collate(data_list)
+# out = model(AtomicData.to_AtomicDataDict(batch))
+# assert AtomicDataDict.NODE_FEATURES_KEY in out
+# features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+# pred_forces = out[AtomicDataDict.FORCE_KEY].detach().numpy()
+# a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in data_list])
+# actual_forces = a_forces.reshape(-1, a_forces.shape[-1])
+# print(f"pred_forces shape: {pred_forces.shape}")
+# print(f"actual_forces shape: {actual_forces.shape}")
+# force_maes = []
+# for i in range(len(pred_forces)):
+#     force_maes.append(mean_absolute_error(pred_forces[i], actual_forces[i]))
+# force_maes = np.array(force_maes)
 # plt.plot(force_maes)
 # plt.title("Atomic Force MAE Values for 100 Training Points")
 # plt.xlabel("Atom Index")
 # plt.ylabel("Atomic Force MAE")
 # plt.savefig("aspirin_train_force_maes.png")
-mol_maes = np.sum(force_maes.reshape(100, 21), axis=1)
-print(mol_maes.shape)
-worst_train = np.argmax(mol_maes)
-print(worst_train)
+# mol_maes = np.sum(force_maes.reshape(100, 21), axis=1)
+# print(mol_maes.shape)
+# worst_train = np.argmax(mol_maes)
+# print(worst_train)
 
 # Plot features
 # tot_atoms, feature_length = features.shape
@@ -163,49 +163,53 @@ print(worst_train)
 
 # Train GMM on training features
 # Determine optimal number of components using Bayesian inference criterion (BIC)
-n_components = np.arange(1, 20)
-models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
+# n_components = np.arange(1, 20)
+# models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
 # aics = [model.fit(features).aic(features) for model in models]
-bics = [model.fit(features).bic(features) for model in models]
+# bics = [model.fit(features).bic(features) for model in models]
 # plt.plot(n_components, aics, label='AIC')
 # plt.plot(n_components, bics, label='BIC')
 # plt.savefig("aspirin_GMM_aics_bics.png")
 
 # Train GMM using optimal number of components
-gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
-gmm.fit(features)
-print(gmm.converged_)
+# gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
+# gmm.fit(features)
+# print(gmm.converged_)
 
 # Evaluate model on test data
-# test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
-# test_data_list = [dataset.get(idx) for idx in test_idxs]
-# test_batch = c.collate(test_data_list)
-# test_out = model(AtomicData.to_AtomicDataDict(test_batch))
-# pred_energy = test_out[AtomicDataDict.TOTAL_ENERGY_KEY]
-# energy_list = [atomic_data.total_energy for atomic_data in test_data_list]
-# actual_energy = torch.cat(energy_list).view(len(test_data_list), -1)
-# print(f"Actual energy shape: {actual_energy.shape}")
-# print(f"Predicted energy shape: {pred_energy.shape}")
-#
-# energy_diff = np.absolute(np.subtract(actual_energy.detach().numpy(), pred_energy.detach().numpy()))
-# print(energy_diff.shape)
-# max_diff_idx = np.argmax(energy_diff)
-# print(max_diff_idx)
-# max_diff_test_idx = test_idxs[max_diff_idx]
-# print(max_diff_test_idx)    # 52
-# plt.plot(energy_diff.flatten())
-# plt.savefig("energy_deviations_draft.png")
+test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
+test_data_list = [dataset.get(idx) for idx in test_idxs]
+test_batch = c.collate(test_data_list)
+test_out = model(AtomicData.to_AtomicDataDict(test_batch))
+pred_energy = test_out[AtomicDataDict.TOTAL_ENERGY_KEY]
+energy_list = [atomic_data.total_energy for atomic_data in test_data_list]
+actual_energy = torch.cat(energy_list).view(len(test_data_list), -1)
+print(f"Actual energy shape: {actual_energy.shape}")
+print(f"Predicted energy shape: {pred_energy.shape}")
+
+energy_diff = np.absolute(np.subtract(actual_energy.detach().numpy(), pred_energy.detach().numpy()))
+print(energy_diff.shape)
+max_diff_idx = np.argmax(energy_diff)
+print(max_diff_idx)
+max_diff_test_idx = test_idxs[max_diff_idx]
+print(max_diff_test_idx)    # 52
+plt.plot(energy_diff.flatten())
+plt.savefig("energy_deviations.png")
 
 # Get probability of worst test data point
 # worst_test = dataset.get(52)
 # out_worst = model(AtomicData.to_AtomicDataDict(worst_test))
-log_probs = gmm.score_samples(features[worst_train * 21: worst_train * 21 + 21, :]).transpose()
-probs = np.exp(log_probs)
-prob_plot = plt.scatter(np.arange(21), probs)
-plt.title("Weighted Probability Per Atom (Aspirin Worst Training Point)")
-plt.xlabel("Atomic Index")
-plt.ylabel("Weighted Probability")
-plt.savefig("aspirin_score_worst_train.png")
+# log_probs = gmm.score_samples(features[worst_train * 21: worst_train * 21 + 21, :])
+# print(log_probs)
+# probs = np.exp(log_probs)
+# print(probs)
+# log_like = gmm.score(features[worst_train * 21: worst_train * 21 + 21, :])
+# print(log_like)
+# prob_plot = plt.scatter(np.arange(21), probs)
+# plt.title("Weighted Probability Per Atom (Aspirin Worst Training Point)")
+# plt.xlabel("Atomic Index")
+# plt.ylabel("Weighted Probability")
+# plt.savefig("aspirin_score_worst_train.png")
 
 # Get probability of actual worst test data point (and plot the features for C6)
 # test_data = np.load(config.dataset_file_name)
