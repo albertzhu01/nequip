@@ -97,8 +97,8 @@ print(f"num_atoms: {num_atoms}")
 print(f"total test atoms: {test_tot_atoms}")
 
 # Plot force MAEs for a certain atom
-plt.plot(test_force_maes[0:test_tot_atoms:num_atoms])
-plt.savefig("aspirin_C1_test_force_maes.png")
+# plt.plot(test_force_maes[0:test_tot_atoms:num_atoms])
+# plt.savefig("aspirin_C1_test_force_maes.png")
 
 # Get indices and features of best 10 and worst 10 test data for a particular atom
 sorted_args = test_force_maes[0:test_tot_atoms:num_atoms].argsort()
@@ -109,10 +109,9 @@ print(f"worst test idxsL {worst_test_idxs}")
 best_test_features = test_features[0:test_tot_atoms:num_atoms][best_test_idxs]
 worst_test_features = test_features[0:test_tot_atoms:num_atoms][worst_test_idxs]
 print(f"Best test features shape: {best_test_features.shape}, and force MAE:")
-print(test_force_maes[best_test_idxs])
+print(test_force_maes[0:test_tot_atoms:num_atoms][best_test_idxs])
 print(f"Worst test features shape: {worst_test_features.shape}, and force MAE:")
-print(test_force_maes[worst_test_idxs])
-
+print(test_force_maes[0:test_tot_atoms:num_atoms][worst_test_idxs])
 
 # Train GMM on training features
 gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
