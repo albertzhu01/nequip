@@ -96,8 +96,9 @@ test_tot_atoms, _ = test_features.shape
 print(f"num_atoms: {num_atoms}")
 
 # Get indices and features of best 10 and worst 10 test data for a particular atom
-best_test_idxs = np.argpartition(test_force_maes[0:test_tot_atoms:num_atoms], 10)[:10]
-worst_test_idxs = np.argpartition(test_force_maes[0:test_tot_atoms:num_atoms], -10)[-10:]
+sorted_args = test_force_maes[0:test_tot_atoms:num_atoms].argsort()
+best_test_idxs = sorted_args[:10]
+worst_test_idxs = sorted_args[-10:][::-1]
 best_test_features = test_features[0:test_tot_atoms:num_atoms][best_test_idxs]
 worst_test_features = test_features[0:test_tot_atoms:num_atoms][worst_test_idxs]
 print(f"Best test features shape: {best_test_features.shape}, and force MAE:")
