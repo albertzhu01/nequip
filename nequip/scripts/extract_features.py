@@ -89,10 +89,19 @@ for i in range(len(test_pred_forces)):
     test_force_maes.append(mean_absolute_error(test_pred_forces[i], test_actual_forces[i]))
 test_force_maes = np.array(test_force_maes)
 
+# Get dimensions of train and test features and number of atoms in aspirin
 train_tot_atoms, feature_length = train_features.shape
 num_atoms = train_tot_atoms // len(train_data_list)
 test_tot_atoms, _ = test_features.shape
 print(f"num_atoms: {num_atoms}")
+
+# Get indices and features of best 10 and worst 10 test data for a particular atom
+best_test_idxs = np.argpartition(test_force_maes[0:test_tot_atoms:num_atoms], 10)[:10]
+worst_test_idxs = np.argpartition(test_force_maes[0:test_tot_atoms:num_atoms], -10)[-10:]
+best_test_features = test_features[0:test_tot_atoms:num_atoms][best_test_idxs]
+worst_test_features = test_features[0:test_tot_atoms:num_atoms][worst_test_idxs]
+print(f"Best test features shape: {best_test_features.shape}")
+print(f"Worst test features shape: {worst_test_features.shape}")
 
 # Train GMM on training features
 gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
@@ -101,8 +110,45 @@ print(gmm.converged_)
 
 # Score samples on training features for a particular atom
 C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
-plt.hist(C1_train_log_probs)
-plt.savefig("C1_train_log_probs.png")
+C1_best10_log_probs = gmm.score_samples(best_test_features)
+C1_worst10_log_probs = gmm.score_samples(worst_test_features)
+print(f"Training features shape: {C1_train_log_probs.shape}")
+print(f"Best 10 features shape: {C1_best10_log_probs.shape}")
+print(f"Worst 10 features shape: {C1_worst10_log_probs.shape}")
+plt.hist(
+    C1_train_log_probs,
+    color='k',
+    density=True,
+    label='log-probability density, Training, C1')
+plt.hist(
+    C1_best10_log_probs,
+    color='b',
+    density=True,
+    label='log-probability density, Best 10, C1'
+)
+plt.hist(
+    C1_worst10_log_probs,
+    color='r',
+    density=True,
+    label='log-probability density, Worst 10, C1'
+)
+plt.axvline(
+    np.percentile(C1_train_log_probs, .02),
+    color='c',
+    linestyle='--',
+    label='0.02-th percentile of training configs'
+)
+plt.axvline(
+    np.percentile(C1_train_log_probs, .25),
+    color='g',
+    linestyle='--',
+    label='0.25-th percentile of training configs'
+)
+plt.legend()
+plt.title("Carbon 1 Log-Probability Densities")
+plt.xlabel("Log-Probability Density")
+plt.ylabel("Density")
+plt.savefig("C1_log_probs.png")
 
 # plt.plot(force_maes)
 # plt.title("Atomic Force MAE Values for 100 Training Points")
