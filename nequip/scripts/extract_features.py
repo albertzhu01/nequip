@@ -100,8 +100,11 @@ best_test_idxs = np.argpartition(test_force_maes[0:test_tot_atoms:num_atoms], 10
 worst_test_idxs = np.argpartition(test_force_maes[0:test_tot_atoms:num_atoms], -10)[-10:]
 best_test_features = test_features[0:test_tot_atoms:num_atoms][best_test_idxs]
 worst_test_features = test_features[0:test_tot_atoms:num_atoms][worst_test_idxs]
-print(f"Best test features shape: {best_test_features.shape}")
-print(f"Worst test features shape: {worst_test_features.shape}")
+print(f"Best test features shape: {best_test_features.shape}, and force MAE:")
+print(test_force_maes[best_test_idxs])
+print(f"Worst test features shape: {worst_test_features.shape}, and force MAE:")
+print(test_force_maes[worst_test_idxs])
+
 
 # Train GMM on training features
 gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
@@ -112,9 +115,11 @@ print(gmm.converged_)
 C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
 C1_best10_log_probs = gmm.score_samples(best_test_features)
 C1_worst10_log_probs = gmm.score_samples(worst_test_features)
-print(f"Training features shape: {C1_train_log_probs.shape}")
-print(f"Best 10 features shape: {C1_best10_log_probs.shape}")
-print(f"Worst 10 features shape: {C1_worst10_log_probs.shape}")
+print(f"Training features log-probs shape: {C1_train_log_probs.shape}")
+print(f"Best 10 features log-probs shape: {C1_best10_log_probs.shape}")
+print(C1_best10_log_probs)
+print(f"Worst 10 features log-probs shape: {C1_worst10_log_probs.shape}")
+print(C1_worst10_log_probs)
 plt.hist(
     C1_train_log_probs,
     bins=50,
