@@ -88,8 +88,6 @@ test_force_maes = []
 for i in range(len(test_pred_forces)):
     test_force_maes.append(mean_absolute_error(test_pred_forces[i], test_actual_forces[i]))
 test_force_maes = np.array(test_force_maes)
-plt.plot(test_force_maes)
-plt.savefig("aspirin_test_force_maes.png")
 
 # Get dimensions of train and test features and number of atoms in aspirin
 train_tot_atoms, feature_length = train_features.shape
@@ -97,6 +95,10 @@ num_atoms = train_tot_atoms // len(train_data_list)
 test_tot_atoms, _ = test_features.shape
 print(f"num_atoms: {num_atoms}")
 print(f"total test atoms: {test_tot_atoms}")
+
+# Plot force MAEs for a certain atom
+plt.plot(test_force_maes[0:test_tot_atoms:num_atoms])
+plt.savefig("aspirin_C1_test_force_maes.png")
 
 # Get indices and features of best 10 and worst 10 test data for a particular atom
 sorted_args = test_force_maes[0:test_tot_atoms:num_atoms].argsort()
