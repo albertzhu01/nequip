@@ -48,58 +48,62 @@ model.eval()
 # Load a config file
 config = Config.from_file(path + "/config_final.yaml")
 dataset = dataset_from_config(config)
-print(len(dataset))
+# print(len(dataset))
 
-# Load trainer and get training data indexes and set up Collater
+# Load trainer and get training and test data indexes and set up Collater
 trainer = torch.load(path + '/trainer.pth', map_location='cpu')
 train_idxs = trainer['train_idcs']
+test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
 c = Collater.for_dataset(dataset, exclude_keys=[])
 
-# Evaluate on actual test data
-# test_data = np.load(config.dataset_file_name)
-# r = test_data['R']
-# actual_energies = test_data['E']
-#
-# pred_energies = []
-# for i in range(actual_energies.size):
-#     test_atomic_data = AtomicData.from_points(
-#         pos=r[i],
-#         r_max=config['r_max'],
-#         **{AtomicDataDict.ATOMIC_NUMBERS_KEY:
-#             torch.Tensor(torch.from_numpy(test_data['z'].astype(np.float32))).to(torch.int64)}
-#     )
-#     pred_energy = model(AtomicData.to_AtomicDataDict(test_atomic_data))[AtomicDataDict.TOTAL_ENERGY_KEY]
-#     pred_energies.append(pred_energy.item())
-#
-# pred_energies = np.array(pred_energies)
-# actual_energies = actual_energies.flatten()
-# print(f"Actual energy shape: {actual_energies.shape}")
-# print(f"Predicted energy shape: {pred_energies.shape}")
-#
-# energy_diff = np.absolute(np.subtract(actual_energies, pred_energies))
-# print(energy_diff.shape)
-# max_diff_idx = np.argmax(energy_diff)
-# print(max_diff_idx)    # 455
-# plt.plot(energy_diff)
-# plt.savefig("real_test_energy_deviations.png")
+# Create list of training and test data AtomicData objects
+train_data_list = [dataset.get(idx.item()) for idx in train_idxs]
+test_data_list = [dataset.get(idx) for idx in test_idxs]
 
-# Create list of training data AtomicData objects
-data_list = [dataset.get(idx.item()) for idx in train_idxs]
+# Evaluate model on batch of training data and test data
+# Train data
+batch = c.collate(train_data_list)
+train_out = model(AtomicData.to_AtomicDataDict(batch))
+train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+train_pred_forces = train_out[AtomicDataDict.FORCE_KEY].detach().numpy()
+train_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in train_data_list])
+train_actual_forces = train_a_forces.reshape(-1, train_a_forces.shape[-1])
+print(f"train_pred_forces shape: {train_pred_forces.shape}")
+print(f"train_actual_forces shape: {train_actual_forces.shape}")
+train_force_maes = []
+for i in range(len(train_pred_forces)):
+    train_force_maes.append(mean_absolute_error(train_pred_forces[i], train_actual_forces[i]))
+train_force_maes = np.array(train_force_maes)
 
-# Evaluate model on batch of training data
-# batch = c.collate(data_list)
-# out = model(AtomicData.to_AtomicDataDict(batch))
-# assert AtomicDataDict.NODE_FEATURES_KEY in out
-# features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-# pred_forces = out[AtomicDataDict.FORCE_KEY].detach().numpy()
-# a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in data_list])
-# actual_forces = a_forces.reshape(-1, a_forces.shape[-1])
-# print(f"pred_forces shape: {pred_forces.shape}")
-# print(f"actual_forces shape: {actual_forces.shape}")
-# force_maes = []
-# for i in range(len(pred_forces)):
-#     force_maes.append(mean_absolute_error(pred_forces[i], actual_forces[i]))
-# force_maes = np.array(force_maes)
+# Test data
+test_batch = c.collate(test_data_list)
+test_out = model(AtomicData.to_AtomicDataDict(test_batch))
+test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+test_pred_forces = test_out[AtomicDataDict.FORCE_KEY].detach().numpy()
+test_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in test_data_list])
+test_actual_forces = test_a_forces.reshape(-1, train_a_forces.shape[-1])
+print(f"test_pred_forces shape: {test_pred_forces.shape}")
+print(f"test_actual_forces shape: {test_actual_forces.shape}")
+test_force_maes = []
+for i in range(len(test_pred_forces)):
+    test_force_maes.append(mean_absolute_error(test_pred_forces[i], test_actual_forces[i]))
+test_force_maes = np.array(test_force_maes)
+
+train_tot_atoms, feature_length = train_features.shape
+num_atoms = train_tot_atoms // len(train_data_list)
+test_tot_atoms, _ = test_features.shape
+print(f"num_atoms: {num_atoms}")
+
+# Train GMM on training features
+gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
+gmm.fit(train_features)
+print(gmm.converged_)
+
+# Score samples on training features for a particular atom
+C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
+plt.hist(C1_train_log_probs)
+plt.savefig("C1_train_log_probs.png")
+
 # plt.plot(force_maes)
 # plt.title("Atomic Force MAE Values for 100 Training Points")
 # plt.xlabel("Atom Index")
@@ -177,24 +181,24 @@ data_list = [dataset.get(idx.item()) for idx in train_idxs]
 # print(gmm.converged_)
 
 # Evaluate model on test data
-test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
-test_data_list = [dataset.get(idx) for idx in test_idxs]
-test_batch = c.collate(test_data_list)
-test_out = model(AtomicData.to_AtomicDataDict(test_batch))
-pred_energy = test_out[AtomicDataDict.TOTAL_ENERGY_KEY]
-energy_list = [atomic_data.total_energy for atomic_data in test_data_list]
-actual_energy = torch.cat(energy_list).view(len(test_data_list), -1)
-print(f"Actual energy shape: {actual_energy.shape}")
-print(f"Predicted energy shape: {pred_energy.shape}")
-
-energy_diff = np.absolute(np.subtract(actual_energy.detach().numpy(), pred_energy.detach().numpy()))
-print(energy_diff.shape)
-max_diff_idx = np.argmax(energy_diff)
-print(max_diff_idx)
-max_diff_test_idx = test_idxs[max_diff_idx]
-print(max_diff_test_idx)    # 52
-plt.plot(energy_diff.flatten())
-plt.savefig("energy_deviations.png")
+# test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
+# test_data_list = [dataset.get(idx) for idx in test_idxs]
+# test_batch = c.collate(test_data_list)
+# test_out = model(AtomicData.to_AtomicDataDict(test_batch))
+# pred_energy = test_out[AtomicDataDict.TOTAL_ENERGY_KEY]
+# energy_list = [atomic_data.total_energy for atomic_data in test_data_list]
+# actual_energy = torch.cat(energy_list).view(len(test_data_list), -1)
+# print(f"Actual energy shape: {actual_energy.shape}")
+# print(f"Predicted energy shape: {pred_energy.shape}")
+#
+# energy_diff = np.absolute(np.subtract(actual_energy.detach().numpy(), pred_energy.detach().numpy()))
+# print(energy_diff.shape)
+# max_diff_idx = np.argmax(energy_diff)
+# print(max_diff_idx)
+# max_diff_test_idx = test_idxs[max_diff_idx]
+# print(max_diff_test_idx)    # 52
+# plt.plot(energy_diff.flatten())
+# plt.savefig("energy_deviations.png")
 
 # Get probability of worst test data point
 # worst_test = dataset.get(52)
