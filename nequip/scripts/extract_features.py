@@ -117,17 +117,20 @@ print(f"Best 10 features shape: {C1_best10_log_probs.shape}")
 print(f"Worst 10 features shape: {C1_worst10_log_probs.shape}")
 plt.hist(
     C1_train_log_probs,
+    bins=50,
     color='k',
     density=True,
     label='log-probability density, Training, C1')
 plt.hist(
     C1_best10_log_probs,
+    bins=50,
     color='b',
     density=True,
     label='log-probability density, Best 10, C1'
 )
 plt.hist(
     C1_worst10_log_probs,
+    bins=50,
     color='r',
     density=True,
     label='log-probability density, Worst 10, C1'
