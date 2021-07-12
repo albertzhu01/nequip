@@ -115,7 +115,7 @@ print(test_force_maes[0:test_tot_atoms:num_atoms][worst_test_idxs])
 
 # Train GMM on training features
 gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
-gmm.fit(train_features)
+gmm.fit(train_features[0:train_tot_atoms:num_atoms])
 print(gmm.converged_)
 
 # Score samples on training features for a particular atom
@@ -127,43 +127,43 @@ print(f"Best 10 features log-probs shape: {C1_best10_log_probs.shape}")
 print(C1_best10_log_probs)
 print(f"Worst 10 features log-probs shape: {C1_worst10_log_probs.shape}")
 print(C1_worst10_log_probs)
-# plt.hist(
-#     C1_train_log_probs,
-#     bins=50,
-#     color='k',
-#     density=True,
-#     label='log-probability density, Training, C1')
-# plt.hist(
-#     C1_best10_log_probs,
-#     bins=50,
-#     color='b',
-#     density=True,
-#     label='log-probability density, Best 10, C1'
-# )
-# plt.hist(
-#     C1_worst10_log_probs,
-#     bins=50,
-#     color='r',
-#     density=True,
-#     label='log-probability density, Worst 10, C1'
-# )
-# plt.axvline(
-#     np.percentile(C1_train_log_probs, .02),
-#     color='c',
-#     linestyle='--',
-#     label='0.02-th percentile of training configs'
-# )
-# plt.axvline(
-#     np.percentile(C1_train_log_probs, .25),
-#     color='g',
-#     linestyle='--',
-#     label='0.25-th percentile of training configs'
-# )
-# plt.legend()
-# plt.title("Carbon 1 Log-Probability Densities")
-# plt.xlabel("Log-Probability Density")
-# plt.ylabel("Density")
-# plt.savefig("C1_log_probs.png")
+plt.hist(
+    C1_train_log_probs,
+    bins=50,
+    color='k',
+    density=True,
+    label='log-probability density, Training, C1')
+plt.hist(
+    C1_best10_log_probs,
+    bins=50,
+    color='b',
+    density=True,
+    label='log-probability density, Best 10, C1'
+)
+plt.hist(
+    C1_worst10_log_probs,
+    bins=50,
+    color='r',
+    density=True,
+    label='log-probability density, Worst 10, C1'
+)
+plt.axvline(
+    np.percentile(C1_train_log_probs, .02),
+    color='c',
+    linestyle='--',
+    label='0.02-th percentile of training configs'
+)
+plt.axvline(
+    np.percentile(C1_train_log_probs, .25),
+    color='g',
+    linestyle='--',
+    label='0.25-th percentile of training configs'
+)
+plt.legend()
+plt.title("Carbon 1 Log-Probability Densities")
+plt.xlabel("Log-Probability Density")
+plt.ylabel("Density")
+plt.savefig("C1_correct_log_probs.png")
 
 # plt.plot(force_maes)
 # plt.title("Atomic Force MAE Values for 100 Training Points")
