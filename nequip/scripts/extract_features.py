@@ -6,6 +6,7 @@ import seaborn as sns
 import pandas as pd
 from ase.visualize import view
 from sklearn.metrics import mean_absolute_error
+from scipy import stats
 
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
@@ -118,52 +119,68 @@ gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_st
 gmm.fit(train_features[0:train_tot_atoms:num_atoms])
 print(gmm.converged_)
 
-# Score samples on training features for a particular atom
-C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
-C1_best10_log_probs = gmm.score_samples(best_test_features)
-C1_worst10_log_probs = gmm.score_samples(worst_test_features)
-print(f"Training features log-probs shape: {C1_train_log_probs.shape}")
-print(f"Best 10 features log-probs shape: {C1_best10_log_probs.shape}")
-print(C1_best10_log_probs)
-print(f"Worst 10 features log-probs shape: {C1_worst10_log_probs.shape}")
-print(C1_worst10_log_probs)
-plt.hist(
-    C1_train_log_probs,
-    bins=50,
-    color='k',
-    density=True,
-    label='log-probability density, Training, C1')
-plt.hist(
-    C1_best10_log_probs,
-    bins=50,
-    color='b',
-    density=True,
-    label='log-probability density, Best 10, C1'
-)
-plt.hist(
-    C1_worst10_log_probs,
-    bins=50,
-    color='r',
-    density=True,
-    label='log-probability density, Worst 10, C1'
-)
-plt.axvline(
-    np.percentile(C1_train_log_probs, .02),
-    color='c',
-    linestyle='--',
-    label='0.02-th percentile of training configs'
-)
-plt.axvline(
-    np.percentile(C1_train_log_probs, .25),
-    color='g',
-    linestyle='--',
-    label='0.25-th percentile of training configs'
+# Make scatterplot of log-prob vs. force MAE for test data for one atom
+C1_train_log_probs = gmm.score_samples(test_features[0:test_tot_atoms:num_atoms])
+C1_test_force_maes = test_force_maes[0:test_tot_atoms:num_atoms]
+r2 = "{}\u00b2".format("r")
+r2_value, p_value = stats.pearsonr(C1_test_force_maes, C1_train_log_probs)
+plt.scatter(
+    x='Force MAE',
+    y='Log-Probability',
+    label=f'{r2}: {r2_value} \n p-value: {p_value}'
 )
 plt.legend()
-plt.title("Carbon 1 Log-Probability Densities")
-plt.xlabel("Log-Probability Density")
-plt.ylabel("Density")
-plt.savefig("C1_correct_log_probs.png")
+plt.title("Carbon 1 Test Data Log-Probability Density vs. Force MAE")
+plt.xlabel("Force MAE (kcal/mol/A)")
+plt.ylabel("Log-Probability Density")
+plt.savefig("C1_logprob_vs_mae.png")
+
+# Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
+# C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
+# C1_best10_log_probs = gmm.score_samples(best_test_features)
+# C1_worst10_log_probs = gmm.score_samples(worst_test_features)
+# print(f"Training features log-probs shape: {C1_train_log_probs.shape}")
+# print(f"Best 10 features log-probs shape: {C1_best10_log_probs.shape}")
+# print(C1_best10_log_probs)
+# print(f"Worst 10 features log-probs shape: {C1_worst10_log_probs.shape}")
+# print(C1_worst10_log_probs)
+# plt.hist(
+#     C1_train_log_probs,
+#     bins=50,
+#     color='k',
+#     density=True,
+#     label='log-probability density, Training, C1')
+# plt.hist(
+#     C1_best10_log_probs,
+#     bins=50,
+#     color='b',
+#     density=True,
+#     label='log-probability density, Best 10, C1'
+# )
+# plt.hist(
+#     C1_worst10_log_probs,
+#     bins=50,
+#     color='r',
+#     density=True,
+#     label='log-probability density, Worst 10, C1'
+# )
+# plt.axvline(
+#     np.percentile(C1_train_log_probs, .02),
+#     color='c',
+#     linestyle='--',
+#     label='0.02-th percentile of training configs'
+# )
+# plt.axvline(
+#     np.percentile(C1_train_log_probs, .25),
+#     color='g',
+#     linestyle='--',
+#     label='0.25-th percentile of training configs'
+# )
+# plt.legend()
+# plt.title("Carbon 1 Log-Probability Densities")
+# plt.xlabel("Log-Probability Density")
+# plt.ylabel("Density")
+# plt.savefig("C1_correct_log_probs.png")
 
 # plt.plot(force_maes)
 # plt.title("Atomic Force MAE Values for 100 Training Points")
