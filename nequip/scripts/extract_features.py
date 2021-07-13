@@ -120,13 +120,13 @@ gmm.fit(train_features[0:train_tot_atoms:num_atoms])
 print(gmm.converged_)
 
 # Make scatterplot of log-prob vs. force MAE for test data for one atom
-C1_train_log_probs = gmm.score_samples(test_features[0:test_tot_atoms:num_atoms])
+C1_test_log_probs = gmm.score_samples(test_features[0:test_tot_atoms:num_atoms])
 C1_test_force_maes = test_force_maes[0:test_tot_atoms:num_atoms]
 r2 = "{}\u00b2".format("r")
-r2_value, p_value = stats.pearsonr(C1_test_force_maes, C1_train_log_probs)
+r2_value, p_value = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
 plt.scatter(
-    x='Force MAE',
-    y='Log-Probability',
+    x=C1_test_force_maes,
+    y=C1_test_log_probs,
     label=f'{r2}: {r2_value} \n p-value: {p_value}'
 )
 plt.legend()
