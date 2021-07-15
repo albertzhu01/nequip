@@ -130,7 +130,7 @@ plt.scatter(
     x=C1_train_force_maes,
     y=C1_train_log_probs,
     color='k',
-    label=f'Train: \n r: {test_r_value} \n p-value: {test_p_value}'
+    label=f'Train: \n r: {train_r_value} \n p-value: {train_p_value}'
 )
 plt.scatter(
     x=C1_test_force_maes,
