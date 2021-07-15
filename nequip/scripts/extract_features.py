@@ -119,18 +119,27 @@ gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_st
 gmm.fit(train_features[0:train_tot_atoms:num_atoms])
 print(gmm.converged_)
 
-# Make scatterplot of log-prob vs. force MAE for test data for one atom
+# Make scatterplot of log-prob vs. force MAE for train and test data for one atom
+C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
+C1_train_force_maes = train_force_maes[0:train_tot_atoms:num_atoms]
 C1_test_log_probs = gmm.score_samples(test_features[0:test_tot_atoms:num_atoms])
 C1_test_force_maes = test_force_maes[0:test_tot_atoms:num_atoms]
-r2 = "{}\u00b2".format("r")
-r2_value, p_value = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
+train_r_value, train_p_value = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
+test_r_value, test_p_value = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
+plt.scatter(
+    x=C1_train_force_maes,
+    y=C1_train_log_probs,
+    color='k',
+    label=f'Train: \n r: {test_r_value} \n p-value: {test_p_value}'
+)
 plt.scatter(
     x=C1_test_force_maes,
     y=C1_test_log_probs,
-    label=f'{r2}: {r2_value} \n p-value: {p_value}'
+    color='b',
+    label=f'Test: \n r: {test_r_value} \n p-value: {test_p_value}'
 )
 plt.legend()
-plt.title("Carbon 1 Test Data Log-Probability Density vs. Force MAE")
+plt.title("Carbon 1 Log-Probability Density vs. Force MAE")
 plt.xlabel("Force MAE (kcal/mol/A)")
 plt.ylabel("Log-Probability Density")
 plt.savefig("C1_logprob_vs_mae.png")
