@@ -125,12 +125,14 @@ C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atom
 
 C1_test_force_maes = test_force_maes[0:test_tot_atoms:num_atoms]
 C1_bad_test_maes_idx = np.where(C1_test_force_maes > 1)
-C1_bad_test_maes = test_force_maes[C1_bad_test_maes_idx]
+C1_bad_test_maes = C1_test_force_maes[C1_bad_test_maes_idx]
 C1_test_log_probs = gmm.score_samples(test_features[0:test_tot_atoms:num_atoms])
 C1_bad_test_logprobs = C1_test_log_probs[C1_bad_test_maes_idx]
+
 train_r_value, train_p_value = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
 test_r_value, test_p_value = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
 test_bad_r_value, test_bad_p_value = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
+
 plt.scatter(
     x=C1_train_force_maes,
     y=C1_train_log_probs,
