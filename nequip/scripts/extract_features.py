@@ -135,6 +135,7 @@ for i in range(7):
     test_bad_r_value, test_bad_p_value = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
 
     plt.figure()
+    plt.subplots(figsize=(19, 9.5))
     plt.scatter(
         x=C1_train_force_maes,
         y=C1_train_log_probs,
