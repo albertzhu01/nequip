@@ -125,7 +125,7 @@ for i in range(7):
     C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
 
     C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
-    C1_bad_test_maes_idx = np.where(C1_test_force_maes > 1)
+    C1_bad_test_maes_idx = np.where(C1_test_force_maes > 1.5)
     C1_bad_test_maes = C1_test_force_maes[C1_bad_test_maes_idx]
     C1_test_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
     C1_bad_test_logprobs = C1_test_log_probs[C1_bad_test_maes_idx]
@@ -153,7 +153,7 @@ for i in range(7):
         label=f'Test bad: \n r: {test_bad_r_value} \n p-value: {test_bad_p_value}'
     )
     plt.axhline(
-        np.median(C1_train_log_probs) - 1.5 * stats.iqr(C1_train_log_probs),
+        np.percentile(C1_train_log_probs, 5),
         color='k',
         linestyle='--',
         label='Uncertainty cutoff (median - 1.5IQR of training data)'
