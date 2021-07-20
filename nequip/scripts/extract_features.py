@@ -152,12 +152,12 @@ plt.scatter(
     label=f'Test bad: \n r: {test_bad_r_value} \n p-value: {test_bad_p_value}'
 )
 plt.axhline(
-    np.percentile(C1_train_log_probs, .05),
+    np.median(C1_train_log_probs) - 1.5 * stats.iqr(C1_train_log_probs),
     color='k',
     linestyle='--',
-    label='Uncertainty cutoff (5th percentile of training data'
+    label='Uncertainty cutoff (median - 1.5IQR of training data)'
 )
-plt.axvline(1, color='m', linestyle='--', label='Chemical accuracy cutoff')
+plt.axvline(1.5, color='m', linestyle='--', label='Chemical accuracy cutoff')
 plt.legend()
 plt.title("Carbon 1 Log-Probability Density vs. Force MAE")
 plt.xlabel("Force MAE (kcal/mol/A)")
