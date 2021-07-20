@@ -124,15 +124,22 @@ for i in range(7):
     C1_train_force_maes = train_force_maes[i:train_tot_atoms:num_atoms]
     C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
 
+    mae_cutoff = 1.5
+    logprob_cutoff = np.percentile(C1_train_log_probs, 2.5)
+
     C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
-    C1_bad_test_maes_idx = np.where(C1_test_force_maes > 1.5)
+    C1_bad_test_maes_idx = np.where(C1_test_force_maes > mae_cutoff)
     C1_bad_test_maes = C1_test_force_maes[C1_bad_test_maes_idx]
     C1_test_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
     C1_bad_test_logprobs = C1_test_log_probs[C1_bad_test_maes_idx]
 
-    train_r_value, train_p_value = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
-    test_r_value, test_p_value = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
-    test_bad_r_value, test_bad_p_value = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
+    train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
+    test_r, test_p = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
+    test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
+
+    num_test_bad_mae = len(C1_bad_test_maes)
+    num_test_bad_logprob = len(np.where(C1_bad_test_logprobs < logprob_cutoff))
+    num_below_l_cutoff = len(np.where(C1_test_log_probs < logprob_cutoff))
 
     plt.figure()
     plt.subplots(figsize=(19, 9.5))
@@ -140,25 +147,25 @@ for i in range(7):
         x=C1_train_force_maes,
         y=C1_train_log_probs,
         color='k',
-        label=f'Train: \n r: {train_r_value} \n p-value: {train_p_value}'
+        label=f'Train: \n r: {train_r} \n p-value: {train_p}'
     )
     plt.scatter(
         x=C1_test_force_maes,
         y=C1_test_log_probs,
         color='b',
-        label=f'Test: \n r: {test_r_value} \n p-value: {test_p_value}'
+        label=f'Test all ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
     )
     plt.scatter(
         x=C1_bad_test_maes,
         y=C1_bad_test_logprobs,
         color='r',
-        label=f'Test bad: \n r: {test_bad_r_value} \n p-value: {test_bad_p_value}'
+        label=f'Test bad ({num_test_bad_logprob}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
     )
     plt.axhline(
-        np.percentile(C1_train_log_probs, 5),
+        logprob_cutoff,
         color='k',
         linestyle='--',
-        label='Uncertainty cutoff (5th percentile of training data)'
+        label='Uncertainty cutoff (2.5th percentile of training data)'
     )
     plt.axvline(1.5, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.legend()
