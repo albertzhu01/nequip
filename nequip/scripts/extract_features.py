@@ -138,8 +138,8 @@ for i in range(7):
     test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
 
     num_test_bad_mae = len(C1_bad_test_maes)
-    num_test_bad_logprob = len(np.where(C1_bad_test_logprobs < logprob_cutoff))
-    num_below_l_cutoff = len(np.where(C1_test_log_probs < logprob_cutoff))
+    num_test_bad_logprob = np.where(C1_bad_test_logprobs < logprob_cutoff).shape
+    num_below_l_cutoff = np.where(C1_test_log_probs < logprob_cutoff).shape
 
     plt.figure()
     plt.subplots(figsize=(19, 9.5))
