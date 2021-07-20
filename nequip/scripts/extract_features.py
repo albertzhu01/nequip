@@ -156,7 +156,7 @@ for i in range(7):
         np.percentile(C1_train_log_probs, 5),
         color='k',
         linestyle='--',
-        label='Uncertainty cutoff (median - 1.5IQR of training data)'
+        label='Uncertainty cutoff (5th percentile of training data)'
     )
     plt.axvline(1.5, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.legend()
