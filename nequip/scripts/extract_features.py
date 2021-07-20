@@ -143,16 +143,16 @@ plt.scatter(
     x=C1_test_force_maes,
     y=C1_test_log_probs,
     color='b',
-    label=f'Test: \n r: {test_r_value} \n p-value: {test_p_value}'
+    label=f'Test all: \n r: {test_r_value} \n p-value: {test_p_value}'
 )
 plt.scatter(
     x=C1_bad_test_maes,
     y=C1_bad_test_logprobs,
     color='r',
-    label=f'Test bad: \n r: {test_bad_r_value} \n p-value: {test_bad_p_value}'
+    label=f'Test bad ({len(C1_bad_test_maes)}): \n r: {test_bad_r_value} \n p-value: {test_bad_p_value}'
 )
 plt.axhline(
-    np.percentile(C1_train_log_probs, .05),
+    np.percentile(C1_train_log_probs, 5),
     color='k',
     linestyle='--',
     label='Uncertainty cutoff (5th percentile of training data'
