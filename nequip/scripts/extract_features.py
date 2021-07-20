@@ -134,7 +134,8 @@ for i in range(7):
     test_r_value, test_p_value = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
     test_bad_r_value, test_bad_p_value = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
 
-    x = plt.scatter(
+    plt.figure()
+    plt.scatter(
         x=C1_train_force_maes,
         y=C1_train_log_probs,
         color='k',
