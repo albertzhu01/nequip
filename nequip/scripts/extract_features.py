@@ -136,7 +136,7 @@ for atom_idx in range(7):
     plt.figure()
     plt.subplots(figsize=(19, 9.5))
     sns.heatmap(df_euc_dists, mask=mask, square=True, cmap='YlGnBu')
-    plt.title('Euclidean Distance between Best 10 and Worst 10 Features of Carbon 1 (Based on Force MAE)')
+    plt.title('Euclidean Distance between Best and Worst 10 Features of Carbon 1 (Based on Force MAE)')
     plt.ylabel('Feature')
     plt.xlabel('Feature')
     plt.savefig("C1_bw_feature_dist.png")
