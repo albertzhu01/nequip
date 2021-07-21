@@ -101,78 +101,106 @@ print(f"total test atoms: {test_tot_atoms}")
 # plt.plot(test_force_maes[0:test_tot_atoms:num_atoms])
 # plt.savefig("aspirin_C1_test_force_maes.png")
 
-# Get indices and features of best 10 and worst 10 test data for a particular atom
-sorted_args = test_force_maes[0:test_tot_atoms:num_atoms].argsort()
-best_test_idxs = sorted_args[:10]
-print(f"best test idxs: {best_test_idxs}")
-worst_test_idxs = sorted_args[-10:][::-1]
-print(f"worst test idxsL {worst_test_idxs}")
-best_test_features = test_features[0:test_tot_atoms:num_atoms][best_test_idxs]
-worst_test_features = test_features[0:test_tot_atoms:num_atoms][worst_test_idxs]
-print(f"Best test features shape: {best_test_features.shape}, and force MAE:")
-print(test_force_maes[0:test_tot_atoms:num_atoms][best_test_idxs])
-print(f"Worst test features shape: {worst_test_features.shape}, and force MAE:")
-print(test_force_maes[0:test_tot_atoms:num_atoms][worst_test_idxs])
+# Get indices and features of best 10 and worst 10 test data for a particular atom and plot euc dists
+for atom_idx in range(7):
+    sorted_args = test_force_maes[atom_idx:test_tot_atoms:num_atoms].argsort()
+    best_test_idxs = sorted_args[:10]
+    print(f"best test idxs: {best_test_idxs}")
+    worst_test_idxs = sorted_args[-10:][::-1]
+    print(f"worst test idxsL {worst_test_idxs}")
+    best_test_features = test_features[atom_idx:test_tot_atoms:num_atoms][best_test_idxs]
+    best_test_force_maes = test_force_maes[atom_idx:test_tot_atoms:num_atoms][best_test_idxs]
+    worst_test_features = test_features[atom_idx:test_tot_atoms:num_atoms][worst_test_idxs]
+    worst_test_force_maes = test_force_maes[atom_idx:test_tot_atoms:num_atoms][worst_test_idxs]
+    print(f"Best test features shape: {best_test_features.shape}, and force MAE:")
+    print(best_test_force_maes)
+    print(f"Worst test features shape: {worst_test_features.shape}, and force MAE:")
+    print(worst_test_force_maes)
 
-# Train GMM on training features
-gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
-gmm.fit(train_features)
-print(gmm.converged_)
+    # Calculate Euclidean distance between 10 best and 10 worst features
+    best_worst_features = np.concatenate((best_test_features, worst_test_features))
+    euc_dists = [[None for _ in range(20)] for _ in range(20)]
+    labels = ['Best' for _ in range(10)] + ['Worst' for _ in range(10)]
 
-# Make scatterplot of log-prob vs. force MAE for train and test data for one atom
-for i in range(7):
-    C1_train_force_maes = train_force_maes[i:train_tot_atoms:num_atoms]
-    C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
+    for i in range(20):
+        for j in range(i, 20):
+            atom_i_feat = best_worst_features[i]
+            atom_j_feat = best_worst_features[j]
+            euc_dists[i][j] = np.linalg.norm(atom_j_feat - atom_i_feat)
+            euc_dists[j][i] = np.linalg.norm(atom_j_feat - atom_i_feat)
 
-    mae_cutoff = 1.5
-    logprob_cutoff = np.percentile(C1_train_log_probs, 2.5)
-
-    C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
-    C1_bad_test_maes_idx = np.where(C1_test_force_maes > mae_cutoff)
-    C1_bad_test_maes = C1_test_force_maes[C1_bad_test_maes_idx]
-    C1_test_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
-    C1_bad_test_logprobs = C1_test_log_probs[C1_bad_test_maes_idx]
-
-    train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
-    test_r, test_p = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
-    test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
-
-    num_test_bad_mae = len(C1_bad_test_maes)
-    num_test_bad_logprob = np.where(C1_bad_test_logprobs < logprob_cutoff)
-    num_below_l_cutoff = np.where(C1_test_log_probs < logprob_cutoff)
-
+    euc_dists_arr = np.array(euc_dists)
+    mask = np.zeros_like(euc_dists_arr)
+    mask[np.triu_indices_from(mask)] = True
+    df_euc_dists = pd.DataFrame(data=euc_dists_arr, index=labels, columns=labels)
     plt.figure()
     plt.subplots(figsize=(19, 9.5))
-    plt.scatter(
-        x=C1_train_force_maes,
-        y=C1_train_log_probs,
-        color='k',
-        label=f'Train: \n r: {train_r} \n p-value: {train_p}'
-    )
-    plt.scatter(
-        x=C1_test_force_maes,
-        y=C1_test_log_probs,
-        color='b',
-        label=f'Test all ({num_below_l_cutoff[0].size}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
-    )
-    plt.scatter(
-        x=C1_bad_test_maes,
-        y=C1_bad_test_logprobs,
-        color='r',
-        label=f'Test bad ({num_test_bad_logprob[0].size}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
-    )
-    plt.axhline(
-        logprob_cutoff,
-        color='k',
-        linestyle='--',
-        label='Uncertainty cutoff (2.5th percentile of training data)'
-    )
-    plt.axvline(1.5, color='m', linestyle='--', label='Chemical accuracy cutoff')
-    plt.legend()
-    plt.title(f"Carbon {i + 1} Log-Probability Density vs. Force MAE")
-    plt.xlabel("Force MAE (kcal/mol/A)")
-    plt.ylabel("Log-Probability Density")
-    plt.savefig(f"C{i + 1}_logprob_vs_mae_all.png")
+    sns.heatmap(df_euc_dists, mask=mask, square=True, cmap='YlGnBu')
+    plt.title(f'Euclidean Distance between Best and Worst 10 Features of Carbon {atom_idx + 1} (Based on Force MAE)')
+    plt.ylabel('Feature')
+    plt.xlabel('Feature')
+    plt.savefig(f"C{atom_idx + 1}_bw_feature_dist.png")
+
+# Train GMM on training features
+# gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
+# gmm.fit(train_features)
+# print(gmm.converged_)
+
+# Make scatterplot of log-prob vs. force MAE for train and test data for one atom
+# for i in range(7):
+#     C1_train_force_maes = train_force_maes[i:train_tot_atoms:num_atoms]
+#     C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
+#
+#     mae_cutoff = 1.5
+#     logprob_cutoff = np.percentile(C1_train_log_probs, 2.5)
+#
+#     C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
+#     C1_bad_test_maes_idx = np.where(C1_test_force_maes > mae_cutoff)
+#     C1_bad_test_maes = C1_test_force_maes[C1_bad_test_maes_idx]
+#     C1_test_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
+#     C1_bad_test_logprobs = C1_test_log_probs[C1_bad_test_maes_idx]
+#
+#     train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
+#     test_r, test_p = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
+#     test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
+#
+#     num_test_bad_mae = len(C1_bad_test_maes)
+#     num_test_bad_logprob = np.where(C1_bad_test_logprobs < logprob_cutoff).shape
+#     num_below_l_cutoff = np.where(C1_test_log_probs < logprob_cutoff).shape
+#
+#     plt.figure()
+#     plt.subplots(figsize=(19, 9.5))
+#     plt.scatter(
+#         x=C1_train_force_maes,
+#         y=C1_train_log_probs,
+#         color='k',
+#         label=f'Train: \n r: {train_r} \n p-value: {train_p}'
+#     )
+#     plt.scatter(
+#         x=C1_test_force_maes,
+#         y=C1_test_log_probs,
+#         color='b',
+#         label=f'Test all ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
+#     )
+#     plt.scatter(
+#         x=C1_bad_test_maes,
+#         y=C1_bad_test_logprobs,
+#         color='r',
+#         label=f'Test bad ({num_test_bad_logprob}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
+#     )
+#     plt.axhline(
+#         logprob_cutoff,
+#         color='k',
+#         linestyle='--',
+#         label='Uncertainty cutoff (2.5th percentile of training data)'
+#     )
+#     plt.axvline(1.5, color='m', linestyle='--', label='Chemical accuracy cutoff')
+#     plt.legend()
+#     plt.title(f"Carbon {i + 1} Log-Probability Density vs. Force MAE")
+#     plt.xlabel("Force MAE (kcal/mol/A)")
+#     plt.ylabel("Log-Probability Density")
+#     plt.savefig(f"C{i + 1}_logprob_vs_mae_all.png")
+>>>>>>> 74e04bedaa87e3d6c63b8b94f26f74ae72dec1f1
 
 # Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
 # C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
