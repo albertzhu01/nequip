@@ -134,7 +134,7 @@ for atom_idx in range(7):
     mask[np.triu_indices_from(mask)] = True
     df_euc_dists = pd.DataFrame(data=euc_dists_arr, index=labels, columns=labels)
     plt.figure()
-    plt.subplots(figsize=(19, 9.5))
+    plt.subplots(figsize=(12, 9))
     sns.heatmap(df_euc_dists, mask=mask, square=True, cmap='YlGnBu')
     plt.title(f'Euclidean Distance between Best and Worst 10 Features of Carbon {atom_idx + 1} (Based on Force MAE)')
     plt.ylabel('Feature')
