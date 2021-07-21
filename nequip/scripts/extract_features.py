@@ -200,7 +200,6 @@ for atom_idx in range(7):
 #     plt.xlabel("Force MAE (kcal/mol/A)")
 #     plt.ylabel("Log-Probability Density")
 #     plt.savefig(f"C{i + 1}_logprob_vs_mae_all.png")
->>>>>>> 74e04bedaa87e3d6c63b8b94f26f74ae72dec1f1
 
 # Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
 # C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
