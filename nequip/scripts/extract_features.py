@@ -138,8 +138,8 @@ for i in range(7):
     test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
 
     num_test_bad_mae = len(C1_bad_test_maes)
-    num_test_bad_logprob = np.where(C1_bad_test_logprobs < logprob_cutoff).shape
-    num_below_l_cutoff = np.where(C1_test_log_probs < logprob_cutoff).shape
+    num_test_bad_logprob = np.where(C1_bad_test_logprobs < logprob_cutoff)
+    num_below_l_cutoff = np.where(C1_test_log_probs < logprob_cutoff)
 
     plt.figure()
     plt.subplots(figsize=(19, 9.5))
@@ -153,13 +153,13 @@ for i in range(7):
         x=C1_test_force_maes,
         y=C1_test_log_probs,
         color='b',
-        label=f'Test all ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
+        label=f'Test all ({num_below_l_cutoff[0].size}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
     )
     plt.scatter(
         x=C1_bad_test_maes,
         y=C1_bad_test_logprobs,
         color='r',
-        label=f'Test bad ({num_test_bad_logprob}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
+        label=f'Test bad ({num_test_bad_logprob[0].size}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
     )
     plt.axhline(
         logprob_cutoff,
