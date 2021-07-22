@@ -99,7 +99,7 @@ feature_clf = LogisticRegression(
     solver='liblinear',
     random_state=0,
     max_iter=1000
-).fit(val_features[0:val_tot_atoms:num_atoms], val_bad_label)
+).fit(val_features[0:val_tot_atoms:num_atoms], val_bad_label[0:val_tot_atoms:num_atoms])
 
 train_accuracy = feature_clf.score(
     train_features[0:train_tot_atoms:num_atoms],
