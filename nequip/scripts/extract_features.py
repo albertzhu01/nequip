@@ -15,7 +15,7 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 f, ax = plt.subplots(figsize=(19, 9.5))
 
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
+path = "/n/home10/axzhu/nequip/results_aspirin_resnet/aspirin/resnet-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 model.eval()
@@ -102,16 +102,16 @@ print(f"total test atoms: {test_tot_atoms}")
 # plt.savefig("aspirin_C1_test_force_maes.png")
 
 # Get indices and features of best 10 and worst 10 test data for a particular atom and plot euc dists
-for atom_idx in range(8):
-    sorted_args = test_force_maes[atom_idx+13:test_tot_atoms:num_atoms].argsort()
+for atom_idx in range(7):
+    sorted_args = test_force_maes[atom_idx:test_tot_atoms:num_atoms].argsort()
     best_test_idxs = sorted_args[:10]
     print(f"best test idxs: {best_test_idxs}")
     worst_test_idxs = sorted_args[-10:][::-1]
     print(f"worst test idxsL {worst_test_idxs}")
-    best_test_features = test_features[atom_idx+13:test_tot_atoms:num_atoms][best_test_idxs]
-    best_test_force_maes = test_force_maes[atom_idx+13:test_tot_atoms:num_atoms][best_test_idxs]
-    worst_test_features = test_features[atom_idx+13:test_tot_atoms:num_atoms][worst_test_idxs]
-    worst_test_force_maes = test_force_maes[atom_idx+13:test_tot_atoms:num_atoms][worst_test_idxs]
+    best_test_features = test_features[atom_idx:test_tot_atoms:num_atoms][best_test_idxs]
+    best_test_force_maes = test_force_maes[atom_idx:test_tot_atoms:num_atoms][best_test_idxs]
+    worst_test_features = test_features[atom_idx:test_tot_atoms:num_atoms][worst_test_idxs]
+    worst_test_force_maes = test_force_maes[atom_idx:test_tot_atoms:num_atoms][worst_test_idxs]
     print(f"Best test features shape: {best_test_features.shape}, and force MAE:")
     print(best_test_force_maes)
     print(f"Worst test features shape: {worst_test_features.shape}, and force MAE:")
@@ -136,10 +136,10 @@ for atom_idx in range(8):
     plt.figure()
     plt.subplots(figsize=(12, 9))
     sns.heatmap(df_euc_dists, mask=mask, square=True, cmap='YlGnBu')
-    plt.title(f'Euclidean Distance between Best and Worst 10 Features of Hydrogen {atom_idx + 1} (Based on Force MAE)')
+    plt.title(f'Distance between Best and Worst 10 Features of Carbon {atom_idx + 1} (Resnet)')
     plt.ylabel('Feature')
     plt.xlabel('Feature')
-    plt.savefig(f"H{atom_idx + 1}_bw_feature_dist.png")
+    plt.savefig(f"C{atom_idx + 1}_bw_feature_dist_resnet.png")
 
 # Train GMM on training features
 # gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
