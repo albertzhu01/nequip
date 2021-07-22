@@ -15,7 +15,7 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 f, ax = plt.subplots(figsize=(19, 9.5))
 
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
+path = "/n/home10/axzhu/nequip/results_resnet/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 model.eval()
@@ -65,39 +65,39 @@ test_data_list = [dataset.get(idx) for idx in test_idxs]
 
 # Evaluate model on batch of training data and test data
 # Train data
-# batch = c.collate(train_data_list)
-# train_out = model(AtomicData.to_AtomicDataDict(batch))
-# train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-# train_pred_forces = train_out[AtomicDataDict.FORCE_KEY].detach().numpy()
-# train_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in train_data_list])
-# train_actual_forces = train_a_forces.reshape(-1, train_a_forces.shape[-1])
-# print(f"train_pred_forces shape: {train_pred_forces.shape}")
-# print(f"train_actual_forces shape: {train_actual_forces.shape}")
-# train_force_maes = []
-# for i in range(len(train_pred_forces)):
-#     train_force_maes.append(mean_absolute_error(train_pred_forces[i], train_actual_forces[i]))
-# train_force_maes = np.array(train_force_maes)
+batch = c.collate(train_data_list)
+train_out = model(AtomicData.to_AtomicDataDict(batch))
+train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+train_pred_forces = train_out[AtomicDataDict.FORCE_KEY].detach().numpy()
+train_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in train_data_list])
+train_actual_forces = train_a_forces.reshape(-1, train_a_forces.shape[-1])
+print(f"train_pred_forces shape: {train_pred_forces.shape}")
+print(f"train_actual_forces shape: {train_actual_forces.shape}")
+train_force_maes = []
+for i in range(len(train_pred_forces)):
+    train_force_maes.append(mean_absolute_error(train_pred_forces[i], train_actual_forces[i]))
+train_force_maes = np.array(train_force_maes)
 
 # Test data
-# test_batch = c.collate(test_data_list)
-# test_out = model(AtomicData.to_AtomicDataDict(test_batch))
-# test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-# test_pred_forces = test_out[AtomicDataDict.FORCE_KEY].detach().numpy()
-# test_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in test_data_list])
-# test_actual_forces = test_a_forces.reshape(-1, train_a_forces.shape[-1])
-# print(f"test_pred_forces shape: {test_pred_forces.shape}")
-# print(f"test_actual_forces shape: {test_actual_forces.shape}")
-# test_force_maes = []
-# for i in range(len(test_pred_forces)):
-#     test_force_maes.append(mean_absolute_error(test_pred_forces[i], test_actual_forces[i]))
-# test_force_maes = np.array(test_force_maes)
+test_batch = c.collate(test_data_list)
+test_out = model(AtomicData.to_AtomicDataDict(test_batch))
+test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+test_pred_forces = test_out[AtomicDataDict.FORCE_KEY].detach().numpy()
+test_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in test_data_list])
+test_actual_forces = test_a_forces.reshape(-1, train_a_forces.shape[-1])
+print(f"test_pred_forces shape: {test_pred_forces.shape}")
+print(f"test_actual_forces shape: {test_actual_forces.shape}")
+test_force_maes = []
+for i in range(len(test_pred_forces)):
+    test_force_maes.append(mean_absolute_error(test_pred_forces[i], test_actual_forces[i]))
+test_force_maes = np.array(test_force_maes)
 
 # Get dimensions of train and test features and number of atoms in aspirin
-# train_tot_atoms, feature_length = train_features.shape
-# num_atoms = train_tot_atoms // len(train_data_list)
-# test_tot_atoms, _ = test_features.shape
-# print(f"num_atoms: {num_atoms}")
-# print(f"total test atoms: {test_tot_atoms}")
+train_tot_atoms, feature_length = train_features.shape
+num_atoms = train_tot_atoms // len(train_data_list)
+test_tot_atoms, _ = test_features.shape
+print(f"num_atoms: {num_atoms}")
+print(f"total test atoms: {test_tot_atoms}")
 
 # Plot force MAEs for a certain atom
 # plt.plot(test_force_maes[0:test_tot_atoms:num_atoms])
@@ -144,64 +144,64 @@ test_data_list = [dataset.get(idx) for idx in test_idxs]
 #     plt.savefig(f"C{atom_idx + 1}_bw_feature_dist.png")
 
 # Train GMM on training features
-# gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
-# gmm.fit(train_features)
-# print(gmm.converged_)
+gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
+gmm.fit(train_features)
+print(gmm.converged_)
 
 # Make scatterplot of log-prob vs. force MAE for train and test data for one atom
-# for i in range(7):
-#     C1_train_force_maes = train_force_maes[i:train_tot_atoms:num_atoms]
-#     C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
-#
-#     mae_cutoff = 1.5
-#     logprob_cutoff = np.percentile(C1_train_log_probs, 2.5)
-#
-#     C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
-#     C1_bad_test_maes_idx = np.where(C1_test_force_maes > mae_cutoff)
-#     C1_bad_test_maes = C1_test_force_maes[C1_bad_test_maes_idx]
-#     C1_test_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
-#     C1_bad_test_logprobs = C1_test_log_probs[C1_bad_test_maes_idx]
-#
-#     train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
-#     test_r, test_p = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
-#     test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
-#
-#     num_test_bad_mae = len(C1_bad_test_maes)
-#     num_test_bad_logprob = np.where(C1_bad_test_logprobs < logprob_cutoff).shape
-#     num_below_l_cutoff = np.where(C1_test_log_probs < logprob_cutoff).shape
-#
-#     plt.figure()
-#     plt.subplots(figsize=(19, 9.5))
-#     plt.scatter(
-#         x=C1_train_force_maes,
-#         y=C1_train_log_probs,
-#         color='k',
-#         label=f'Train: \n r: {train_r} \n p-value: {train_p}'
-#     )
-#     plt.scatter(
-#         x=C1_test_force_maes,
-#         y=C1_test_log_probs,
-#         color='b',
-#         label=f'Test all ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
-#     )
-#     plt.scatter(
-#         x=C1_bad_test_maes,
-#         y=C1_bad_test_logprobs,
-#         color='r',
-#         label=f'Test bad ({num_test_bad_logprob}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
-#     )
-#     plt.axhline(
-#         logprob_cutoff,
-#         color='k',
-#         linestyle='--',
-#         label='Uncertainty cutoff (2.5th percentile of training data)'
-#     )
-#     plt.axvline(1.5, color='m', linestyle='--', label='Chemical accuracy cutoff')
-#     plt.legend()
-#     plt.title(f"Carbon {i + 1} Log-Probability Density vs. Force MAE")
-#     plt.xlabel("Force MAE (kcal/mol/A)")
-#     plt.ylabel("Log-Probability Density")
-#     plt.savefig(f"C{i + 1}_logprob_vs_mae_all.png")
+for i in range(7):
+    C1_train_force_maes = train_force_maes[i:train_tot_atoms:num_atoms]
+    C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
+
+    mae_cutoff = 1.5
+    logprob_cutoff = np.percentile(C1_train_log_probs, 2.5)
+
+    C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
+    C1_bad_test_maes_idx = np.where(C1_test_force_maes > mae_cutoff)
+    C1_bad_test_maes = C1_test_force_maes[C1_bad_test_maes_idx]
+    C1_test_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
+    C1_bad_test_logprobs = C1_test_log_probs[C1_bad_test_maes_idx]
+
+    train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
+    test_r, test_p = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
+    test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
+
+    num_test_bad_mae = len(C1_bad_test_maes)
+    num_test_bad_logprob = np.where(C1_bad_test_logprobs < logprob_cutoff)[0].size
+    num_below_l_cutoff = np.where(C1_test_log_probs < logprob_cutoff)[0].size
+
+    plt.figure()
+    plt.subplots(figsize=(19, 9.5))
+    plt.scatter(
+        x=C1_train_force_maes,
+        y=C1_train_log_probs,
+        color='k',
+        label=f'Train: \n r: {train_r} \n p-value: {train_p}'
+    )
+    plt.scatter(
+        x=C1_test_force_maes,
+        y=C1_test_log_probs,
+        color='b',
+        label=f'Test all ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
+    )
+    plt.scatter(
+        x=C1_bad_test_maes,
+        y=C1_bad_test_logprobs,
+        color='r',
+        label=f'Test bad ({num_test_bad_logprob}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
+    )
+    plt.axhline(
+        logprob_cutoff,
+        color='k',
+        linestyle='--',
+        label='Uncertainty cutoff (2.5th percentile of training data)'
+    )
+    plt.axvline(1.5, color='m', linestyle='--', label='Chemical accuracy cutoff')
+    plt.legend()
+    plt.title(f"Carbon {i + 1} Log-Probability Density vs. Force MAE Resnet")
+    plt.xlabel("Force MAE (kcal/mol/A)")
+    plt.ylabel("Log-Probability Density")
+    plt.savefig(f"C{i + 1}_logprob_vs_mae_resnet.png")
 
 # Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
 # C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
