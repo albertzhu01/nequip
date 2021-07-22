@@ -15,8 +15,8 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
 f, ax = plt.subplots(figsize=(19, 9.5))
 
-path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-# path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
+# path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
+path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 model.eval()
@@ -30,7 +30,7 @@ dataset = dataset_from_config(config)
 trainer = torch.load(path + '/trainer.pth', map_location='cpu')
 train_idxs = trainer['train_idcs']
 val_idxs = trainer['val_idcs']
-test_idxs = [idx for idx in range(len(dataset)) if idx not in (train_idxs + val_idxs)]
+test_idxs = [idx for idx in range(len(dataset)) if idx not in torch.cat((train_idxs, val_idxs))]
 c = Collater.for_dataset(dataset, exclude_keys=[])
 
 # Create list of training, validation, and test data AtomicData objects
@@ -56,7 +56,7 @@ train_bad_label = np.where(train_force_maes > 1.5, np.ones(train_force_maes.size
 
 # Val data
 val_batch = c.collate(val_data_list)
-val_out = model(AtomicData.to_AtomicDataDict(batch))
+val_out = model(AtomicData.to_AtomicDataDict(val_batch))
 val_features = val_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 val_pred_forces = val_out[AtomicDataDict.FORCE_KEY].detach().numpy()
 val_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in val_data_list])
@@ -87,11 +87,15 @@ test_bad_label = np.where(test_force_maes > 1.5, np.ones(test_force_maes.size), 
 feature_clf = LogisticRegression(
     class_weight='balanced',
     solver='liblinear',
-    random_state=0
+    random_state=0,
+    max_iter=1000
 ).fit(val_features, val_bad_label)
 
 train_accuracy = feature_clf.score(train_features, train_bad_label)
 print(f"Train dataset accuracy: {train_accuracy}")
+
+val_accuracy = feature_clf.score(val_features, val_bad_label)
+print(f"Val dataset accuracy: {val_accuracy}")
 
 test_accuracy = feature_clf.score(test_features, test_bad_label)
 print(f"Test dataset accuracy: {test_accuracy}")
