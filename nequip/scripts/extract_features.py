@@ -15,7 +15,7 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 f, ax = plt.subplots(figsize=(19, 9.5))
 
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/nequip/results_aspirin_resnet/aspirin/resnet-run"
+path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 model.eval()
@@ -54,6 +54,8 @@ dataset = dataset_from_config(config)
 # Load trainer and get training and test data indexes and set up Collater
 trainer = torch.load(path + '/trainer.pth', map_location='cpu')
 train_idxs = trainer['train_idcs']
+val_idxs = trainer['val_idcs']
+print(val_idxs)
 test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
 c = Collater.for_dataset(dataset, exclude_keys=[])
 
@@ -63,83 +65,83 @@ test_data_list = [dataset.get(idx) for idx in test_idxs]
 
 # Evaluate model on batch of training data and test data
 # Train data
-batch = c.collate(train_data_list)
-train_out = model(AtomicData.to_AtomicDataDict(batch))
-train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-train_pred_forces = train_out[AtomicDataDict.FORCE_KEY].detach().numpy()
-train_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in train_data_list])
-train_actual_forces = train_a_forces.reshape(-1, train_a_forces.shape[-1])
-print(f"train_pred_forces shape: {train_pred_forces.shape}")
-print(f"train_actual_forces shape: {train_actual_forces.shape}")
-train_force_maes = []
-for i in range(len(train_pred_forces)):
-    train_force_maes.append(mean_absolute_error(train_pred_forces[i], train_actual_forces[i]))
-train_force_maes = np.array(train_force_maes)
+# batch = c.collate(train_data_list)
+# train_out = model(AtomicData.to_AtomicDataDict(batch))
+# train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+# train_pred_forces = train_out[AtomicDataDict.FORCE_KEY].detach().numpy()
+# train_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in train_data_list])
+# train_actual_forces = train_a_forces.reshape(-1, train_a_forces.shape[-1])
+# print(f"train_pred_forces shape: {train_pred_forces.shape}")
+# print(f"train_actual_forces shape: {train_actual_forces.shape}")
+# train_force_maes = []
+# for i in range(len(train_pred_forces)):
+#     train_force_maes.append(mean_absolute_error(train_pred_forces[i], train_actual_forces[i]))
+# train_force_maes = np.array(train_force_maes)
 
 # Test data
-test_batch = c.collate(test_data_list)
-test_out = model(AtomicData.to_AtomicDataDict(test_batch))
-test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-test_pred_forces = test_out[AtomicDataDict.FORCE_KEY].detach().numpy()
-test_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in test_data_list])
-test_actual_forces = test_a_forces.reshape(-1, train_a_forces.shape[-1])
-print(f"test_pred_forces shape: {test_pred_forces.shape}")
-print(f"test_actual_forces shape: {test_actual_forces.shape}")
-test_force_maes = []
-for i in range(len(test_pred_forces)):
-    test_force_maes.append(mean_absolute_error(test_pred_forces[i], test_actual_forces[i]))
-test_force_maes = np.array(test_force_maes)
+# test_batch = c.collate(test_data_list)
+# test_out = model(AtomicData.to_AtomicDataDict(test_batch))
+# test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+# test_pred_forces = test_out[AtomicDataDict.FORCE_KEY].detach().numpy()
+# test_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in test_data_list])
+# test_actual_forces = test_a_forces.reshape(-1, train_a_forces.shape[-1])
+# print(f"test_pred_forces shape: {test_pred_forces.shape}")
+# print(f"test_actual_forces shape: {test_actual_forces.shape}")
+# test_force_maes = []
+# for i in range(len(test_pred_forces)):
+#     test_force_maes.append(mean_absolute_error(test_pred_forces[i], test_actual_forces[i]))
+# test_force_maes = np.array(test_force_maes)
 
 # Get dimensions of train and test features and number of atoms in aspirin
-train_tot_atoms, feature_length = train_features.shape
-num_atoms = train_tot_atoms // len(train_data_list)
-test_tot_atoms, _ = test_features.shape
-print(f"num_atoms: {num_atoms}")
-print(f"total test atoms: {test_tot_atoms}")
+# train_tot_atoms, feature_length = train_features.shape
+# num_atoms = train_tot_atoms // len(train_data_list)
+# test_tot_atoms, _ = test_features.shape
+# print(f"num_atoms: {num_atoms}")
+# print(f"total test atoms: {test_tot_atoms}")
 
 # Plot force MAEs for a certain atom
 # plt.plot(test_force_maes[0:test_tot_atoms:num_atoms])
 # plt.savefig("aspirin_C1_test_force_maes.png")
 
 # Get indices and features of best 10 and worst 10 test data for a particular atom and plot euc dists
-for atom_idx in range(7):
-    sorted_args = test_force_maes[atom_idx:test_tot_atoms:num_atoms].argsort()
-    best_test_idxs = sorted_args[:10]
-    print(f"best test idxs: {best_test_idxs}")
-    worst_test_idxs = sorted_args[-10:][::-1]
-    print(f"worst test idxsL {worst_test_idxs}")
-    best_test_features = test_features[atom_idx:test_tot_atoms:num_atoms][best_test_idxs]
-    best_test_force_maes = test_force_maes[atom_idx:test_tot_atoms:num_atoms][best_test_idxs]
-    worst_test_features = test_features[atom_idx:test_tot_atoms:num_atoms][worst_test_idxs]
-    worst_test_force_maes = test_force_maes[atom_idx:test_tot_atoms:num_atoms][worst_test_idxs]
-    print(f"Best test features shape: {best_test_features.shape}, and force MAE:")
-    print(best_test_force_maes)
-    print(f"Worst test features shape: {worst_test_features.shape}, and force MAE:")
-    print(worst_test_force_maes)
-
-    # Calculate Euclidean distance between 10 best and 10 worst features
-    best_worst_features = np.concatenate((best_test_features, worst_test_features))
-    euc_dists = [[None for _ in range(20)] for _ in range(20)]
-    labels = ['Best' for _ in range(10)] + ['Worst' for _ in range(10)]
-
-    for i in range(20):
-        for j in range(i, 20):
-            atom_i_feat = best_worst_features[i]
-            atom_j_feat = best_worst_features[j]
-            euc_dists[i][j] = np.linalg.norm(atom_j_feat - atom_i_feat)
-            euc_dists[j][i] = np.linalg.norm(atom_j_feat - atom_i_feat)
-
-    euc_dists_arr = np.array(euc_dists)
-    mask = np.zeros_like(euc_dists_arr)
-    mask[np.triu_indices_from(mask)] = True
-    df_euc_dists = pd.DataFrame(data=euc_dists_arr, index=labels, columns=labels)
-    plt.figure()
-    plt.subplots(figsize=(12, 9))
-    sns.heatmap(df_euc_dists, mask=mask, square=True, cmap='YlGnBu')
-    plt.title(f'Distance between Best and Worst 10 Features of Carbon {atom_idx + 1} (Resnet)')
-    plt.ylabel('Feature')
-    plt.xlabel('Feature')
-    plt.savefig(f"C{atom_idx + 1}_bw_feature_dist_resnet.png")
+# for atom_idx in range(7):
+#     sorted_args = test_force_maes[atom_idx:test_tot_atoms:num_atoms].argsort()
+#     best_test_idxs = sorted_args[:10]
+#     print(f"best test idxs: {best_test_idxs}")
+#     worst_test_idxs = sorted_args[-10:][::-1]
+#     print(f"worst test idxsL {worst_test_idxs}")
+#     best_test_features = test_features[atom_idx:test_tot_atoms:num_atoms][best_test_idxs]
+#     best_test_force_maes = test_force_maes[atom_idx:test_tot_atoms:num_atoms][best_test_idxs]
+#     worst_test_features = test_features[atom_idx:test_tot_atoms:num_atoms][worst_test_idxs]
+#     worst_test_force_maes = test_force_maes[atom_idx:test_tot_atoms:num_atoms][worst_test_idxs]
+#     print(f"Best test features shape: {best_test_features.shape}, and force MAE:")
+#     print(best_test_force_maes)
+#     print(f"Worst test features shape: {worst_test_features.shape}, and force MAE:")
+#     print(worst_test_force_maes)
+#
+#     # Calculate Euclidean distance between 10 best and 10 worst features
+#     best_worst_features = np.concatenate((best_test_features, worst_test_features))
+#     euc_dists = [[None for _ in range(20)] for _ in range(20)]
+#     labels = ['Best' for _ in range(10)] + ['Worst' for _ in range(10)]
+#
+#     for i in range(20):
+#         for j in range(i, 20):
+#             atom_i_feat = best_worst_features[i]
+#             atom_j_feat = best_worst_features[j]
+#             euc_dists[i][j] = np.linalg.norm(atom_j_feat - atom_i_feat)
+#             euc_dists[j][i] = np.linalg.norm(atom_j_feat - atom_i_feat)
+#
+#     euc_dists_arr = np.array(euc_dists)
+#     mask = np.zeros_like(euc_dists_arr)
+#     mask[np.triu_indices_from(mask)] = True
+#     df_euc_dists = pd.DataFrame(data=euc_dists_arr, index=labels, columns=labels)
+#     plt.figure()
+#     plt.subplots(figsize=(12, 9))
+#     sns.heatmap(df_euc_dists, mask=mask, square=True, cmap='YlGnBu')
+#     plt.title(f'Euclidean Distance between Best and Worst 10 Features of Carbon {atom_idx + 1} (Based on Force MAE)')
+#     plt.ylabel('Feature')
+#     plt.xlabel('Feature')
+#     plt.savefig(f"C{atom_idx + 1}_bw_feature_dist.png")
 
 # Train GMM on training features
 # gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
