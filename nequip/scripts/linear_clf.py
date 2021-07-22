@@ -94,27 +94,28 @@ print(f"total train atoms: {train_tot_atoms}")
 print(f"total test atoms: {test_tot_atoms}")
 print(f"total val atoms: {val_tot_atoms}")
 
-feature_clf = LogisticRegression(
-    class_weight='balanced',
-    solver='liblinear',
-    random_state=0,
-    max_iter=1000
-).fit(val_features[0:val_tot_atoms:num_atoms], val_bad_label[0:val_tot_atoms:num_atoms])
+for i in range(num_atoms):
+    feature_clf = LogisticRegression(
+        class_weight='balanced',
+        solver='liblinear',
+        random_state=0,
+        max_iter=1000
+    ).fit(val_features[i:val_tot_atoms:num_atoms], val_bad_label[i:val_tot_atoms:num_atoms])
 
-train_accuracy = feature_clf.score(
-    train_features[0:train_tot_atoms:num_atoms],
-    train_bad_label[0:train_tot_atoms:num_atoms]
-)
-print(f"Train dataset accuracy: {train_accuracy}")
+    train_accuracy = feature_clf.score(
+        train_features[i:train_tot_atoms:num_atoms],
+        train_bad_label[i:train_tot_atoms:num_atoms]
+    )
+    print(f"Train dataset accuracy: {train_accuracy}")
 
-val_accuracy = feature_clf.score(
-    val_features[0:val_tot_atoms:num_atoms],
-    val_bad_label[0:val_tot_atoms:num_atoms]
-)
-print(f"Val dataset accuracy: {val_accuracy}")
+    val_accuracy = feature_clf.score(
+        val_features[i:val_tot_atoms:num_atoms],
+        val_bad_label[i:val_tot_atoms:num_atoms]
+    )
+    print(f"Val dataset accuracy: {val_accuracy}")
 
-test_accuracy = feature_clf.score(
-    test_features[0:test_tot_atoms:num_atoms],
-    test_bad_label[0:test_tot_atoms:num_atoms]
-)
-print(f"Test dataset accuracy: {test_accuracy}")
+    test_accuracy = feature_clf.score(
+        test_features[i:test_tot_atoms:num_atoms],
+        test_bad_label[i:test_tot_atoms:num_atoms]
+    )
+    print(f"Test dataset accuracy: {test_accuracy}")
