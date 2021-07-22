@@ -15,8 +15,8 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
 f, ax = plt.subplots(figsize=(19, 9.5))
 
-path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-# path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
+# path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
+path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 model.eval()
@@ -87,11 +87,15 @@ test_bad_label = np.where(test_force_maes > 1.5, np.ones(test_force_maes.size), 
 feature_clf = LogisticRegression(
     class_weight='balanced',
     solver='liblinear',
-    random_state=0
+    random_state=0,
+    max_iter=1000
 ).fit(val_features, val_bad_label)
 
 train_accuracy = feature_clf.score(train_features, train_bad_label)
 print(f"Train dataset accuracy: {train_accuracy}")
+
+val_accuracy = feature_clf.score(val_features, val_bad_label)
+print(f"Val dataset accuracy: {val_accuracy}")
 
 test_accuracy = feature_clf.score(test_features, test_bad_label)
 print(f"Test dataset accuracy: {test_accuracy}")
