@@ -17,7 +17,7 @@ r_max: 4.0                                                                      
 
 num_layers: 6                                                                     # number of interaction blocks, we found 5-6 to work best
 chemical_embedding_irreps_out: 32x0e                                              # irreps for the chemical embedding of species
-feature_irreps_hidden: 32x0o + 32x0e + 16x1o + 16x1e + 8x2o + 8x2e                # irreps used for hidden features, here we go up to lmax=2, with even and odd parities
+feature_irreps_hidden: 32x0o + 32x0e + 32x1o + 32x1e + 32x2o + 32x2e              # irreps used for hidden features, here we go up to lmax=2, with even and odd parities
 irreps_edge_sh: 0e + 1o + 2e                                                      # irreps of the spherical harmonics used for edges. If a single integer, indicates the full SH up to L_max=that_integer
 conv_to_output_hidden_irreps_out: 16x0e                                           # irreps used in hidden layer of output block
 
