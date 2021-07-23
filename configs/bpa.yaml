@@ -1,4 +1,4 @@
-# an example yaml file
+# 3BPA yaml file
 # for a full yaml file containing all possible features check out full.yaml
 
 # Two folders will be used during the training: 'root'/process and 'root'/'run_name'
@@ -6,7 +6,7 @@
 # process contains processed data sets
 # if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
 root: results/bpa
-run_name: example-run
+run_name: train300K_072321
 seed: 0                                                                           # random number seed for numpy and torch
 restart: false                                                                    # set True for a restarted run
 append: false                                                                     # set True if a restarted run should append to the previous log file
@@ -41,9 +41,9 @@ use_sc: true                                                                    
 # key_mapping is used to map the key in the npz file to the NequIP default values (see data/_key.py)
 # all arrays are expected to have the shape of (nframe, natom, ?) except the fixed fields
 # note that if your data set uses pbc, you need to also pass an array that maps to the nequip "pbc" key
-dataset: ase                                                                       # type of data set, can be npz or ase
+# dataset: npz                                                                     # type of data set, can be npz or ase
 # dataset_url: http://quantum-machine.org/gdml/data/npz/aspirin_ccsd.zip           # url to download the npz. optional
-dataset_file_name: ./configs_final/train_300K.xyz                                  # path to data set file
+# dataset_file_name: ./benchmark_data/aspirin_ccsd-train.npz                       # path to data set file
 # key_mapping:
 #   z: atomic_numbers                                                              # atomic species, integers
 #   E: total_energy                                                                # total potential eneriges to train to
@@ -55,8 +55,8 @@ dataset_file_name: ./configs_final/train_300K.xyz                               
 # As an alternative option to npz, you can also pass data ase ASE Atoms-objects
 # This can often be easier to work with, simply make sure the ASE Atoms object
 # has a calculator for which atoms.get_potential_energy() and atoms.get_forces() are defined
-# dataset: ase
-# dataset_file_name: xxx.xyz                                                       # need to be a format accepted by ase.io.read
+dataset: ase
+dataset_file_name: ./configs_final/train_300K.xyz                                  # need to be a format accepted by ase.io.read
 ase_args:                                                                          # any arguments needed by ase.io.read
   format: extxyz
 
@@ -66,11 +66,11 @@ wandb_project: 3BPA                                                             
 wandb_resume: true                                                                 # if true and restart is true, wandb run data will be restarted and updated.
                                                                                    # if false, a new wandb run will be generated
 verbose: info                                                                      # the same as python logging, e.g. warning, info, debug, error. case insensitive
-log_batch_freq: 1                                                                  # batch frequency, how often to print training errors withinin the same epoch
+log_batch_freq: 10                                                                 # batch frequency, how often to print training errors withinin the same epoch
 log_epoch_freq: 1                                                                  # epoch frequency, how often to print and save the model
 
 # training
-n_train: 100                                                                       # number of training data
+n_train: 500                                                                       # number of training data
 n_val: 50                                                                          # number of validation data
 learning_rate: 0.01                                                                # learning rate, we found values between 0.01 and 0.005 to work best - this is often one of the most important hyperparameters to tune
 batch_size: 5                                                                      # batch size, we found it important to keep this small for most applications (1-5)
@@ -81,7 +81,7 @@ ema_decay: 0.999                                                                
 
 # loss function
 loss_coeffs:                                                                       # different weights to use in a weighted loss functions
-  forces: 100                                                                      # for MD applications, we recommed a force weight of 100 and an energy weight of 1
+  forces: 729                                                                      # for MD applications, we recommed a force weight of 100 and an energy weight of 1
   total_energy: 1                                                                  # alternatively, if energies are not of importance, a force weight 1 and an energy weight of 0 also works.
 
 # output metrics
