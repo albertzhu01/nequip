@@ -49,7 +49,7 @@ model.eval()
 # Load a config file
 config = Config.from_file(path + "/config_final.yaml")
 dataset = dataset_from_config(config)
-config_test = Config.from_file("/n/home10/axzhu/nequip/dataset.yaml")
+config_test = Config.from_file("/n/home10/axzhu/nequip/configs/dataset.yaml")
 dataset_test = dataset_from_config(config_test)
 print(f"Train dataset length: {len(dataset)}")
 print(f"Test dataset length: {len(dataset_test)}")
