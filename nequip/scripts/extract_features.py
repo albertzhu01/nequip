@@ -15,7 +15,7 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 f, ax = plt.subplots(figsize=(19, 9.5))
 
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/nequip/results_resnet/aspirin/example-run"
+path = "/n/home10/axzhu/nequip/results/bpa/train300K_072321"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 model.eval()
@@ -49,22 +49,26 @@ model.eval()
 # Load a config file
 config = Config.from_file(path + "/config_final.yaml")
 dataset = dataset_from_config(config)
-# print(len(dataset))
+config_test = Config.from_file("/n/home10/axzhu/nequip/dataset.yaml")
+dataset_test = dataset_from_config(config_test)
+print(f"Train dataset length: {len(dataset)}")
+print(f"Test dataset length: {len(dataset_test)}")
 
 # Load trainer and get training and test data indexes and set up Collater
 trainer = torch.load(path + '/trainer.pth', map_location='cpu')
 train_idxs = trainer['train_idcs']
-val_idxs = trainer['val_idcs']
-print(val_idxs)
-test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
-c = Collater.for_dataset(dataset, exclude_keys=[])
+print(f"# of training points: {len(train_idxs)}")
+# val_idxs = trainer['val_idcs']
+# print(val_idxs)
+# test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
 
 # Create list of training and test data AtomicData objects
 train_data_list = [dataset.get(idx.item()) for idx in train_idxs]
-test_data_list = [dataset.get(idx) for idx in test_idxs]
+test_data_list = [dataset.get(idx) for idx in range(len(dataset_test))]
 
 # Evaluate model on batch of training data and test data
 # Train data
+c = Collater.for_dataset(dataset, exclude_keys=[])
 batch = c.collate(train_data_list)
 train_out = model(AtomicData.to_AtomicDataDict(batch))
 train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
@@ -79,7 +83,8 @@ for i in range(len(train_pred_forces)):
 train_force_maes = np.array(train_force_maes)
 
 # Test data
-test_batch = c.collate(test_data_list)
+c_test = Collater.for_dataset(dataset_test, exclude_keys=[])
+test_batch = c_test.collate(test_data_list)
 test_out = model(AtomicData.to_AtomicDataDict(test_batch))
 test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 test_pred_forces = test_out[AtomicDataDict.FORCE_KEY].detach().numpy()
@@ -97,6 +102,7 @@ train_tot_atoms, feature_length = train_features.shape
 num_atoms = train_tot_atoms // len(train_data_list)
 test_tot_atoms, _ = test_features.shape
 print(f"num_atoms: {num_atoms}")
+print(f"total train atoms: {train_tot_atoms}")
 print(f"total test atoms: {test_tot_atoms}")
 
 # Plot force MAEs for a certain atom
@@ -144,22 +150,26 @@ print(f"total test atoms: {test_tot_atoms}")
 #     plt.savefig(f"C{atom_idx + 1}_bw_feature_dist.png")
 
 # Train GMM on training features
-gmm = mixture.GaussianMixture(n_components=11, covariance_type='full', random_state=0)
+n_components = np.arange(1, 28)
+models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
+bics = [model.fit(train_features).bic(train_features) for model in models]
+print(f"Number of components with min BIC: {bics.index(min(bics))}")
+gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
 gmm.fit(train_features)
 print(gmm.converged_)
 
 # Make scatterplot of log-prob vs. force MAE for train and test data for one atom
-for i in range(2):
-    C1_train_force_maes = train_force_maes[i+10:train_tot_atoms:num_atoms]
-    C1_train_log_probs = gmm.score_samples(train_features[i+10:train_tot_atoms:num_atoms])
+for i in range(27):
+    C1_train_force_maes = train_force_maes[i:train_tot_atoms:num_atoms]
+    C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
 
-    mae_cutoff = 1.5
+    mae_cutoff = 0.065
     logprob_cutoff = np.percentile(C1_train_log_probs, 2.5)
 
-    C1_test_force_maes = test_force_maes[i+10:test_tot_atoms:num_atoms]
+    C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
     C1_bad_test_maes_idx = np.where(C1_test_force_maes > mae_cutoff)
     C1_bad_test_maes = C1_test_force_maes[C1_bad_test_maes_idx]
-    C1_test_log_probs = gmm.score_samples(test_features[i+10:test_tot_atoms:num_atoms])
+    C1_test_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
     C1_bad_test_logprobs = C1_test_log_probs[C1_bad_test_maes_idx]
 
     train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
@@ -196,12 +206,12 @@ for i in range(2):
         linestyle='--',
         label='Uncertainty cutoff (2.5th percentile of training data)'
     )
-    plt.axvline(1.5, color='m', linestyle='--', label='Chemical accuracy cutoff')
+    plt.axvline(mae_cutoff, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.legend()
-    plt.title(f"Carbon {i + 8} Log-Probability Density vs. Force MAE Resnet")
-    plt.xlabel("Force MAE (kcal/mol/A)")
+    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE")
+    plt.xlabel("Force MAE (eV/A)")
     plt.ylabel("Log-Probability Density")
-    plt.savefig(f"C{i + 8}_logprob_vs_mae_resnet.png")
+    plt.savefig(f"bpa_atom{i}_logprob_vs_mae.png")
 
 # Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
 # C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
