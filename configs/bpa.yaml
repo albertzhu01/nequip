@@ -70,7 +70,7 @@ log_batch_freq: 10                                                              
 log_epoch_freq: 1                                                                  # epoch frequency, how often to print and save the model
 
 # training
-n_train: 100                                                                       # number of training data
+n_train: 450                                                                       # number of training data
 n_val: 50                                                                          # number of validation data
 learning_rate: 0.01                                                                # learning rate, we found values between 0.01 and 0.005 to work best - this is often one of the most important hyperparameters to tune
 batch_size: 5                                                                      # batch size, we found it important to keep this small for most applications (1-5)
