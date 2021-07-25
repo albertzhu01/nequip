@@ -149,17 +149,17 @@ gmm.fit(train_features)
 print(gmm.converged_)
 
 # Make scatterplot of log-prob vs. force MAE for train and test data for one atom
-for i in range(7):
-    C1_train_force_maes = train_force_maes[i:train_tot_atoms:num_atoms]
-    C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
+for i in range(2):
+    C1_train_force_maes = train_force_maes[i+10:train_tot_atoms:num_atoms]
+    C1_train_log_probs = gmm.score_samples(train_features[i+10:train_tot_atoms:num_atoms])
 
     mae_cutoff = 1.5
     logprob_cutoff = np.percentile(C1_train_log_probs, 2.5)
 
-    C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
+    C1_test_force_maes = test_force_maes[i+10:test_tot_atoms:num_atoms]
     C1_bad_test_maes_idx = np.where(C1_test_force_maes > mae_cutoff)
     C1_bad_test_maes = C1_test_force_maes[C1_bad_test_maes_idx]
-    C1_test_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
+    C1_test_log_probs = gmm.score_samples(test_features[i+10:test_tot_atoms:num_atoms])
     C1_bad_test_logprobs = C1_test_log_probs[C1_bad_test_maes_idx]
 
     train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
@@ -198,10 +198,10 @@ for i in range(7):
     )
     plt.axvline(1.5, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.legend()
-    plt.title(f"Carbon {i + 1} Log-Probability Density vs. Force MAE Resnet")
+    plt.title(f"Carbon {i + 8} Log-Probability Density vs. Force MAE Resnet")
     plt.xlabel("Force MAE (kcal/mol/A)")
     plt.ylabel("Log-Probability Density")
-    plt.savefig(f"C{i + 1}_logprob_vs_mae_resnet.png")
+    plt.savefig(f"C{i + 8}_logprob_vs_mae_resnet.png")
 
 # Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
 # C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
