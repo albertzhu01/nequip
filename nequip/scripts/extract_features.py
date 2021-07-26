@@ -62,8 +62,7 @@ print(f"# of training points: {len(train_idxs)}")
 
 # Create list of training and test data AtomicData objects
 train_data_list = [dataset.get(idx.item()) for idx in train_idxs]
-test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))
-                  if idx not in train_idxs.tolist()]
+test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))]
 print(f"Train dataset length: {len(train_data_list)}")
 print(f"Test dataset length: {len(test_data_list)}")
 
@@ -189,19 +188,19 @@ for i in range(27):
         x=C1_train_force_maes,
         y=C1_train_log_probs,
         color='k',
-        label=f'Train: \n r: {train_r} \n p-value: {train_p}'
+        label=f'Train 300K: \n r: {train_r} \n p-value: {train_p}'
     )
     plt.scatter(
         x=C1_test_force_maes,
         y=C1_test_log_probs,
         color='b',
-        label=f'Test all ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
+        label=f'Test all 600K ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
     )
     plt.scatter(
         x=C1_bad_test_maes,
         y=C1_bad_test_logprobs,
         color='r',
-        label=f'Test bad ({num_test_bad_logprob}/{num_test_bad_mae})'
+        label=f'Test bad 600K ({num_test_bad_logprob}/{num_test_bad_mae})'
     )
     plt.axhline(
         logprob_cutoff,
@@ -211,10 +210,10 @@ for i in range(27):
     )
     plt.axvline(mae_cutoff, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.legend()
-    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE")
+    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE (600K Test)")
     plt.xlabel("Force MAE (eV/A)")
     plt.ylabel("Log-Probability Density")
-    plt.savefig(f"bpa_atom{i}_logprob_vs_mae.png")
+    plt.savefig(f"bpa_atom{i}_logprob_vs_mae_600K.png")
 
 # Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
 # C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
