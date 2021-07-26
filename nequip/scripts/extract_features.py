@@ -194,13 +194,13 @@ for i in range(27):
         x=C1_test_force_maes,
         y=C1_test_log_probs,
         color='b',
-        label=f'Test all 600K ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
+        label=f'Test all 1200K ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
     )
     plt.scatter(
         x=C1_bad_test_maes,
         y=C1_bad_test_logprobs,
         color='r',
-        label=f'Test bad 600K ({num_test_bad_logprob}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
+        label=f'Test bad 1200K ({num_test_bad_logprob}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
     )
     plt.axhline(
         logprob_cutoff,
@@ -210,10 +210,10 @@ for i in range(27):
     )
     plt.axvline(mae_cutoff, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.legend()
-    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE (600K Test)")
+    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE (1200K Test)")
     plt.xlabel("Force MAE (eV/A)")
     plt.ylabel("Log-Probability Density")
-    plt.savefig(f"bpa_atom{i}_logprob_vs_mae_600K.png")
+    plt.savefig(f"bpa_atom{i}_logprob_vs_mae_1200K.png")
 
 # Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
 # C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
