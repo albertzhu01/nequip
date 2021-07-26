@@ -51,8 +51,6 @@ config = Config.from_file(path + "/config_final.yaml")
 dataset = dataset_from_config(config)
 config_test = Config.from_file("/n/home10/axzhu/nequip/configs/dataset.yaml")
 dataset_test = dataset_from_config(config_test)
-print(f"Train dataset length: {len(dataset)}")
-print(f"Test dataset length: {len(dataset_test)}")
 
 # Load trainer and get training and test data indexes and set up Collater
 trainer = torch.load(path + '/trainer.pth', map_location='cpu')
@@ -64,7 +62,10 @@ print(f"# of training points: {len(train_idxs)}")
 
 # Create list of training and test data AtomicData objects
 train_data_list = [dataset.get(idx.item()) for idx in train_idxs]
-test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))]
+test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))
+                  if dataset_test.get(idx) not in train_data_list]
+print(f"Train dataset length: {len(train_data_list)}")
+print(f"Test dataset length: {len(test_data_list)}")
 
 # Evaluate model on batch of training data and test data
 # Train data
@@ -165,7 +166,7 @@ for i in range(27):
     C1_train_force_maes = train_force_maes[i:train_tot_atoms:num_atoms]
     C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
 
-    mae_cutoff = 0.0435
+    mae_cutoff = 0.043
     logprob_cutoff = np.percentile(C1_train_log_probs, 2.5)
 
     C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
@@ -176,7 +177,7 @@ for i in range(27):
 
     train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
     test_r, test_p = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
-    test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
+    # test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
 
     num_test_bad_mae = len(C1_bad_test_maes)
     num_test_bad_logprob = np.where(C1_bad_test_logprobs < logprob_cutoff)[0].size
@@ -191,8 +192,8 @@ for i in range(27):
         label=f'Train: \n r: {train_r} \n p-value: {train_p}'
     )
     plt.scatter(
-        x=C1_test_force_maes[np.setdiff1d(np.arange(2305), train_idxs.detach().numpy())],
-        y=C1_test_log_probs[np.setdiff1d(np.arange(2305), train_idxs.detach().numpy())],
+        x=C1_test_force_maes,
+        y=C1_test_log_probs,
         color='b',
         label=f'Test all ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
     )
@@ -200,7 +201,7 @@ for i in range(27):
         x=C1_bad_test_maes,
         y=C1_bad_test_logprobs,
         color='r',
-        label=f'Test bad ({num_test_bad_logprob}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
+        label=f'Test bad ({num_test_bad_logprob}/{num_test_bad_mae})'
     )
     plt.axhline(
         logprob_cutoff,
