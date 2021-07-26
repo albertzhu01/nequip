@@ -64,7 +64,7 @@ print(f"# of training points: {len(train_idxs)}")
 
 # Create list of training and test data AtomicData objects
 train_data_list = [dataset.get(idx.item()) for idx in train_idxs]
-test_data_list = [dataset.get(idx) for idx in range(len(dataset_test))]
+test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))]
 
 # Evaluate model on batch of training data and test data
 # Train data
