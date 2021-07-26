@@ -63,7 +63,7 @@ print(f"# of training points: {len(train_idxs)}")
 # Create list of training and test data AtomicData objects
 train_data_list = [dataset.get(idx.item()) for idx in train_idxs]
 test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))
-                  if dataset_test.get(idx) not in train_data_list]
+                  if idx not in train_idxs.tolist()]
 print(f"Train dataset length: {len(train_data_list)}")
 print(f"Test dataset length: {len(test_data_list)}")
 
