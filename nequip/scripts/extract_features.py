@@ -64,12 +64,13 @@ print(f"# of training points: {len(train_idxs)}")
 
 # Create list of training and test data AtomicData objects
 train_data_list = [dataset.get(idx.item()) for idx in train_idxs]
-test_data_list = [dataset.get(idx) for idx in range(len(dataset_test))]
+test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))]
 
 # Evaluate model on batch of training data and test data
 # Train data
 c = Collater.for_dataset(dataset, exclude_keys=[])
 batch = c.collate(train_data_list)
+print("Begin model evaluation on training data...")
 train_out = model(AtomicData.to_AtomicDataDict(batch))
 train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 train_pred_forces = train_out[AtomicDataDict.FORCE_KEY].detach().numpy()
@@ -85,6 +86,7 @@ train_force_maes = np.array(train_force_maes)
 # Test data
 c_test = Collater.for_dataset(dataset_test, exclude_keys=[])
 test_batch = c_test.collate(test_data_list)
+print("Begin model evaluation on test data...")
 test_out = model(AtomicData.to_AtomicDataDict(test_batch))
 test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
 test_pred_forces = test_out[AtomicDataDict.FORCE_KEY].detach().numpy()
