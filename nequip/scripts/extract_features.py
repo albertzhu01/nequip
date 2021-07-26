@@ -165,7 +165,7 @@ for i in range(27):
     C1_train_force_maes = train_force_maes[i:train_tot_atoms:num_atoms]
     C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
 
-    mae_cutoff = 0.065
+    mae_cutoff = 0.0435
     logprob_cutoff = np.percentile(C1_train_log_probs, 2.5)
 
     C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
@@ -191,8 +191,8 @@ for i in range(27):
         label=f'Train: \n r: {train_r} \n p-value: {train_p}'
     )
     plt.scatter(
-        x=C1_test_force_maes,
-        y=C1_test_log_probs,
+        x=C1_test_force_maes[np.setdiff1d(np.arange(2305), train_idxs.detach().numpy())],
+        y=C1_test_log_probs[np.setdiff1d(np.arange(2305), train_idxs.detach().numpy())],
         color='b',
         label=f'Test all ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
     )
