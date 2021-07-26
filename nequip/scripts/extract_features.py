@@ -176,7 +176,7 @@ for i in range(27):
 
     train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
     test_r, test_p = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
-    # test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
+    test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
 
     num_test_bad_mae = len(C1_bad_test_maes)
     num_test_bad_logprob = np.where(C1_bad_test_logprobs < logprob_cutoff)[0].size
@@ -200,7 +200,7 @@ for i in range(27):
         x=C1_bad_test_maes,
         y=C1_bad_test_logprobs,
         color='r',
-        label=f'Test bad 600K ({num_test_bad_logprob}/{num_test_bad_mae})'
+        label=f'Test bad 600K ({num_test_bad_logprob}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
     )
     plt.axhline(
         logprob_cutoff,
