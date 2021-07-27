@@ -161,46 +161,63 @@ gmm.fit(train_features)
 print(gmm.converged_)
 
 # Make scatterplot of log-prob vs. force MAE for train and test data for one atom
-for i in range(27):
+for i in range(num_atoms):
+
+    # Training data force MAEs and log-prob densities for 1 atom
     C1_train_force_maes = train_force_maes[i:train_tot_atoms:num_atoms]
     C1_train_log_probs = gmm.score_samples(train_features[i:train_tot_atoms:num_atoms])
 
+    # 'Not-so-arbitrary' cut-offs for chemical accuracy and uncertainty
     mae_cutoff = 0.043
     logprob_cutoff = np.percentile(C1_train_log_probs, 2.5)
 
+    # Bad (above mae_cutoff) testing data force MAEs and log-prob densities for 1 atom
     C1_test_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
     C1_bad_test_maes_idx = np.where(C1_test_force_maes > mae_cutoff)
     C1_bad_test_maes = C1_test_force_maes[C1_bad_test_maes_idx]
     C1_test_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
     C1_bad_test_logprobs = C1_test_log_probs[C1_bad_test_maes_idx]
 
+    # Good (below mae_cutoff) testing data force MAEs and log-prob densities for 1 atom
+    C1_good_test_mae_idx = np.setdiff1d(np.arange(len(test_data_list)), C1_bad_test_maes_idx)
+    C1_good_test_maes = C1_test_force_maes[C1_good_test_mae_idx]
+    C1_good_test_logprobs = C1_test_log_probs[C1_good_test_mae_idx]
+
+    # r correlation and p-values for train, total test, bad test, and good test data
     train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
     test_r, test_p = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
     test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
+    test_good_r, test_good_p = stats.pearsonr(C1_good_test_maes, C1_good_test_logprobs)
 
+    # Number of good and bad test data points, number of each below log-prob cutoff
     num_test_bad_mae = len(C1_bad_test_maes)
+    num_test_good_mae = len(C1_good_test_maes)
     num_test_bad_logprob = np.where(C1_bad_test_logprobs < logprob_cutoff)[0].size
     num_below_l_cutoff = np.where(C1_test_log_probs < logprob_cutoff)[0].size
+    num_test_good_logprob = num_below_l_cutoff - num_test_bad_logprob
 
+    # Plot everything
     plt.figure()
-    plt.subplots(figsize=(19, 9.5))
+    plt.subplots(figsize=(16, 9))
     plt.scatter(
         x=C1_train_force_maes,
         y=C1_train_log_probs,
         color='k',
-        label=f'Train 300K: \n r: {train_r} \n p-value: {train_p}'
+        label=f'Train 300K: r = {train_r:.3f}, p-value: {train_p:.3f}'
     )
     plt.scatter(
-        x=C1_test_force_maes,
-        y=C1_test_log_probs,
+        x=C1_good_test_maes,
+        y=C1_good_test_logprobs,
         color='b',
-        label=f'Test all 1200K ({num_below_l_cutoff}/{len(test_data_list)}): \n r: {test_r} \n p-value: {test_p}'
+        label=f'Test 1200K good ({num_test_good_logprob}/{num_test_good_mae}): '
+              + f'r = {test_good_r:.3f}, p-value = {test_good_p:.3f}'
     )
     plt.scatter(
         x=C1_bad_test_maes,
         y=C1_bad_test_logprobs,
         color='r',
-        label=f'Test bad 1200K ({num_test_bad_logprob}/{num_test_bad_mae}): \n r: {test_bad_r} \n p-value: {test_bad_p}'
+        label=f'Test 1200K bad ({num_test_bad_logprob}/{num_test_bad_mae}): '
+              + f'r = {test_bad_r:.3f}, p-value = {test_bad_p:.3f}'
     )
     plt.axhline(
         logprob_cutoff,
@@ -209,6 +226,7 @@ for i in range(27):
         label='Uncertainty cutoff (2.5th percentile of training data)'
     )
     plt.axvline(mae_cutoff, color='m', linestyle='--', label='Chemical accuracy cutoff')
+    plt.plot([], [], ' ', label=f"All test data: r = {test_r:.3f}, p = {test_p:.3f}")
     plt.legend()
     plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE (1200K Test)")
     plt.xlabel("Force MAE (eV/A)")
