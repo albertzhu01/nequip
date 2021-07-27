@@ -186,7 +186,7 @@ for i in range(num_atoms):
     # r correlation and p-values for train, total test, bad test, and good test data
     train_r, train_p = stats.pearsonr(C1_train_force_maes, C1_train_log_probs)
     test_r, test_p = stats.pearsonr(C1_test_force_maes, C1_test_log_probs)
-    test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
+    # test_bad_r, test_bad_p = stats.pearsonr(C1_bad_test_maes, C1_bad_test_logprobs)
     test_good_r, test_good_p = stats.pearsonr(C1_good_test_maes, C1_good_test_logprobs)
 
     # Number of good and bad test data points, number of each below log-prob cutoff
@@ -209,15 +209,14 @@ for i in range(num_atoms):
         x=C1_good_test_maes,
         y=C1_good_test_logprobs,
         color='b',
-        label=f'Test 600K good ({num_test_good_logprob}/{num_test_good_mae}): '
+        label=f'Test 300K good ({num_test_good_logprob}/{num_test_good_mae}): '
               + f'r = {test_good_r:.3f}, p-value = {test_good_p:.3f}'
     )
     plt.scatter(
         x=C1_bad_test_maes,
         y=C1_bad_test_logprobs,
         color='r',
-        label=f'Test 600K bad ({num_test_bad_logprob}/{num_test_bad_mae}): '
-              + f'r = {test_bad_r:.3f}, p-value = {test_bad_p:.3f}'
+        label=f'Test 300K bad ({num_test_bad_logprob}/{num_test_bad_mae})'
     )
     plt.axhline(
         logprob_cutoff,
@@ -228,10 +227,10 @@ for i in range(num_atoms):
     plt.axvline(mae_cutoff, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.plot([], [], ' ', label=f"All test data: r = {test_r:.3f}, p-value = {test_p:.3f}")
     plt.legend()
-    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE (600K Test)")
+    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE (300K Test)")
     plt.xlabel("Force MAE (eV/A)")
     plt.ylabel("Log-Probability Density")
-    plt.savefig(f"bpa_atom{i}_logprob_vs_mae_600K.png")
+    plt.savefig(f"bpa_atom{i}_logprob_vs_mae_300K.png")
 
 # Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
 # C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
