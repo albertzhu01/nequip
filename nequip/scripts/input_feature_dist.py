@@ -96,8 +96,8 @@ for i in range(num_atoms):
     plt.figure()
     plt.subplots(figsize=(16, 9))
     plt.scatter(
-        x=input_dists,
-        y=feature_dists,
+        x=input_dists.detach().numpy(),
+        y=feature_dists.detach().numpy(),
     )
     plt.title(f"3BPA Atom Index {i} Feature Distance vs. Input Distance (300K Test)")
     plt.xlabel("Input Distance (A)")
