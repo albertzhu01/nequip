@@ -100,7 +100,7 @@ for i in range(num_atoms):
         x=input_dists.detach().numpy(),
         y=feature_dists.detach().numpy(),
     )
-    plt.title(f"3BPA Atom Index {i} Feature Distance vs. Input Distance (600K Test)")
+    plt.title(f"3BPA Atom Index {i} Feature Distance vs. Input Distance (300K Test)")
     plt.xlabel("Input Distance (A)")
     plt.ylabel("Feature Distance")
-    plt.savefig(f"bpa_atom{i}_i-f-dist_600K.png")
+    plt.savefig(f"bpa_atom{i}_i-f-dist_300K.png")
