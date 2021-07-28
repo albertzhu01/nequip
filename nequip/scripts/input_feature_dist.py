@@ -27,14 +27,6 @@ dataset = dataset_from_config(config)
 config_test = Config.from_file("/n/home10/axzhu/nequip/configs/dataset.yaml")
 dataset_test = dataset_from_config(config_test)
 
-# Load trainer and get training and test data indexes and set up Collater
-trainer = torch.load(path + '/trainer.pth', map_location='cpu')
-train_idxs = trainer['train_idcs']
-print(f"# of training points: {len(train_idxs)}")
-# val_idxs = trainer['val_idcs']
-# print(val_idxs)
-# test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
-
 # Sample two sets of 100 points from the test set
 sample_idxs = torch.randperm(len(dataset_test))[:200]
 sample1 = sample_idxs[:100]
@@ -44,30 +36,7 @@ print(sample2)
 test_sample1 = [dataset_test.get(idx.item()) for idx in sample1]
 test_sample2 = [dataset_test.get(idx.item()) for idx in sample2]
 
-# Create list of training and test data AtomicData objects
-# train_data_list = [dataset.get(idx.item()) for idx in train_idxs]
-# test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))]
-# print(f"Train dataset length: {len(train_data_list)}")
-# print(f"Test dataset length: {len(test_data_list)}")
-
-# Evaluate model on batch of training data and test data
-# Train data
-# c = Collater.for_dataset(dataset, exclude_keys=[])
-# batch = c.collate(train_data_list)
-# print("Begin model evaluation on training data...")
-# train_out = model(AtomicData.to_AtomicDataDict(batch))
-# train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-# train_pred_forces = train_out[AtomicDataDict.FORCE_KEY].detach().numpy()
-# train_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in train_data_list])
-# train_actual_forces = train_a_forces.reshape(-1, train_a_forces.shape[-1])
-# print(f"train_pred_forces shape: {train_pred_forces.shape}")
-# print(f"train_actual_forces shape: {train_actual_forces.shape}")
-# train_force_maes = []
-# for i in range(len(train_pred_forces)):
-#     train_force_maes.append(mean_absolute_error(train_pred_forces[i], train_actual_forces[i]))
-# train_force_maes = np.array(train_force_maes)
-
-# Test data
+# Evaluate model on test data samples and extract atomic positions and features
 c_test = Collater.for_dataset(dataset_test, exclude_keys=[])
 test_batch1 = c_test.collate(test_sample1)
 test_batch2 = c_test.collate(test_sample2)
@@ -75,15 +44,62 @@ print("Begin model evaluation on test data...")
 test_out1 = model(AtomicData.to_AtomicDataDict(test_batch1))
 test_out2 = model(AtomicData.to_AtomicDataDict(test_batch2))
 
-test_pos1 = test_out1[AtomicDataDict.POSITIONS_KEY]
-test_pos2 = test_out2[AtomicDataDict.POSITIONS_KEY]
+test_pos1 = test_out1[AtomicDataDict.POSITIONS_KEY].detach().numpy()
+test_pos2 = test_out2[AtomicDataDict.POSITIONS_KEY].detach().numpy()
 print(f"Atomic positions shape: {test_pos1.shape}")
 
 test_features1 = test_out1[AtomicDataDict.NODE_FEATURES_KEY]
 test_features2 = test_out2[AtomicDataDict.NODE_FEATURES_KEY]
 print(f"Atomic positions shape: {test_features1.shape}")
 
+# Get dimensions of train and test features and number of atoms in molecule
+test_sample_len = len(test_sample1)
 test_tot_atoms, feature_length = test_features1.shape
-num_atoms = test_tot_atoms // len(test_sample1)
+num_atoms = test_tot_atoms // test_sample_len
 print(f"Total test atoms per sample: {test_tot_atoms}")
 print(f"Number of atoms in molecule: {num_atoms}")
+
+# First compute pairwise distances between atoms for each molecule in the test samples
+pos_dists1 = np.zeros((num_atoms, test_sample_len, num_atoms))
+pos_dists2 = np.zeros((num_atoms, test_sample_len, num_atoms))
+for i in range(len(test_sample1)):
+    for j in range(num_atoms):
+        for k in range(j, num_atoms):
+            atom_j1_pos = test_pos1[i * num_atoms + j]
+            atom_k1_pos = test_pos1[i * num_atoms + k]
+            pos_dists1[j][i][k] = np.linalg.norm(atom_k1_pos - atom_j1_pos)
+            pos_dists1[k][i][j] = pos_dists1[j][i][k]
+
+            atom_j2_pos = test_pos2[i * num_atoms + j]
+            atom_k2_pos = test_pos2[i * num_atoms + k]
+            pos_dists2[j][i][k] = np.linalg.norm(atom_k2_pos - atom_j2_pos)
+            pos_dists2[k][i][j] = pos_dists2[j][i][k]
+
+print(f"Atom distances shape: {pos_dists2.shape}")
+
+# Next compute the atomic input and feature distances per atom for all 100 molecules in the 2 test samples
+for i in range(num_atoms):
+    atom_i_dists1 = torch.tensor(pos_dists1[i:i+1])
+    atom_i_dists2 = torch.tensor(pos_dists2[i:i+1])
+    input_dists = torch.cdist(atom_i_dists1, atom_i_dists2).view(-1)
+
+    print(f"Input distances shape: {input_dists.shape}")
+
+    feature_dists = torch.cdist(
+        test_features1[i:test_tot_atoms:num_atoms].view(1, test_sample_len, feature_length),
+        test_features2[i:test_tot_atoms:num_atoms].view(1, test_sample_len, feature_length)
+    ).view(-1)
+
+    print(f"Feature distances shape: {feature_dists.shape}")
+
+    # Plot
+    plt.figure()
+    plt.subplots(figsize=(16, 9))
+    plt.scatter(
+        x=input_dists,
+        y=feature_dists,
+    )
+    plt.title(f"3BPA Atom Index {i} Feature Distance vs. Input Distance (300K Test)")
+    plt.xlabel("Input Distance (A)")
+    plt.ylabel("Feature Distance")
+    plt.savefig(f"bpa_atom{i}_input_feature_dist.png")
