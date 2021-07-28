@@ -82,13 +82,14 @@ for i in range(num_atoms):
     atom_i_dists1 = torch.tensor(pos_dists1[i:i+1])
     atom_i_dists2 = torch.tensor(pos_dists2[i:i+1])
     print(f"Atomic distances shape: {atom_i_dists1.shape}")
-    input_dists = torch.cdist(atom_i_dists1, atom_i_dists2).view(-1)
+    input_dists = torch.cdist(atom_i_dists1, atom_i_dists2, p=2).view(-1)
 
     print(f"Input distances shape: {input_dists.shape}")
 
     feature_dists = torch.cdist(
         test_features1[i:test_tot_atoms:num_atoms].view(1, test_sample_len, feature_length),
-        test_features2[i:test_tot_atoms:num_atoms].view(1, test_sample_len, feature_length)
+        test_features2[i:test_tot_atoms:num_atoms].view(1, test_sample_len, feature_length),
+        p=2
     ).view(-1)
 
     print(f"Feature distances shape: {feature_dists.shape}")
