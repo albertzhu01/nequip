@@ -81,7 +81,7 @@ print(f"Atom distances shape: {pos_dists2.shape}")
 for i in range(num_atoms):
     atom_i_dists1 = torch.tensor(pos_dists1[i:i+1])
     atom_i_dists2 = torch.tensor(pos_dists2[i:i+1])
-    print(f"Atomic distances shape: {atom_i_dists1}")
+    print(f"Atomic distances shape: {atom_i_dists1.shape}")
     input_dists = torch.cdist(atom_i_dists1, atom_i_dists2).view(-1)
 
     print(f"Input distances shape: {input_dists.shape}")
@@ -100,7 +100,7 @@ for i in range(num_atoms):
         x=input_dists.detach().numpy(),
         y=feature_dists.detach().numpy(),
     )
-    plt.title(f"3BPA Atom Index {i} Feature Distance vs. Input Distance (600K Test)")
+    plt.title(f"3BPA Atom Index {i} Feature Distance vs. Input Distance (1200K Test)")
     plt.xlabel("Input Distance (A)")
     plt.ylabel("Feature Distance")
-    plt.savefig(f"bpa_atom{i}_i-f-dist_600K.png")
+    plt.savefig(f"bpa_atom{i}_i-f-dist_1200K.png")
