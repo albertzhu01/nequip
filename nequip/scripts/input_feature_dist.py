@@ -50,7 +50,7 @@ print(f"Atomic positions shape: {test_pos1.shape}")
 
 test_features1 = test_out1[AtomicDataDict.NODE_FEATURES_KEY]
 test_features2 = test_out2[AtomicDataDict.NODE_FEATURES_KEY]
-print(f"Atomic positions shape: {test_features1.shape}")
+print(f"Atomic features shape: {test_features1.shape}")
 
 # Get dimensions of train and test features and number of atoms in molecule
 test_sample_len = len(test_sample1)
@@ -59,7 +59,7 @@ num_atoms = test_tot_atoms // test_sample_len
 print(f"Total test atoms per sample: {test_tot_atoms}")
 print(f"Number of atoms in molecule: {num_atoms}")
 
-# First compute pairwise distances between atoms for each molecule in the test samples
+# First compute pairwise distances between atoms for each molecule in the 2 test samples
 pos_dists1 = np.zeros((num_atoms, test_sample_len, num_atoms))
 pos_dists2 = np.zeros((num_atoms, test_sample_len, num_atoms))
 for i in range(len(test_sample1)):
@@ -81,6 +81,7 @@ print(f"Atom distances shape: {pos_dists2.shape}")
 for i in range(num_atoms):
     atom_i_dists1 = torch.tensor(pos_dists1[i:i+1])
     atom_i_dists2 = torch.tensor(pos_dists2[i:i+1])
+    print(f"Atomic distances shape: {atom_i_dists1}")
     input_dists = torch.cdist(atom_i_dists1, atom_i_dists2).view(-1)
 
     print(f"Input distances shape: {input_dists.shape}")
@@ -99,7 +100,7 @@ for i in range(num_atoms):
         x=input_dists.detach().numpy(),
         y=feature_dists.detach().numpy(),
     )
-    plt.title(f"3BPA Atom Index {i} Feature Distance vs. Input Distance (300K Test)")
+    plt.title(f"3BPA Atom Index {i} Feature Distance vs. Input Distance (600K Test)")
     plt.xlabel("Input Distance (A)")
     plt.ylabel("Feature Distance")
-    plt.savefig(f"bpa_atom{i}_input_feature_dist.png")
+    plt.savefig(f"bpa_atom{i}_i-f-dist_600K.png")
