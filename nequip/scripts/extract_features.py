@@ -203,20 +203,20 @@ for i in range(num_atoms):
         x=C1_good_test_maes,
         y=C1_good_test_logprobs,
         color='b',
-        label=f'Test 300K good ({num_test_good_logprob}/{num_test_good_mae}): '
+        label=f'Test 600K good ({num_test_good_logprob}/{num_test_good_mae}): '
               + f'r = {test_good_r:.3f}, p-value = {test_good_p:.3f}'
     )
     plt.scatter(
         x=C1_bad_test_maes,
         y=C1_bad_test_logprobs,
         color='r',
-        label=f'Test 300K bad ({num_test_bad_logprob}/{num_test_bad_mae})'
+        label=f'Test 600K bad ({num_test_bad_logprob}/{num_test_bad_mae})'
     )
     plt.scatter(
         x=C1_train_force_maes,
         y=C1_train_log_probs,
         color='k',
-        label=f'Train 300K: r = {train_r:.3f}, p-value: {train_p:.3f}'
+        label=f'Train mixed: r = {train_r:.3f}, p-value: {train_p:.3f}'
     )
     plt.axhline(
         logprob_cutoff,
@@ -227,10 +227,10 @@ for i in range(num_atoms):
     plt.axvline(mae_cutoff, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.plot([], [], ' ', label=f"All test data: r = {test_r:.3f}, p-value = {test_p:.3f}")
     plt.legend()
-    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE (300K Test, Mixed Train)")
+    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE (600K Test, Mixed Train)")
     plt.xlabel("Force MAE (eV/A)")
     plt.ylabel("Log-Probability Density")
-    plt.savefig(f"bpa_atom{i}_lp_vs_mae_300K_mix.png")
+    plt.savefig(f"bpa_atom{i}_lp_vs_mae_600K_mix.png")
 
 # Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
 # C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
