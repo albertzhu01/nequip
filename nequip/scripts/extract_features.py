@@ -216,7 +216,7 @@ for i in range(num_atoms):
         x=C1_train_force_maes,
         y=C1_train_log_probs,
         color='k',
-        label=f'Train 300K: r = {train_r:.3f}, p-value: {train_p:.3f}'
+        label=f'Train mixed: r = {train_r:.3f}, p-value: {train_p:.3f}'
     )
     plt.axhline(
         logprob_cutoff,
