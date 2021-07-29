@@ -15,7 +15,7 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 f, ax = plt.subplots(figsize=(19, 9.5))
 
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/nequip/results/bpa/train300K_072321"
+path = "/n/home10/axzhu/nequip/results/bpa_mixed/train_mixed_072721"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 model.eval()
@@ -200,12 +200,6 @@ for i in range(num_atoms):
     plt.figure()
     plt.subplots(figsize=(16, 9))
     plt.scatter(
-        x=C1_train_force_maes,
-        y=C1_train_log_probs,
-        color='k',
-        label=f'Train 300K: r = {train_r:.3f}, p-value: {train_p:.3f}'
-    )
-    plt.scatter(
         x=C1_good_test_maes,
         y=C1_good_test_logprobs,
         color='b',
@@ -218,6 +212,12 @@ for i in range(num_atoms):
         color='r',
         label=f'Test 300K bad ({num_test_bad_logprob}/{num_test_bad_mae})'
     )
+    plt.scatter(
+        x=C1_train_force_maes,
+        y=C1_train_log_probs,
+        color='k',
+        label=f'Train 300K: r = {train_r:.3f}, p-value: {train_p:.3f}'
+    )
     plt.axhline(
         logprob_cutoff,
         color='k',
@@ -227,10 +227,10 @@ for i in range(num_atoms):
     plt.axvline(mae_cutoff, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.plot([], [], ' ', label=f"All test data: r = {test_r:.3f}, p-value = {test_p:.3f}")
     plt.legend()
-    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE (300K Test)")
+    plt.title(f"3BPA Atom Index {i} Log-Probability Density vs. Force MAE (300K Test, Mixed Train)")
     plt.xlabel("Force MAE (eV/A)")
     plt.ylabel("Log-Probability Density")
-    plt.savefig(f"bpa_atom{i}_logprob_vs_mae_300K.png")
+    plt.savefig(f"bpa_atom{i}_lp_vs_mae_300K_mix.png")
 
 # Score samples on training, best 10, and worst 10 features for a particular atom and plot log probs
 # C1_train_log_probs = gmm.score_samples(train_features[0:train_tot_atoms:num_atoms])
