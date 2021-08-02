@@ -5,7 +5,7 @@
 # run_name contains logfiles and saved models
 # process contains processed data sets
 # if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
-root: results/bpa_test1200K
+root: results/bpa_test300K
 run_name: example-run
 seed: 0                                                                           # random number seed for numpy and torch
 restart: false                                                                    # set True for a restarted run
@@ -56,7 +56,7 @@ use_sc: true                                                                    
 # This can often be easier to work with, simply make sure the ASE Atoms object
 # has a calculator for which atoms.get_potential_energy() and atoms.get_forces() are defined
 dataset: ase
-dataset_file_name: ./configs_final/test_1200K.xyz                                # need to be a format accepted by ase.io.read
+dataset_file_name: ./configs_final/test_300K.xyz                                 # need to be a format accepted by ase.io.read
 ase_args:                                                                        # any arguments needed by ase.io.read
   format: extxyz
 
