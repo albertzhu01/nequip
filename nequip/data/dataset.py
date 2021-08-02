@@ -295,7 +295,7 @@ class AtomicInMemoryDataset(AtomicDataset):
         unbiased: bool = True,
         modes: Optional[List[Union[str]]] = None,
     ) -> List[tuple]:
-        if self._indices is not None:
+        if hasattr(self, '_indices') and self._indices is not None:
             selector = torch.as_tensor(self._indices)[::stride]
         else:
             selector = torch.arange(0, self.len(), stride)
