@@ -98,7 +98,7 @@ for i in range(num_atoms):
         x=soap_dists,
         y=feature_dists.detach().numpy(),
     )
-    plt.title(f"3BPA Atom Index {i} Feature Distance vs. SOAP Distance (600K Test)")
+    plt.title(f"3BPA Atom Index {i} Feature Distance vs. SOAP Distance (1200K Test)")
     plt.xlabel("SOAP Distance")
     plt.ylabel("Feature Distance")
-    plt.savefig(f"bpa_atom{i}_soap-dist_600K.png")
+    plt.savefig(f"bpa_atom{i}_soap-dist_1200K.png")
