@@ -51,13 +51,12 @@ test_sample = [dataset_test.get(idx.item()) for idx in sample_idxs]
 bpa_list = []
 for atomic_data in test_sample:
     bpa_list.append(atomic_data.to_ase())
-print(bpa_list)
+# print(bpa_list)
 
 # Create SOAP output for BPA system
 soap_bpa = soap.create(bpa_list)
-print(soap_bpa)
+# print(soap_bpa)
 print(soap_bpa.shape)
-
 print(soap_bpa[:, 0, :].shape)
 
 # Evaluate model on test data samples and extract atomic positions and features
@@ -96,7 +95,7 @@ for i in range(num_atoms):
     plt.figure()
     plt.subplots(figsize=(16, 9))
     plt.scatter(
-        x=soap_dists.detach().numpy(),
+        x=soap_dists,
         y=feature_dists.detach().numpy(),
     )
     plt.title(f"3BPA Atom Index {i} Feature Distance vs. SOAP Distance (300K Test)")
