@@ -13,6 +13,7 @@ from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
 f, ax = plt.subplots(figsize=(19, 9.5))
+torch.manual_seed(0)
 
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
 path = "/n/home10/axzhu/nequip/results/bpa/train300K_072321"
@@ -82,15 +83,18 @@ for i in range(1):
     atom_i_dists1 = torch.tensor(pos_dists1[i:i+1])
     atom_i_dists2 = torch.tensor(pos_dists2[i:i+1])
     print(f"Atomic distances shape: {atom_i_dists1.shape}")
-    input_dists = torch.cdist(atom_i_dists1, atom_i_dists2, p=2).view(-1)
+    input_dists = torch.mul(torch.cdist(atom_i_dists1, atom_i_dists2, p=1).view(-1), 1/26)
 
     print(f"Input distances shape: {input_dists.shape}")
 
-    feature_dists = torch.cdist(
-        test_features1[i:test_tot_atoms:num_atoms].view(1, test_sample_len, feature_length),
-        test_features2[i:test_tot_atoms:num_atoms].view(1, test_sample_len, feature_length),
-        p=2
-    ).view(-1)
+    feature_dists = torch.mul(
+        torch.cdist(
+            test_features1[i:test_tot_atoms:num_atoms].view(1, test_sample_len, feature_length),
+            test_features2[i:test_tot_atoms:num_atoms].view(1, test_sample_len, feature_length),
+            p=1
+        ).view(-1),
+        1/26
+    )
 
     print(f"Feature distances shape: {feature_dists.shape}")
 
