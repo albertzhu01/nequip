@@ -80,7 +80,7 @@ for i in range(num_atoms):
     soap_atom_i = torch.tensor(soap_bpa[:, i, :])
     print(f"Atom {i} SOAP shape: {soap_atom_i.shape}")
 
-    soap_dists = pairwise.cosine_distances(soap_atom_i, soap_atom_i)
+    soap_dists = pairwise.cosine_distances(soap_atom_i, soap_atom_i).reshape(-1)
     print(f"Atom {i} SOAP distances shape: {soap_dists.shape}")
 
     feature_dists = torch.cdist(
