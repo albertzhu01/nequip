@@ -78,7 +78,7 @@ for i in range(len(test_sample1)):
 print(f"Atom distances shape: {pos_dists2.shape}")
 
 # Next compute the atomic input and feature distances per atom for all 100 molecules in the 2 test samples
-for i in range(num_atoms):
+for i in range(1):
     atom_i_dists1 = torch.tensor(pos_dists1[i:i+1])
     atom_i_dists2 = torch.tensor(pos_dists2[i:i+1])
     print(f"Atomic distances shape: {atom_i_dists1.shape}")
