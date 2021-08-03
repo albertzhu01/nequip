@@ -92,17 +92,17 @@ def main(args=None):
         # we know the train and val, get the rest
         all_idcs = set(range(len(dataset)))
         # set operations
-        test_idcs = list(all_idcs - train_idcs - val_idcs)
-        assert set(test_idcs).isdisjoint(train_idcs)
-        assert set(test_idcs).isdisjoint(val_idcs)
+        test_idcs = list(all_idcs)
+        # assert set(test_idcs).isdisjoint(train_idcs)
+        # assert set(test_idcs).isdisjoint(val_idcs)
     else:
         # load from file
         test_idcs = load_file(args.test_indexes)
 
     # Do the stats
-    e_stats = RunningStats()
+    e_stats = RunningStats(reduction='rms')
     e_stats.to(device=device, dtype=torch.get_default_dtype())
-    f_stats = RunningStats(dim=(3,), reduce_dims=(0,))
+    f_stats = RunningStats(dim=(3,), reduce_dims=(0,), reduction='rms')
     f_stats.to(device=device, dtype=torch.get_default_dtype())
 
     batch_i: int = 0
@@ -122,8 +122,8 @@ def main(args=None):
         out = model(AtomicData.to_AtomicDataDict(batch))
         e = out[AtomicDataDict.TOTAL_ENERGY_KEY].detach()
         f = out[AtomicDataDict.FORCE_KEY].detach()
-        e_stats.accumulate_batch((e - batch[AtomicDataDict.TOTAL_ENERGY_KEY]).abs())
-        f_stats.accumulate_batch((f - batch[AtomicDataDict.FORCE_KEY]).abs())
+        e_stats.accumulate_batch((e - batch[AtomicDataDict.TOTAL_ENERGY_KEY]).square())
+        f_stats.accumulate_batch((f - batch[AtomicDataDict.FORCE_KEY]).square())
 
         if since_last_log >= args.log_every:
             print(
