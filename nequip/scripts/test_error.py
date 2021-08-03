@@ -9,7 +9,7 @@ from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.scripts.deploy import load_deployed_model
 from nequip.utils import load_file
 
-from torch_runstats import RunningStats
+from torch_runstats import RunningStats, Reduction
 
 
 def main(args=None):
@@ -100,9 +100,9 @@ def main(args=None):
         test_idcs = load_file(args.test_indexes)
 
     # Do the stats
-    e_stats = RunningStats(reduction='rms')
+    e_stats = RunningStats(reduction=Reduction.RMS)
     e_stats.to(device=device, dtype=torch.get_default_dtype())
-    f_stats = RunningStats(dim=(3,), reduce_dims=(0,), reduction='rms')
+    f_stats = RunningStats(dim=(3,), reduce_dims=(0,), reduction=Reduction.RMS)
     f_stats.to(device=device, dtype=torch.get_default_dtype())
 
     batch_i: int = 0
