@@ -100,9 +100,9 @@ def main(args=None):
         test_idcs = load_file(args.test_indexes)
 
     # Do the stats
-    e_stats = RunningStats()
+    e_stats = RunningStats(reduction='rms')
     e_stats.to(device=device, dtype=torch.get_default_dtype())
-    f_stats = RunningStats(dim=(3,), reduce_dims=(0,))
+    f_stats = RunningStats(dim=(3,), reduce_dims=(0,), reduction='rms')
     f_stats.to(device=device, dtype=torch.get_default_dtype())
 
     batch_i: int = 0
