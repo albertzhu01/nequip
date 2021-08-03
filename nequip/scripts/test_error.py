@@ -122,8 +122,8 @@ def main(args=None):
         out = model(AtomicData.to_AtomicDataDict(batch))
         e = out[AtomicDataDict.TOTAL_ENERGY_KEY].detach()
         f = out[AtomicDataDict.FORCE_KEY].detach()
-        e_stats.accumulate_batch((e - batch[AtomicDataDict.TOTAL_ENERGY_KEY]).square())
-        f_stats.accumulate_batch((f - batch[AtomicDataDict.FORCE_KEY]).square())
+        e_stats.accumulate_batch((e - batch[AtomicDataDict.TOTAL_ENERGY_KEY]).abs())
+        f_stats.accumulate_batch((f - batch[AtomicDataDict.FORCE_KEY]).abs())
 
         if since_last_log >= args.log_every:
             print(
