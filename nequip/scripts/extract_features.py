@@ -67,8 +67,12 @@ train_val_data_list = [dataset.get(idx.item()) for idx in torch.cat((train_idxs,
 train_data_atoms = [atomic_data.to_ase() for atomic_data in train_val_data_list]
 test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))
                   if dataset_test.get(idx).to_ase() not in train_data_atoms]
+test_data_atoms = [atomic_data.to_ase() for atomic_data in test_data_list]
+test_idxs = [idx for idx in range(len(dataset_test)) if dataset_test.get(idx).to_ase() in test_data_atoms]
 print(f"Train + val dataset length: {len(train_val_data_list)}")
 print(f"Test dataset length: {len(test_data_list)}")
+print(f"Test idxs length: {len(test_idxs)}")
+print(test_idxs)
 
 # Evaluate model on batch of training data and test data
 # Train data
