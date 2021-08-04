@@ -15,7 +15,7 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 f, ax = plt.subplots(figsize=(19, 9.5))
 
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/nequip/results/bpa_mixed/train_mixed_072721"
+path = "/n/home10/axzhu/nequip/results/bpa/train300K_072321"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 model.eval()
