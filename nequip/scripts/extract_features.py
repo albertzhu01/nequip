@@ -63,11 +63,11 @@ print(f"# of val points: {len(val_idxs)}")
 # test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
 
 # Create list of training and test data AtomicData objects
-train_data_list = [dataset.get(idx.item()) for idx in train_idxs]
-train_data_atoms = [atomic_data.to_ase() for atomic_data in train_data_list]
+train_val_data_list = [dataset.get(idx.item()) for idx in (train_idxs + val_idxs)]
+train_data_atoms = [atomic_data.to_ase() for atomic_data in train_val_data_list]
 test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))
                   if dataset_test.get(idx).to_ase() not in train_data_atoms]
-print(f"Train dataset length: {len(train_data_list)}")
+print(f"Train + val dataset length: {len(train_val_data_list)}")
 print(f"Test dataset length: {len(test_data_list)}")
 
 # Evaluate model on batch of training data and test data
