@@ -63,7 +63,7 @@ print(f"# of val points: {len(val_idxs)}")
 # test_idxs = [idx for idx in range(len(dataset)) if idx not in train_idxs]
 
 # Create list of training and test data AtomicData objects
-train_val_data_list = [dataset.get(idx.item()) for idx in (train_idxs + val_idxs)]
+train_val_data_list = [dataset.get(idx.item()) for idx in torch.cat((train_idxs, val_idxs))]
 train_data_atoms = [atomic_data.to_ase() for atomic_data in train_val_data_list]
 test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))
                   if dataset_test.get(idx).to_ase() not in train_data_atoms]
