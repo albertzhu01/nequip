@@ -54,7 +54,7 @@ test_idxs = [idx for idx in range(len(dataset_test)) if idx not in torch.cat((tr
 random.shuffle(test_idxs)
 sample_idxs = test_idxs[:100]
 print(sample_idxs)
-test_sample = [dataset_test.get(idx.item()) for idx in sample_idxs]
+test_sample = [dataset_test.get(idx) for idx in sample_idxs]
 
 # Create ASE.Atoms from test set
 bpa_list = []
