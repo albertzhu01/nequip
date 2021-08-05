@@ -73,7 +73,7 @@ test_idxs = [idx for idx in range(len(dataset_test)) if dataset_test.get(idx).to
 print(f"Train + val dataset length: {len(train_val_data_list)}")
 print(f"Test dataset length: {len(test_data_list)}")
 print(f"Test idxs length: {len(test_idxs)}")
-print(test_idxs)
+# print(test_idxs)
 
 # Evaluate model on batch of training data and test data
 # Train data
