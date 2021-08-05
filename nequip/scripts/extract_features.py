@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from ase.visualize import view
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 from scipy import stats
 
 from nequip.utils import Config, dataset_from_config
@@ -77,44 +77,44 @@ print(test_idxs)
 
 # Evaluate model on batch of training data and test data
 # Train data
-# c = Collater.for_dataset(dataset, exclude_keys=[])
-# batch = c.collate(train_data_list)
-# print("Begin model evaluation on training data...")
-# train_out = model(AtomicData.to_AtomicDataDict(batch))
-# train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-# train_pred_forces = train_out[AtomicDataDict.FORCE_KEY].detach().numpy()
-# train_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in train_data_list])
-# train_actual_forces = train_a_forces.reshape(-1, train_a_forces.shape[-1])
-# print(f"train_pred_forces shape: {train_pred_forces.shape}")
-# print(f"train_actual_forces shape: {train_actual_forces.shape}")
-# train_force_maes = []
-# for i in range(len(train_pred_forces)):
-#     train_force_maes.append(mean_absolute_error(train_pred_forces[i], train_actual_forces[i]))
-# train_force_maes = np.array(train_force_maes)
+c = Collater.for_dataset(dataset, exclude_keys=[])
+batch = c.collate(train_data_list)
+print("Begin model evaluation on training data...")
+train_out = model(AtomicData.to_AtomicDataDict(batch))
+train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+train_pred_forces = train_out[AtomicDataDict.FORCE_KEY].detach().numpy()
+train_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in train_data_list])
+train_actual_forces = train_a_forces.reshape(-1, train_a_forces.shape[-1])
+print(f"train_pred_forces shape: {train_pred_forces.shape}")
+print(f"train_actual_forces shape: {train_actual_forces.shape}")
+train_force_maes = []
+for i in range(len(train_pred_forces)):
+    train_force_maes.append(mean_absolute_error(train_pred_forces[i], train_actual_forces[i]))
+train_force_maes = np.array(train_force_maes)
 
 # Test data
-# c_test = Collater.for_dataset(dataset_test, exclude_keys=[])
-# test_batch = c_test.collate(test_data_list)
-# print("Begin model evaluation on test data...")
-# test_out = model(AtomicData.to_AtomicDataDict(test_batch))
-# test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
-# test_pred_forces = test_out[AtomicDataDict.FORCE_KEY].detach().numpy()
-# test_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in test_data_list])
-# test_actual_forces = test_a_forces.reshape(-1, train_a_forces.shape[-1])
-# print(f"test_pred_forces shape: {test_pred_forces.shape}")
-# print(f"test_actual_forces shape: {test_actual_forces.shape}")
-# test_force_maes = []
-# for i in range(len(test_pred_forces)):
-#     test_force_maes.append(mean_absolute_error(test_pred_forces[i], test_actual_forces[i]))
-# test_force_maes = np.array(test_force_maes)
+c_test = Collater.for_dataset(dataset_test, exclude_keys=[])
+test_batch = c_test.collate(test_data_list)
+print("Begin model evaluation on test data...")
+test_out = model(AtomicData.to_AtomicDataDict(test_batch))
+test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
+test_pred_forces = test_out[AtomicDataDict.FORCE_KEY].detach().numpy()
+test_a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in test_data_list])
+test_actual_forces = test_a_forces.reshape(-1, train_a_forces.shape[-1])
+print(f"test_pred_forces shape: {test_pred_forces.shape}")
+print(f"test_actual_forces shape: {test_actual_forces.shape}")
+test_force_maes = []
+for i in range(len(test_pred_forces)):
+    test_force_maes.append(mean_absolute_error(test_pred_forces[i], test_actual_forces[i]))
+test_force_maes = np.array(test_force_maes)
 
 # Get dimensions of train and test features and number of atoms in aspirin
-# train_tot_atoms, feature_length = train_features.shape
-# num_atoms = train_tot_atoms // len(train_data_list)
-# test_tot_atoms, _ = test_features.shape
-# print(f"num_atoms: {num_atoms}")
-# print(f"total train atoms: {train_tot_atoms}")
-# print(f"total test atoms: {test_tot_atoms}")
+train_tot_atoms, feature_length = train_features.shape
+num_atoms = train_tot_atoms // len(train_data_list)
+test_tot_atoms, _ = test_features.shape
+print(f"num_atoms: {num_atoms}")
+print(f"total train atoms: {train_tot_atoms}")
+print(f"total test atoms: {test_tot_atoms}")
 
 # Plot force MAEs for a certain atom
 # plt.plot(test_force_maes[0:test_tot_atoms:num_atoms])
@@ -161,13 +161,50 @@ print(test_idxs)
 #     plt.savefig(f"C{atom_idx + 1}_bw_feature_dist.png")
 
 # Train GMM on training features
-# n_components = np.arange(1, 28)
-# models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
-# bics = [model.fit(train_features).bic(train_features) for model in models]
-# print(f"Number of components with min BIC: {bics.index(min(bics))}")
-# gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
-# gmm.fit(train_features)
-# print(gmm.converged_)
+n_components = np.arange(1, 28)
+models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
+bics = [model.fit(train_features).bic(train_features) for model in models]
+print(f"Number of components with min BIC: {bics.index(min(bics))}")
+gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
+gmm.fit(train_features)
+print(gmm.converged_)
+
+# Plot force MAE and RMSE vs. relative confidence for each atom
+percentiles = np.arange(5, 100, 5)
+for i in range(num_atoms):
+    atom_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
+    atom_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
+    atom_pred_forces = test_pred_forces[i:test_tot_atoms:num_atoms]
+    atom_actual_forces = test_actual_forces[i:test_tot_atoms:num_atoms]
+    f_maes = []
+    f_rmses = []
+
+    for j in np.nditer(percentiles):
+        cutoff_idxs = np.argwhere(atom_log_probs > np.percentile(atom_log_probs, j))
+        f_maes.append(np.mean(atom_force_maes[cutoff_idxs]))
+        f_rmses.append(
+            mean_squared_error(atom_actual_forces[cutoff_idxs], atom_pred_forces[cutoff_idxs], squared=False)
+        )
+
+    plt.figure()
+    plt.subplots(figsize=(16, 9))
+    plt.scatter(
+        x=percentiles,
+        y=f_maes,
+        color='b',
+        label=f'Force MAE'
+    )
+    plt.scatter(
+        x=percentiles,
+        y=f_rmses,
+        color='g',
+        label=f'Force RMSE'
+    )
+    plt.legend()
+    plt.title(f"3BPA Atom Index {i} Error vs. Relative Confidence (300K Test)")
+    plt.xlabel("Confidence Percentile")
+    plt.ylabel("Error (eV/A)")
+    plt.savefig(f"bpa_atom{i}_err_vs_rel-conf_300K.png")
 
 # Make scatterplot of log-prob vs. force MAE for train and test data for one atom
 # for i in range(num_atoms):
