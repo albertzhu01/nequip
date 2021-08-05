@@ -12,6 +12,10 @@ from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
+import random
+random.seed(0)
+
+# Import SOAP
 from dscribe.descriptors import SOAP
 species = ["H", "C", "O", "N"]
 rcut = 6.0
@@ -27,24 +31,27 @@ soap = SOAP(
     lmax=lmax,
 )
 
-f, ax = plt.subplots(figsize=(19, 9.5))
+# Set seed
 torch.manual_seed(0)
 
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/nequip/results/bpa/train300K_072321"
+path = "/n/home10/axzhu/nequip/results/aspirin/example-run"
 
+# Load model
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 model.eval()
 
 # Load a config file
-config = Config.from_file(path + "/config_final.yaml")
-dataset = dataset_from_config(config)
 # config_test = Config.from_file("C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run/config_final.yaml")
-config_test = Config.from_file("/n/home10/axzhu/nequip/configs/dataset.yaml")
+config_test = Config.from_file(path + "/config_final.yaml")
 dataset_test = dataset_from_config(config_test)
+trainer = torch.load(path + '/trainer.pth', map_location='cpu')
+train_idxs = trainer['train_idcs']
+val_idxs = trainer['val_idcs']
+test_idxs = [idx for idx in range(len(dataset_test)) if idx not in torch.cat((train_idxs, val_idxs))]
 
 # Sample 100 points from the test set
-sample_idxs = torch.randperm(len(dataset_test))[:100]
+sample_idxs = random.shuffle(test_idxs)[:100]
 test_sample = [dataset_test.get(idx.item()) for idx in sample_idxs]
 
 # Create ASE.Atoms from test set
@@ -59,12 +66,11 @@ soap_bpa = soap.create(bpa_list)
 print(soap_bpa.shape)
 print(soap_bpa[:, 0, :].shape)
 
-# Evaluate model on test data samples and extract atomic positions and features
+# Evaluate model on test data samples and extract atomic features
 c_test = Collater.for_dataset(dataset_test, exclude_keys=[])
 test_batch = c_test.collate(test_sample)
 print("Begin model evaluation on test data...")
 test_out = model(AtomicData.to_AtomicDataDict(test_batch))
-
 test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY]
 print(f"Atomic features shape: {test_features.shape}")
 
@@ -98,7 +104,7 @@ for i in range(num_atoms):
         x=soap_dists,
         y=feature_dists.detach().numpy(),
     )
-    plt.title(f"3BPA Atom Index {i} Feature Distance vs. SOAP Distance (1200K Test)")
+    plt.title(f"Aspirin Atom Index {i} Feature Distance vs. SOAP Distance")
     plt.xlabel("SOAP Distance")
     plt.ylabel("Feature Distance")
-    plt.savefig(f"bpa_atom{i}_soap-dist_1200K.png")
+    plt.savefig(f"aspirin_atom{i}_soap-dist.png")
