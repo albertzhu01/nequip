@@ -170,7 +170,7 @@ gmm.fit(train_features)
 print(gmm.converged_)
 
 # Plot force MAE and RMSE vs. relative confidence for each atom
-percentiles = np.arange(5, 100, 5)
+percentiles = np.arange(0, 100, 5)
 for i in range(num_atoms):
     atom_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
     atom_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
@@ -180,7 +180,7 @@ for i in range(num_atoms):
     # f_rmses = []
 
     for j in np.nditer(percentiles):
-        cutoff_idxs = np.argwhere(atom_log_probs > np.percentile(atom_log_probs, j))
+        cutoff_idxs = np.argwhere(atom_log_probs >= np.percentile(atom_log_probs, j))
         f_maes.append(np.mean(atom_force_maes[cutoff_idxs]))
         # f_rmses.append(
         #     mean_squared_error(atom_actual_forces[cutoff_idxs], atom_pred_forces[cutoff_idxs], squared=False)
