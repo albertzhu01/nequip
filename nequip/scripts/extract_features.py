@@ -173,6 +173,7 @@ print(gmm.converged_)
 percentiles = np.arange(0, 100, 5)
 for i in range(num_atoms):
     atom_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
+    print(f"atom_log_probs shape: {atom_log_probs.shape}")
     atom_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
     atom_pred_forces = test_pred_forces[i:test_tot_atoms:num_atoms]
     print(f"atom_pred_forces shape: {atom_pred_forces.shape}")
@@ -182,6 +183,7 @@ for i in range(num_atoms):
     f_rmses = []
 
     for j in np.nditer(percentiles):
+        print(f"percentile: {np.percentile(atom_log_probs, j)}")
         cutoff_idxs = np.argwhere(atom_log_probs >= np.percentile(atom_log_probs, j))
         print(f"cutoff_idxs shape: {cutoff_idxs.shape}")
         f_maes.append(np.mean(atom_force_maes[cutoff_idxs]))
