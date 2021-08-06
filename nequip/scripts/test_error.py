@@ -144,7 +144,7 @@ def main(args=None):
 
     # Determine the test set
     # this makes no sense if a dataset is given seperately
-    if train_idcs is not None and dataset_is_from_training:
+    if train_idcs is not None:
         # we know the train and val, get the rest
         all_idcs = set(range(len(dataset)))
         # set operations
