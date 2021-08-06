@@ -176,16 +176,16 @@ for i in range(num_atoms):
     atom_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
     atom_pred_forces = test_pred_forces[i:test_tot_atoms:num_atoms]
     print(f"atom_pred_forces shape: {atom_pred_forces.shape}")
-    print(f"atom_pred_forces[cutoff_idxs] shape: {atom_pred_forces[cutoff_idxs].shape}")
     atom_actual_forces = test_actual_forces[i:test_tot_atoms:num_atoms]
     print(f"atom_actual_forces shape: {atom_actual_forces.shape}")
-    print(f"atom_actual_forces[cutoff_idxs] shape: {atom_actual_forces[cutoff_idxs].shape}")
     f_maes = []
     f_rmses = []
 
     for j in np.nditer(percentiles):
         cutoff_idxs = np.argwhere(atom_log_probs >= np.percentile(atom_log_probs, j))
         f_maes.append(np.mean(atom_force_maes[cutoff_idxs]))
+        print(f"atom_pred_forces[cutoff_idxs] shape: {atom_pred_forces[cutoff_idxs].shape}")
+        print(f"atom_actual_forces[cutoff_idxs] shape: {atom_actual_forces[cutoff_idxs].shape}")
         print(f"f_rmses: {f_rmses}")
         f_rmses.append(
             mean_squared_error(atom_actual_forces[cutoff_idxs], atom_pred_forces[cutoff_idxs], squared=False)
