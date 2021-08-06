@@ -184,7 +184,7 @@ for i in range(num_atoms):
 
     for j in np.nditer(percentiles):
         print(f"percentile: {np.percentile(atom_log_probs, j)}")
-        cutoff_idxs = np.argwhere(atom_log_probs >= np.percentile(atom_log_probs, j))
+        cutoff_idxs = np.argwhere(atom_log_probs >= np.percentile(atom_log_probs, j)).reshape(-1)
         print(f"cutoff_idxs shape: {cutoff_idxs.shape}")
         f_maes.append(np.mean(atom_force_maes[cutoff_idxs]))
         print(f"atom_pred_forces[cutoff_idxs] shape: {atom_pred_forces[cutoff_idxs].shape}")
