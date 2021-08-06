@@ -173,23 +173,23 @@ print(gmm.converged_)
 percentiles = np.arange(0, 100, 5)
 for i in range(num_atoms):
     atom_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
-    print(f"atom_log_probs shape: {atom_log_probs.shape}")
+    # print(f"atom_log_probs shape: {atom_log_probs.shape}")
     atom_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
     atom_pred_forces = test_pred_forces[i:test_tot_atoms:num_atoms]
-    print(f"atom_pred_forces shape: {atom_pred_forces.shape}")
+    # print(f"atom_pred_forces shape: {atom_pred_forces.shape}")
     atom_actual_forces = test_actual_forces[i:test_tot_atoms:num_atoms]
-    print(f"atom_actual_forces shape: {atom_actual_forces.shape}")
+    # print(f"atom_actual_forces shape: {atom_actual_forces.shape}")
     f_maes = []
     f_rmses = []
 
     for j in np.nditer(percentiles):
-        print(f"percentile: {np.percentile(atom_log_probs, j)}")
+        # print(f"percentile: {np.percentile(atom_log_probs, j)}")
         cutoff_idxs = np.argwhere(atom_log_probs >= np.percentile(atom_log_probs, j)).reshape(-1)
-        print(f"cutoff_idxs shape: {cutoff_idxs.shape}")
+        # print(f"cutoff_idxs shape: {cutoff_idxs.shape}")
         f_maes.append(np.mean(atom_force_maes[cutoff_idxs]))
-        print(f"atom_pred_forces[cutoff_idxs] shape: {atom_pred_forces[cutoff_idxs].shape}")
-        print(f"atom_actual_forces[cutoff_idxs] shape: {atom_actual_forces[cutoff_idxs].shape}")
-        print(f"f_rmses: {f_rmses}")
+        # print(f"atom_pred_forces[cutoff_idxs] shape: {atom_pred_forces[cutoff_idxs].shape}")
+        # print(f"atom_actual_forces[cutoff_idxs] shape: {atom_actual_forces[cutoff_idxs].shape}")
+        # print(f"f_rmses: {f_rmses}")
         f_rmses.append(
             mean_squared_error(atom_actual_forces[cutoff_idxs], atom_pred_forces[cutoff_idxs], squared=False)
         )
@@ -211,10 +211,10 @@ for i in range(num_atoms):
         label=f'Force RMSE'
     )
     plt.legend(fontsize=14)
-    plt.title(f"3BPA Atom Index {i} Error vs. Relative Confidence (300K Train, 1200K Test)", fontsize=18)
+    plt.title(f"3BPA Atom Index {i} Error vs. Relative Confidence (300K Train, 600K Test)", fontsize=18)
     plt.xlabel("Confidence Percentile", fontsize=16)
     plt.ylabel("Error (eV/A)", fontsize=16)
-    plt.savefig(f"bpa_atom{i}_err_vs_rel-conf_1200K.png")
+    plt.savefig(f"bpa_atom{i}_err_vs_rel-conf_600K.png")
 
 # Make scatterplot of log-prob vs. force MAE for train and test data for one atom
 # for i in range(num_atoms):
