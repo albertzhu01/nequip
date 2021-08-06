@@ -28,6 +28,7 @@ default_config = dict(
     model_initializers=[],
     dataset_statistics_stride=1,
     default_dtype="float32",
+    allow_tf32=True,
     verbose="INFO",
     model_debug_mode=False,
     equivariance_test=False,
@@ -79,6 +80,14 @@ def _load_callable(obj: Union[str, Callable]) -> Callable:
 
 def fresh_start(config):
     # = Set global state =
+    # Set TF32 support
+    # See https://pytorch.org/docs/stable/notes/cuda.html#tensorfloat-32-tf32-on-ampere-devices
+    if torch.cuda.is_available():
+        if torch.torch.backends.cuda.matmul.allow_tf32 and not config.allow_tf32:
+            # it is enabled, and we dont want it to, so disable:
+            torch.backends.cuda.matmul.allow_tf32 = False
+            torch.backends.cudnn.allow_tf32 = False
+
     if config.model_debug_mode:
         set_irreps_debug(enabled=True)
     torch.set_default_dtype(
@@ -139,7 +148,10 @@ def fresh_start(config):
     stats = trainer.dataset_train.statistics(
         fields=stats_fields, modes=stats_modes, stride=config.dataset_statistics_stride
     )
-    ((energies_mean, energies_std), (allowed_species, Z_count),) = stats[:2]
+    (
+        (energies_mean, energies_std),
+        (allowed_species, Z_count),
+    ) = stats[:2]
     if force_training:
         # Scale by the force std instead
         force_rms = stats[2][0]
@@ -209,10 +221,15 @@ def fresh_start(config):
     # == Build the model ==
     final_model = RescaleOutput(
         model=core_model,
-        scale_keys=[AtomicDataDict.TOTAL_ENERGY_KEY, AtomicDataDict.PER_ATOM_ENERGY_KEY]
+        scale_keys=[AtomicDataDict.TOTAL_ENERGY_KEY]
         + (
             [AtomicDataDict.FORCE_KEY]
             if AtomicDataDict.FORCE_KEY in core_model.irreps_out
+            else []
+        )
+        + (
+            [AtomicDataDict.PER_ATOM_ENERGY_KEY]
+            if AtomicDataDict.PER_ATOM_ENERGY_KEY in core_model.irreps_out
             else []
         ),
         scale_by=global_scale,
