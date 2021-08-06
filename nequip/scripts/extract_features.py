@@ -94,7 +94,7 @@ train_force_maes = np.array(train_force_maes)
 
 # Test data
 c_test = Collater.for_dataset(dataset_test, exclude_keys=[])
-test_batch = c_test.collate(test_data_list)
+test_batch = c_test.collate(test_data_list[:10])
 print("Begin model evaluation on test data...")
 test_out = model(AtomicData.to_AtomicDataDict(test_batch))
 test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
@@ -175,7 +175,11 @@ for i in range(num_atoms):
     atom_log_probs = gmm.score_samples(test_features[i:test_tot_atoms:num_atoms])
     atom_force_maes = test_force_maes[i:test_tot_atoms:num_atoms]
     atom_pred_forces = test_pred_forces[i:test_tot_atoms:num_atoms]
+    print(f"atom_pred_forces shape: {atom_pred_forces.shape}")
+    print(f"atom_pred_forces[cutoff_idxs] shape: {atom_pred_forces[cutoff_idxs].shape}")
     atom_actual_forces = test_actual_forces[i:test_tot_atoms:num_atoms]
+    print(f"atom_actual_forces shape: {atom_actual_forces.shape}")
+    print(f"atom_actual_forces[cutoff_idxs] shape: {atom_actual_forces[cutoff_idxs].shape}")
     f_maes = []
     # f_rmses = []
 
