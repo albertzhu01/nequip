@@ -78,7 +78,7 @@ print(f"Test idxs length: {len(test_idxs)}")
 # Evaluate model on batch of training data and test data
 # Train data
 c = Collater.for_dataset(dataset, exclude_keys=[])
-batch = c.collate(train_data_list[:10])
+batch = c.collate(train_data_list)
 print("Begin model evaluation on training data...")
 train_out = model(AtomicData.to_AtomicDataDict(batch))
 train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
@@ -94,7 +94,7 @@ train_force_maes = np.array(train_force_maes)
 
 # Test data
 c_test = Collater.for_dataset(dataset_test, exclude_keys=[])
-test_batch = c_test.collate(test_data_list[:10])
+test_batch = c_test.collate(test_data_list)
 print("Begin model evaluation on test data...")
 test_out = model(AtomicData.to_AtomicDataDict(test_batch))
 test_features = test_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
@@ -110,7 +110,7 @@ test_force_maes = np.array(test_force_maes)
 
 # Get dimensions of train and test features and number of atoms in aspirin
 train_tot_atoms, feature_length = train_features.shape
-num_atoms = train_tot_atoms // len(train_data_list[:10])
+num_atoms = train_tot_atoms // len(train_data_list)
 test_tot_atoms, _ = test_features.shape
 print(f"num_atoms: {num_atoms}")
 print(f"total train atoms: {train_tot_atoms}")
@@ -194,25 +194,25 @@ for i in range(num_atoms):
             mean_squared_error(atom_actual_forces[cutoff_idxs], atom_pred_forces[cutoff_idxs], squared=False)
         )
 
-    # plt.figure()
-    # plt.subplots(figsize=(16, 9))
-    # plt.scatter(
-    #     x=percentiles,
-    #     y=f_maes,
-    #     color='b',
-    #     label=f'Force MAE'
-    # )
-    # plt.scatter(
-    #     x=percentiles,
-    #     y=f_rmses,
-    #     color='g',
-    #     label=f'Force RMSE'
-    # )
-    # plt.legend()
-    # plt.title(f"3BPA Atom Index {i} Error vs. Relative Confidence (1200K Test)")
-    # plt.xlabel("Confidence Percentile")
-    # plt.ylabel("Error (eV/A)")
-    # plt.savefig(f"bpa_atom{i}_err_vs_rel-conf_1200K.png")
+    plt.figure()
+    plt.subplots(figsize=(16, 9))
+    plt.scatter(
+        x=percentiles,
+        y=f_maes,
+        color='b',
+        label=f'Force MAE'
+    )
+    plt.scatter(
+        x=percentiles,
+        y=f_rmses,
+        color='g',
+        label=f'Force RMSE'
+    )
+    plt.legend(fontsize=14)
+    plt.title(f"3BPA Atom Index {i} Error vs. Relative Confidence (300K Train, 1200K Test)", fontsize=18)
+    plt.xlabel("Confidence Percentile", fontsize=16)
+    plt.ylabel("Error (eV/A)", fontsize=16)
+    plt.savefig(f"bpa_atom{i}_err_vs_rel-conf_1200K.png")
 
 # Make scatterplot of log-prob vs. force MAE for train and test data for one atom
 # for i in range(num_atoms):
