@@ -78,7 +78,7 @@ print(f"Test idxs length: {len(test_idxs)}")
 # Evaluate model on batch of training data and test data
 # Train data
 c = Collater.for_dataset(dataset, exclude_keys=[])
-batch = c.collate(train_data_list)
+batch = c.collate(train_data_list[:10])
 print("Begin model evaluation on training data...")
 train_out = model(AtomicData.to_AtomicDataDict(batch))
 train_features = train_out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
@@ -181,34 +181,35 @@ for i in range(num_atoms):
     print(f"atom_actual_forces shape: {atom_actual_forces.shape}")
     print(f"atom_actual_forces[cutoff_idxs] shape: {atom_actual_forces[cutoff_idxs].shape}")
     f_maes = []
-    # f_rmses = []
+    f_rmses = []
 
     for j in np.nditer(percentiles):
         cutoff_idxs = np.argwhere(atom_log_probs >= np.percentile(atom_log_probs, j))
         f_maes.append(np.mean(atom_force_maes[cutoff_idxs]))
-        # f_rmses.append(
-        #     mean_squared_error(atom_actual_forces[cutoff_idxs], atom_pred_forces[cutoff_idxs], squared=False)
-        # )
+        print(f"f_rmses: {f_rmses}")
+        f_rmses.append(
+            mean_squared_error(atom_actual_forces[cutoff_idxs], atom_pred_forces[cutoff_idxs], squared=False)
+        )
 
-    plt.figure()
-    plt.subplots(figsize=(16, 9))
-    plt.scatter(
-        x=percentiles,
-        y=f_maes,
-        color='b',
-        label=f'Force MAE'
-    )
+    # plt.figure()
+    # plt.subplots(figsize=(16, 9))
+    # plt.scatter(
+    #     x=percentiles,
+    #     y=f_maes,
+    #     color='b',
+    #     label=f'Force MAE'
+    # )
     # plt.scatter(
     #     x=percentiles,
     #     y=f_rmses,
     #     color='g',
     #     label=f'Force RMSE'
     # )
-    plt.legend()
-    plt.title(f"3BPA Atom Index {i} Error vs. Relative Confidence (1200K Test)")
-    plt.xlabel("Confidence Percentile")
-    plt.ylabel("Error (eV/A)")
-    plt.savefig(f"bpa_atom{i}_err_vs_rel-conf_1200K.png")
+    # plt.legend()
+    # plt.title(f"3BPA Atom Index {i} Error vs. Relative Confidence (1200K Test)")
+    # plt.xlabel("Confidence Percentile")
+    # plt.ylabel("Error (eV/A)")
+    # plt.savefig(f"bpa_atom{i}_err_vs_rel-conf_1200K.png")
 
 # Make scatterplot of log-prob vs. force MAE for train and test data for one atom
 # for i in range(num_atoms):
