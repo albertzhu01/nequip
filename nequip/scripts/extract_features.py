@@ -196,16 +196,18 @@ for i in range(num_atoms):
 
     plt.figure()
     plt.subplots(figsize=(16, 9))
-    plt.scatter(
-        x=percentiles,
-        y=f_maes,
+    plt.plot(
+        percentiles,
+        f_maes,
         color='b',
+        marker='o',
         label=f'Force MAE'
     )
-    plt.scatter(
-        x=percentiles,
-        y=f_rmses,
+    plt.plot(
+        percentiles,
+        f_rmses,
         color='g',
+        marker='o',
         label=f'Force RMSE'
     )
     plt.legend(fontsize=14)
