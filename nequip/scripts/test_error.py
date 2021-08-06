@@ -148,9 +148,9 @@ def main(args=None):
         # we know the train and val, get the rest
         all_idcs = set(range(len(dataset)))
         # set operations
-        test_idcs = list(all_idcs - train_idcs - val_idcs)
-        assert set(test_idcs).isdisjoint(train_idcs)
-        assert set(test_idcs).isdisjoint(val_idcs)
+        test_idcs = list(all_idcs)
+        # assert set(test_idcs).isdisjoint(train_idcs)
+        # assert set(test_idcs).isdisjoint(val_idcs)
         print(
             f"Using training dataset minus training and validation frames, yielding a test set size of {len(test_idcs)} frames.",
             file=sys.stderr,
