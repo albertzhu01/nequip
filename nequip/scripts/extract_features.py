@@ -110,7 +110,7 @@ test_force_maes = np.array(test_force_maes)
 
 # Get dimensions of train and test features and number of atoms in aspirin
 train_tot_atoms, feature_length = train_features.shape
-num_atoms = train_tot_atoms // len(train_data_list)
+num_atoms = train_tot_atoms // len(train_data_list[:10])
 test_tot_atoms, _ = test_features.shape
 print(f"num_atoms: {num_atoms}")
 print(f"total train atoms: {train_tot_atoms}")
