@@ -211,10 +211,10 @@ for i in range(num_atoms):
         label=f'Force RMSE'
     )
     plt.legend(fontsize=14)
-    plt.title(f"3BPA Atom Index {i} Error vs. Relative Confidence (300K Train, 600K Test)", fontsize=18)
+    plt.title(f"3BPA Atom Index {i} Error vs. Relative Confidence (300K Train, 300K Test)", fontsize=18)
     plt.xlabel("Confidence Percentile", fontsize=16)
     plt.ylabel("Error (eV/A)", fontsize=16)
-    plt.savefig(f"bpa_atom{i}_err_vs_rel-conf_600K.png")
+    plt.savefig(f"bpa_atom{i}_err_vs_rel-conf_300K.png")
 
 # Make scatterplot of log-prob vs. force MAE for train and test data for one atom
 # for i in range(num_atoms):
