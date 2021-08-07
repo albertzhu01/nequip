@@ -15,7 +15,7 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 f, ax = plt.subplots(figsize=(19, 9.5))
 
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
-path = "/n/home10/axzhu/nequip/results/bpa/train300K_072321"
+path = "/n/home10/axzhu/nequip/results/bpa_mixed/train_mixed_072721"
 
 model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
 model.eval()
@@ -49,7 +49,7 @@ model.eval()
 # Load a config file
 config = Config.from_file(path + "/config_final.yaml")
 dataset = dataset_from_config(config)
-config_test = Config.from_file("/n/home10/axzhu/nequip/configs/dataset.yaml")
+config_test = Config.from_file("/n/home10/axzhu/nequip/configs/bpa_1200K.yaml")
 dataset_test = dataset_from_config(config_test)
 
 # Load trainer and get training and test data indexes and set up Collater
