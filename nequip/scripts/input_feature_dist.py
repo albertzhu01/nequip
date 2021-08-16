@@ -25,7 +25,7 @@ model.eval()
 config = Config.from_file(path + "/config_final.yaml")
 dataset = dataset_from_config(config)
 # config_test = Config.from_file("C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run/config_final.yaml")
-config_test = Config.from_file("/n/home10/axzhu/nequip/configs/dataset.yaml")
+config_test = Config.from_file("/n/home10/axzhu/nequip/configs/bpa_1200K.yaml")
 dataset_test = dataset_from_config(config_test)
 
 # Sample two sets of 100 points from the test set
