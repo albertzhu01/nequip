@@ -171,7 +171,7 @@ def main():
         atom_force_maes_mix_300K = tr_mix_te_300K_mae[i:tr_mix_te_300K_atoms:num_atoms]
         f_maes_mix_300K = compute_maes(atom_logprobs_mix_300K, atom_force_maes_mix_300K)
 
-        atom_logprobs_mix_600K = gmm_mixed.score_samples(tr_mix_te_600K_atoms[i:tr_mix_te_600K_atoms:num_atoms])
+        atom_logprobs_mix_600K = gmm_mixed.score_samples(tr_mix_te_600K_feat[i:tr_mix_te_600K_atoms:num_atoms])
         atom_force_maes_mix_600K = tr_mix_te_600K_mae[i:tr_mix_te_600K_atoms:num_atoms]
         f_maes_mix_600K = compute_maes(atom_logprobs_mix_600K, atom_force_maes_mix_600K)
 
