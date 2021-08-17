@@ -50,7 +50,7 @@ def main():
     def evaluate(dataset, data_list, test_train, model):
         c = Collater.for_dataset(dataset, exclude_keys=[])
         if test_train == 'test':
-            batch = c.collate(data_list[:100])
+            batch = c.collate(data_list)
         else:
             batch = c.collate(data_list)
         print(f"Begin model evaluation on {test_train} data...")
