@@ -49,7 +49,10 @@ def main():
 
     def evaluate(dataset, data_list, test_train, model):
         c = Collater.for_dataset(dataset, exclude_keys=[])
-        batch = c.collate(data_list)
+        if test_train == 'test':
+            batch = c.collate(data_list[:100])
+        else:
+            batch = c.collate(data_list)
         print(f"Begin model evaluation on {test_train} data...")
         out = model(AtomicData.to_AtomicDataDict(batch))
         features = out[AtomicDataDict.NODE_FEATURES_KEY].detach().numpy()
