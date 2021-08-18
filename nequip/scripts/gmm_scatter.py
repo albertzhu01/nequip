@@ -34,10 +34,24 @@ def main(args=None):
         type=Path,
         default=None
     )
+    parser.add_argument(
+        "--train_temp",
+        help="Temperature of training data",
+        type=str,
+        default="300K"
+    )
+    parser.add_argument(
+        "--test_temp",
+        help="Temperature of test data",
+        type=str,
+        default="300K"
+    )
 
     args = parser.parse_args(args=args)
     path = str(args.train_dir)
     system = str(args.chemical_system)
+    train_temp = args.train_temp
+    test_temp = args.test_temp
 
     # Load model
     model = torch.load(path + "/best_model.pth", map_location=torch.device('cpu'))
@@ -143,23 +157,25 @@ def main(args=None):
         # Plot everything
         plt.figure()
         plt.subplots(figsize=(16, 9))
+        plt.rc('xtick', labelsize=14)
+        plt.rc('ytick', labelsize=14)
         plt.scatter(
             x=atom_i_good_test_maes,
             y=atom_i_good_test_logprobs,
             color='b',
-            label=f'Test 300K good ({num_test_good_logprob}/{num_test_good_mae})'
+            label=f'Test {test_temp} good ({num_test_good_logprob}/{num_test_good_mae})'
         )
         plt.scatter(
             x=atom_i_bad_test_maes,
             y=atom_i_bad_test_logprobs,
             color='r',
-            label=f'Test 300K bad ({num_test_bad_logprob}/{num_test_bad_mae})'
+            label=f'Test {test_temp} bad ({num_test_bad_logprob}/{num_test_bad_mae})'
         )
         plt.scatter(
             x=atom_i_train_force_maes,
             y=atom_i_train_log_probs,
             color='k',
-            label=f'Train 300K'
+            label=f'Train {train_temp}'
         )
         plt.axhline(
             logprob_cutoff,
@@ -170,7 +186,10 @@ def main(args=None):
         plt.axvline(mae_cutoff, color='m', linestyle='--', label='Chemical accuracy cutoff')
         plt.plot([], [], ' ', label=f"All test data: r = {test_r:.3f}")
         plt.legend(fontsize=14)
-        plt.title(f"Atom Index {i} Log-Probability Density vs. Force MAE ({system})", fontsize=18)
+        plt.title(
+            f"Atom Index {i} Log-Probability Density vs. Force MAE (Train {train_temp}, Test {test_temp})",
+            fontsize=18
+        )
         plt.xlabel("Force MAE (eV/A)", fontsize=16)
         plt.ylabel("Log-Probability Density", fontsize=16)
         plt.savefig(f"atom{i}_logprob_vs_mae_{system}.png")
