@@ -85,7 +85,7 @@ plt.plot(
 
 plt.xlabel("Frame Number (After First 1000)", fontsize=18)
 plt.ylabel("Energy (kcal/mol)")
-ax.set_yscale("log")
+ax.set_yscale("symlog")
 plt.title("Total and Atomic Energies of Aspirin")
 plt.legend()
 plt.savefig("aspirin_atomic_energies.png")
