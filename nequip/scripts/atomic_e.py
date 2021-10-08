@@ -70,7 +70,9 @@ aspirin_atoms = [
         "H8",
     ]
 
+print(atomic_energies.shape)
 for i in range(len(aspirin_atoms)):
+    print(atomic_energies[:][i].shape)
     plt.plot(
         atomic_energies[:][i],
         label=aspirin_atoms[i]
