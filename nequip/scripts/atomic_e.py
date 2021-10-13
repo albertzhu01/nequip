@@ -32,7 +32,7 @@ print(f"# of training points: {len(train_idxs)}")
 print(f"# of val points: {len(val_idxs)}")
 
 # Create list of training and test data AtomicData objects
-test_idxs = [idx for idx in range(10000) if idx not in torch.cat((train_idxs, val_idxs)).tolist()]
+test_idxs = [idx for idx in range(11000) if idx not in torch.cat((train_idxs, val_idxs)).tolist()]
 test_data_list = [dataset.get(idx) for idx in test_idxs]
 print(f"Test idxs length: {len(test_idxs)}")
 # print(test_idxs)
@@ -71,21 +71,21 @@ aspirin_atoms = [
     ]
 
 print(atomic_energies.shape)
-for i in range(len(aspirin_atoms)):
+for i in [0, 1, 2, 3, 4, 5, 6, 10, 11]:
     print(atomic_energies[i:len(atomic_energies):len(aspirin_atoms)].shape)
     plt.plot(
         atomic_energies[i:len(atomic_energies):len(aspirin_atoms)],
         label=aspirin_atoms[i]
     )
 
-plt.plot(
-    total_energies,
-    label="Total energy"
-)
+# plt.plot(
+#     total_energies,
+#     label="Total energy"
+# )
 
 plt.xlabel("Frame Number (After First 1000)", fontsize=18)
 plt.ylabel("Energy (kcal/mol)")
 ax.set_yscale("symlog")
-plt.title("Total and Atomic Energies of Aspirin")
+plt.title("Carbon Atomic Energies of Aspirin")
 plt.legend()
-plt.savefig("aspirin_tot_atomic_energies.png")
+plt.savefig("aspirin_C_energies_10000.png")
