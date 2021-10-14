@@ -87,6 +87,6 @@ for i in [3, 13]:
 plt.xlabel("Frame Number (After First 1000)", fontsize=18)
 plt.ylabel("Energy (kcal/mol)")
 # ax.set_yscale("symlog")
-plt.title("Hydrogen Atomic Energies of Aspirin")
+plt.title("C4 and H1 Atomic Energies of Aspirin")
 plt.legend()
-plt.savefig("aspirin_H_energies_10000.png")
+plt.savefig("aspirin_C4H1_energies_500.png")
