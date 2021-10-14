@@ -71,7 +71,7 @@ aspirin_atoms = [
     ]
 
 print(atomic_energies.shape)
-for i in [7, 8, 9, 12]:
+for i in range(13, 21):
     print(atomic_energies[i:len(atomic_energies):len(aspirin_atoms)].shape)
     plt.plot(
         atomic_energies[i:len(atomic_energies):len(aspirin_atoms)],

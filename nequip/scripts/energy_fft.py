@@ -78,7 +78,7 @@ for i in [7, 8, 9, 12]:
     T = 0.5
     x = np.linspace(0.0, N * T, N)
     y = atomic_energies[i:len(atomic_energies):len(aspirin_atoms)]
-    xf = np.linspace(0.0, 1.0 / (2.0 * T), N / 2)
+    xf = np.linspace(0.0, 1.0 / (2.0 * T), N // 2)
     yf = fft(y)
     plt.grid()
     plt.plot(
