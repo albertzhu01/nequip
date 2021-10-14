@@ -71,7 +71,7 @@ aspirin_atoms = [
     ]
 
 print(atomic_energies.shape)
-for i in [0, 1, 2, 3, 4, 5, 6, 10, 11]:
+for i in [7, 8, 9, 12]:
     print(atomic_energies[i:len(atomic_energies):len(aspirin_atoms)].shape)
     plt.plot(
         atomic_energies[i:len(atomic_energies):len(aspirin_atoms)],
@@ -86,6 +86,6 @@ for i in [0, 1, 2, 3, 4, 5, 6, 10, 11]:
 plt.xlabel("Frame Number (After First 1000)", fontsize=18)
 plt.ylabel("Energy (kcal/mol)")
 # ax.set_yscale("symlog")
-plt.title("Carbon Atomic Energies of Aspirin")
+plt.title("Oxygen Atomic Energies of Aspirin")
 plt.legend()
-plt.savefig("aspirin_C_energies_10000.png")
+plt.savefig("aspirin_O_energies_10000.png")
