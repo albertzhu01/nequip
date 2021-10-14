@@ -73,10 +73,15 @@ aspirin_atoms = [
     ]
 
 print(atomic_energies.shape)
-for i in [3]:
+for i in [13]:
     print(atomic_energies[i:len(atomic_energies):len(aspirin_atoms)].shape)
+
+    # Number of frames
+    N = 10000
+    # Time spacing (femtoseconds)
     T = 0.5
     x = np.linspace(0.0, N * T, N)
+    # Vector of atomic energies for the ith atom in aspirin
     y = atomic_energies[i:len(atomic_energies):len(aspirin_atoms)]
     xf = fftfreq(N, T)[:N//2]
     yf = fft(y)
@@ -95,6 +100,6 @@ for i in [3]:
 plt.xlabel("Frequency (1/fs)", fontsize=18)
 plt.ylabel("Relative Amplitude")
 # ax.set_yscale("symlog")
-plt.title("FFT of Carbon 4 Atomic Energies of Aspirin")
+plt.title("FFT of Hydrogen 1 Atomic Energies of Aspirin")
 plt.legend()
-plt.savefig("aspirin_C4_energies_fft.png")
+plt.savefig("aspirin_H1_energies_fft.png")
