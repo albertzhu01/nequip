@@ -95,6 +95,6 @@ for i in [3]:
 plt.xlabel("Frequency (1/fs)", fontsize=18)
 plt.ylabel("Relative Amplitude")
 # ax.set_yscale("symlog")
-plt.title("FFT of Carbon Atomic Energies of Aspirin")
+plt.title("FFT of Carbon 4 Atomic Energies of Aspirin")
 plt.legend()
-plt.savefig("aspirin_C_energies_fft.png")
+plt.savefig("aspirin_C4_energies_fft.png")
