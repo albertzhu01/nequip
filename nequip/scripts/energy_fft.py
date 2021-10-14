@@ -73,7 +73,7 @@ aspirin_atoms = [
     ]
 
 print(atomic_energies.shape)
-for i in [7, 8, 9, 12]:
+for i in [3]:
     print(atomic_energies[i:len(atomic_energies):len(aspirin_atoms)].shape)
     T = 0.5
     x = np.linspace(0.0, N * T, N)
@@ -95,6 +95,6 @@ for i in [7, 8, 9, 12]:
 plt.xlabel("Frequency (1/fs)", fontsize=18)
 plt.ylabel("Relative Amplitude")
 # ax.set_yscale("symlog")
-plt.title("FFT of Oxygen Atomic Energies of Aspirin")
+plt.title("FFT of Carbon Atomic Energies of Aspirin")
 plt.legend()
-plt.savefig("aspirin_O_energies_fft.png")
+plt.savefig("aspirin_C_energies_fft.png")
