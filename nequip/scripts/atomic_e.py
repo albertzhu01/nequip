@@ -32,7 +32,8 @@ print(f"# of training points: {len(train_idxs)}")
 print(f"# of val points: {len(val_idxs)}")
 
 # Create list of training and test data AtomicData objects
-test_idxs = [idx for idx in range(11000) if idx not in torch.cat((train_idxs, val_idxs)).tolist()]
+N = 500
+test_idxs = [idx for idx in range(N + 1000) if idx not in torch.cat((train_idxs, val_idxs)).tolist()]
 test_data_list = [dataset.get(idx) for idx in test_idxs]
 print(f"Test idxs length: {len(test_idxs)}")
 # print(test_idxs)
@@ -71,7 +72,7 @@ aspirin_atoms = [
     ]
 
 print(atomic_energies.shape)
-for i in range(13, 21):
+for i in [3, 13]:
     print(atomic_energies[i:len(atomic_energies):len(aspirin_atoms)].shape)
     plt.plot(
         atomic_energies[i:len(atomic_energies):len(aspirin_atoms)],
