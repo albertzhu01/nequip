@@ -33,7 +33,7 @@ print(f"# of training points: {len(train_idxs)}")
 print(f"# of val points: {len(val_idxs)}")
 
 # Create list of training and test data AtomicData objects
-N = 500
+N = 10000
 test_idxs = [idx for idx in range(N + 1000) if idx not in torch.cat((train_idxs, val_idxs)).tolist()]
 test_data_list = [dataset.get(idx) for idx in test_idxs]
 print(f"Test idxs length: {len(test_idxs)}")
@@ -97,4 +97,4 @@ plt.ylabel("Relative Amplitude")
 # ax.set_yscale("symlog")
 plt.title("FFT of Oxygen Atomic Energies of Aspirin")
 plt.legend()
-plt.savefig("aspirin_O_energies_fft_test.png")
+plt.savefig("aspirin_O_energies_fft.png")
