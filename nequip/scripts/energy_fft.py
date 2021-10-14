@@ -7,7 +7,7 @@ import pandas as pd
 from ase.visualize import view
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from scipy import stats
-from scipy.fftpack import fft
+from scipy.fftpack import fft, fftfreq
 
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
@@ -78,7 +78,7 @@ for i in [3]:
     T = 0.5
     x = np.linspace(0.0, N * T, N)
     y = atomic_energies[i:len(atomic_energies):len(aspirin_atoms)]
-    xf = np.linspace(0.0, 1.0 / (2.0 * T), N // 2)
+    xf = fftfreq(N, T)[:N//2]
     yf = fft(y)
     plt.grid()
     plt.plot(
