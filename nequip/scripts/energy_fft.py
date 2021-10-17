@@ -13,8 +13,6 @@ from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 
-f, ax = plt.subplots(figsize=(16, 9))
-
 # path = "C:/Users/alber/nequip/nequip/scripts/aspirin_50_epochs_new/results/aspirin/example-run"
 path = "/n/home10/axzhu/nequip/results/aspirin-md17/example-run-full"
 
@@ -73,7 +71,7 @@ aspirin_atoms = [
     ]
 
 print(atomic_energies.shape)
-for i in [13]:
+for i in range(len(aspirin_atoms)):
     print(atomic_energies[i:len(atomic_energies):len(aspirin_atoms)].shape)
 
     # Number of frames
@@ -85,6 +83,10 @@ for i in [13]:
     y = atomic_energies[i:len(atomic_energies):len(aspirin_atoms)]
     xf = fftfreq(N, T)[:N//2]
     yf = fft(y)
+    plt.figure()
+    plt.subplots(figsize=(16, 9))
+    plt.rc('xtick', labelsize=16)
+    plt.rc('ytick', labelsize=16)
     plt.grid()
     plt.plot(
         xf,
@@ -92,14 +94,20 @@ for i in [13]:
         label=aspirin_atoms[i]
     )
 
+    plt.xlabel("Frequency (1/fs)", fontsize=18)
+    plt.ylabel("Relative Amplitude", fontsize=18)
+    plt.title(f"FFT of {aspirin_atoms[i]} Atomic Energies of Aspirin", fontsize=20)
+    plt.legend()
+    plt.savefig(f"aspirin_{aspirin_atoms[i]}_e_fft_10000.png", fontsize=14)
+
 # plt.plot(
 #     total_energies,
 #     label="Total energy"
 # )
 
-plt.xlabel("Frequency (1/fs)", fontsize=18)
-plt.ylabel("Relative Amplitude")
+# plt.xlabel("Frequency (1/fs)", fontsize=18)
+# plt.ylabel("Relative Amplitude")
 # ax.set_yscale("symlog")
-plt.title("FFT of Hydrogen 1 Atomic Energies of Aspirin")
-plt.legend()
-plt.savefig("aspirin_H1_energies_fft.png")
+# plt.title("FFT of Hydrogen 1 Atomic Energies of Aspirin")
+# plt.legend()
+# plt.savefig("aspirin_H1_energies_fft.png")
