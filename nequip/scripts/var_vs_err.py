@@ -17,15 +17,15 @@ test_pred_forces = []
 test_pred_energies = []
 test_force_maes = []
 for i in range(1):
-    train_pred_forces.append(np.load(f"/n/home10/axzhu/nequip/ensembles/train_forces_ensemble{i}")['arr_0'])
+    train_pred_forces.append(np.load(f"/n/home10/axzhu/nequip/ensembles/train_forces_ensemble{i}.npz")['arr_0'])
     train_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles/train_atomic_e_ensemble{i}")['arr_0'].reshape(-1))
-    train_force_maes.append(np.load(f"/n/home10/axzhu/nequip/ensembles/train_forces_mae_ensemble{i}")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles/train_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
+    train_force_maes.append(np.load(f"/n/home10/axzhu/nequip/ensembles/train_forces_mae_ensemble{i}.npz")['arr_0'])
 
-    test_pred_forces.append(np.load(f"/n/home10/axzhu/nequip/ensembles/test_forces_ensemble{i}")['arr_0'])
+    test_pred_forces.append(np.load(f"/n/home10/axzhu/nequip/ensembles/test_forces_ensemble{i}.npz")['arr_0'])
     test_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles/test_atomic_e_ensemble{i}")['arr_0'].reshape(-1))
-    test_force_maes.append(np.load(f"/n/home10/axzhu/nequip/ensembles/test_forces_mae_ensemble{i}")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles/test_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
+    test_force_maes.append(np.load(f"/n/home10/axzhu/nequip/ensembles/test_forces_mae_ensemble{i}.npz")['arr_0'])
 
 train_pred_forces = np.array(train_pred_forces)
 train_pred_energies = np.array(train_pred_energies)
