@@ -77,23 +77,16 @@ def main(args=None):
         out = model(AtomicData.to_AtomicDataDict(batch))
         pred_energies = out[AtomicDataDict.PER_ATOM_ENERGY_KEY].detach().numpy()
         pred_forces = out[AtomicDataDict.FORCE_KEY].detach().numpy()
-        a_energies = np.array([atomic_data.atomic_energy.detach().numpy() for atomic_data in data_list])
         a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in data_list])
-        actual_energies = a_energies.reshape(-1)
         actual_forces = a_forces.reshape(-1, a_forces.shape[-1])
         print(f"{test_train}_pred_energies shape: {pred_energies.shape}")
-        print(f"{test_train}_actual_energies shape: {actual_energies.shape}")
         print(f"{test_train}_pred_forces shape: {pred_forces.shape}")
         print(f"{test_train}_actual_forces shape: {actual_forces.shape}")
         force_maes = []
-        energy_maes = []
         for force in range(len(pred_forces)):
             force_maes.append(mean_absolute_error(pred_forces[force], actual_forces[force]))
-        for energy in range(len(pred_energies)):
-            energy_maes.append(mean_absolute_error(pred_energies[energy], actual_energies[energy]))
         force_maes = np.array(force_maes)
-        energy_maes = np.array(energy_maes)
-        return [pred_energies, pred_forces, energy_maes, force_maes]
+        return [pred_energies, pred_forces, force_maes]
 
     # Evaluate model on batch of training data and test data
     train_out_e_f = evaluate(dataset_train, train_data_list, "train")
@@ -101,13 +94,11 @@ def main(args=None):
 
     np.savez(f'train_atomic_e_{path[-9:]}', train_out_e_f[0])
     np.savez(f'train_forces_{path[-9:]}', train_out_e_f[1])
-    np.savez(f'train_atomic_e_mae_{path[-9:]}', train_out_e_f[2])
-    np.savez(f'train_forces_mae_{path[-9:]}', train_out_e_f[3])
+    np.savez(f'train_forces_mae_{path[-9:]}', train_out_e_f[2])
 
     np.savez(f'test_atomic_e_{path[-9:]}', test_out_e_f[0])
     np.savez(f'test_forces_{path[-9:]}', test_out_e_f[1])
-    np.savez(f'test_atomic_e_mae_{path[-9:]}', test_out_e_f[2])
-    np.savez(f'test_forces_mae_{path[-9:]}', test_out_e_f[3])
+    np.savez(f'test_forces_mae_{path[-9:]}', test_out_e_f[2])
 
 
 if __name__ == "__main__":
