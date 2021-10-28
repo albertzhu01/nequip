@@ -59,7 +59,7 @@ def main(args=None):
 
     # Create list of training and test data, ensuring that the the test data does not contain train or val data
     train_data_list = [dataset_train.get(idx) for idx in train_idxs]
-    train_val_data_list = [dataset_train.get(idx) for idx in torch.cat((train_idxs, val_idxs))]
+    train_val_data_list = [dataset_train.get(idx) for idx in train_idxs + val_idxs]
     train_data_atoms = [atomic_data.to_ase() for atomic_data in train_val_data_list]
     test_data_list = [dataset_test.get(idx) for idx in range(len(dataset_test))
                       if dataset_test.get(idx).to_ase() not in train_data_atoms]
