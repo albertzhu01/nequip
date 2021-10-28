@@ -42,11 +42,11 @@ print(f"test_pred_forces shape: {test_pred_forces.shape}")
 print(f"test_pred_energies shape: {test_pred_energies.shape}")
 print(f"test_force_maes shape: {test_force_maes.shape}")
 
-var_train_forces = np.var(train_pred_forces, axis=0)
+var_train_forces = np.sum(np.var(train_pred_forces, axis=0), axis=1)
 var_train_energies = np.var(train_pred_energies, axis=0)
 mean_train_maes = np.mean(train_force_maes, axis=0)
 
-var_test_forces = np.var(test_pred_forces, axis=0)
+var_test_forces = np.sum(np.var(test_pred_forces, axis=0), axis=1)
 var_test_energies = np.var(test_pred_energies, axis=0)
 mean_test_maes = np.mean(test_force_maes, axis=0)
 
