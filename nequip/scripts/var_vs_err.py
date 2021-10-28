@@ -92,13 +92,13 @@ for i in range(27):
     plt.rc('ytick', labelsize=14)
     plt.scatter(
         x=mean_train_maes[i:12150:27],
-        y=var_train_energies[i:12150:27],
+        y=var_train_forces[i:12150:27],
         color='k',
         label=f'Training Data'
     )
     plt.scatter(
         x=mean_test_maes[i:48735:27],
-        y=var_test_energies[i:48735:27],
+        y=var_test_forces[i:48735:27],
         color='b',
         label=f'Test Data'
     )
