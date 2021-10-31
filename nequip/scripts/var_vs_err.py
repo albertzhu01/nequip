@@ -17,15 +17,14 @@ test_pred_forces = []
 test_pred_energies = []
 test_force_maes = []
 for i in range(10):
-    train_pred_forces.append(np.load(f"/n/home10/axzhu/nequip/ensembles/train_forces_ensemble{i}.npz")['arr_0'])
+    train_pred_forces.append(np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_ensemble{i}.npz")['arr_0'])
     train_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles/train_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
-    train_force_maes.append(np.load(f"/n/home10/axzhu/nequip/ensembles/train_forces_mae_ensemble{i}.npz")['arr_0'])
-
-    test_pred_forces.append(np.load(f"/n/home10/axzhu/nequip/ensembles/test_forces_ensemble{i}.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
+    train_force_maes.append(np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_mae_ensemble{i}.npz")['arr_0'])
+    test_pred_forces.append(np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_ensemble{i}.npz")['arr_0'])
     test_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles/test_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
-    test_force_maes.append(np.load(f"/n/home10/axzhu/nequip/ensembles/test_forces_mae_ensemble{i}.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
+    test_force_maes.append(np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_mae_ensemble{i}.npz")['arr_0'])
 
 train_pred_forces = np.array(train_pred_forces)
 train_pred_energies = np.array(train_pred_energies)
@@ -104,10 +103,10 @@ for i in range(27):
     )
     plt.legend(fontsize=14)
     plt.title(
-        f"Atom Index {i} Predicted Atomic Force Variance vs. Force MAE (Train 300K, Test 300K)",
+        f"Atom Index {i} Predicted Atomic Force Variance vs. Force MAE (Train 300K, Test 600K)",
         fontsize=18
     )
     plt.xlabel("Force MAE (eV/A)", fontsize=16)
     plt.ylabel("Variance of Predicted Atomic Forces ((eV/A)^2)", fontsize=16)
-    plt.savefig(f"atom{i}_f-var_vs_mae_300K.png")
+    plt.savefig(f"atom{i}_f-var_vs_mae_600K.png")
 
