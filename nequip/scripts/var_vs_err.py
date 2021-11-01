@@ -9,6 +9,8 @@ from sklearn.metrics import mean_absolute_error
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
 
+
+# Script for plotting variances vs. force MAE by loading data outputted from ensemble_uncertainty.py
 train_pred_forces = []
 train_pred_energies = []
 train_force_maes = []
