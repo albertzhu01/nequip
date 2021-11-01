@@ -81,12 +81,12 @@ for i in range(27):
     # )
     # plt.legend(fontsize=14)
     # plt.title(
-    #     f"Atom Index {i} Predicted Atomic Energy Variance vs. Force MAE (Train 300K, Test 600K)",
+    #     f"Atom Index {i} Predicted Atomic Energy Variance vs. Force MAE (Train 300K, Test 1200K)",
     #     fontsize=18
     # )
     # plt.xlabel("Force MAE (eV/A)", fontsize=16)
     # plt.ylabel("Variance of Predicted Atomic Energies (eV^2)", fontsize=16)
-    # plt.savefig(f"atom{i}_e-var_vs_mae_600K.png")
+    # plt.savefig(f"atom{i}_e-var_vs_mae_1200K.png")
 
     # Force variance vs. energy mae
     plt.figure()
@@ -107,10 +107,10 @@ for i in range(27):
     )
     plt.legend(fontsize=14)
     plt.title(
-        f"Atom Index {i} Predicted Atomic Force Variance vs. Force MAE (Train 300K, Test 600K)",
+        f"Atom Index {i} Predicted Atomic Force Variance vs. Force MAE (Train 300K, Test 1200K)",
         fontsize=18
     )
     plt.xlabel("Force MAE (eV/A)", fontsize=16)
     plt.ylabel("Variance of Predicted Atomic Forces ((eV/A)^2)", fontsize=16)
-    plt.savefig(f"atom{i}_f-var_vs_mae_600K.png")
+    plt.savefig(f"atom{i}_f-var_vs_mae_1200K.png")
 
