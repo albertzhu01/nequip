@@ -17,14 +17,18 @@ test_pred_forces = []
 test_pred_energies = []
 test_force_maes = []
 for i in range(10):
-    train_pred_forces.append(np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_ensemble{i}.npz")['arr_0'])
+    train_pred_forces.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_ensemble{i}_600K.npz")['arr_0'])
     train_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
-    train_force_maes.append(np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_mae_ensemble{i}.npz")['arr_0'])
-    test_pred_forces.append(np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_ensemble{i}.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_atomic_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
+    train_force_maes.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_mae_ensemble{i}_600K.npz")['arr_0'])
+    test_pred_forces.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_ensemble{i}_600K.npz")['arr_0'])
     test_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
-    test_force_maes.append(np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_mae_ensemble{i}.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_atomic_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
+    test_force_maes.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_mae_ensemble{i}_600K.npz")['arr_0'])
 
 train_pred_forces = np.array(train_pred_forces)
 train_pred_energies = np.array(train_pred_energies)
@@ -59,54 +63,54 @@ print(f"mean_test_maes shape: {mean_test_maes.shape}")
 for i in range(27):
 
     # Energy variance vs energy mae
-    # plt.figure()
-    # plt.subplots(figsize=(16, 9))
-    # plt.rc('xtick', labelsize=14)
-    # plt.rc('ytick', labelsize=14)
-    # plt.scatter(
-    #     x=mean_train_maes[i:12150:27],
-    #     y=var_train_energies[i:12150:27],
-    #     color='k',
-    #     label=f'Training Data'
-    # )
-    # plt.scatter(
-    #     x=mean_test_maes[i:48735:27],
-    #     y=var_test_energies[i:48735:27],
-    #     color='b',
-    #     label=f'Test Data'
-    # )
-    # plt.legend(fontsize=14)
-    # plt.title(
-    #     f"Atom Index {i} Predicted Atomic Energy Variance vs. Force MAE (Train 300K, Test 300K)",
-    #     fontsize=18
-    # )
-    # plt.xlabel("Force MAE (eV/A)", fontsize=16)
-    # plt.ylabel("Variance of Predicted Atomic Energies (eV^2)", fontsize=16)
-    # plt.savefig(f"atom{i}_e-var_vs_mae_300K.png")
-
-    # Force variance vs. energy mae
     plt.figure()
     plt.subplots(figsize=(16, 9))
     plt.rc('xtick', labelsize=14)
     plt.rc('ytick', labelsize=14)
     plt.scatter(
         x=mean_train_maes[i:12150:27],
-        y=var_train_forces[i:12150:27],
+        y=var_train_energies[i:12150:27],
         color='k',
         label=f'Training Data'
     )
     plt.scatter(
         x=mean_test_maes[i:48735:27],
-        y=var_test_forces[i:48735:27],
+        y=var_test_energies[i:48735:27],
         color='b',
         label=f'Test Data'
     )
     plt.legend(fontsize=14)
     plt.title(
-        f"Atom Index {i} Predicted Atomic Force Variance vs. Force MAE (Train 300K, Test 600K)",
+        f"Atom Index {i} Predicted Atomic Energy Variance vs. Force MAE (Train 300K, Test 600K)",
         fontsize=18
     )
     plt.xlabel("Force MAE (eV/A)", fontsize=16)
-    plt.ylabel("Variance of Predicted Atomic Forces ((eV/A)^2)", fontsize=16)
-    plt.savefig(f"atom{i}_f-var_vs_mae_600K.png")
+    plt.ylabel("Variance of Predicted Atomic Energies (eV^2)", fontsize=16)
+    plt.savefig(f"atom{i}_e-var_vs_mae_600K.png")
+
+    # Force variance vs. energy mae
+    # plt.figure()
+    # plt.subplots(figsize=(16, 9))
+    # plt.rc('xtick', labelsize=14)
+    # plt.rc('ytick', labelsize=14)
+    # plt.scatter(
+    #     x=mean_train_maes[i:12150:27],
+    #     y=var_train_forces[i:12150:27],
+    #     color='k',
+    #     label=f'Training Data'
+    # )
+    # plt.scatter(
+    #     x=mean_test_maes[i:48735:27],
+    #     y=var_test_forces[i:48735:27],
+    #     color='b',
+    #     label=f'Test Data'
+    # )
+    # plt.legend(fontsize=14)
+    # plt.title(
+    #     f"Atom Index {i} Predicted Atomic Force Variance vs. Force MAE (Train 300K, Test 600K)",
+    #     fontsize=18
+    # )
+    # plt.xlabel("Force MAE (eV/A)", fontsize=16)
+    # plt.ylabel("Variance of Predicted Atomic Forces ((eV/A)^2)", fontsize=16)
+    # plt.savefig(f"atom{i}_f-var_vs_mae_600K.png")
 
