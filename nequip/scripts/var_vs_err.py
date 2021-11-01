@@ -18,17 +18,17 @@ test_pred_energies = []
 test_force_maes = []
 for i in range(10):
     train_pred_forces.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_ensemble{i}_600K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_forces_ensemble{i}_200K.npz")['arr_0'])
     train_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_atomic_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_atomic_e_ensemble{i}_200K.npz")['arr_0'].reshape(-1))
     train_force_maes.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_mae_ensemble{i}_600K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_forces_mae_ensemble{i}_200K.npz")['arr_0'])
     test_pred_forces.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_ensemble{i}_600K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_forces_ensemble{i}_200K.npz")['arr_0'])
     test_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_atomic_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_atomic_e_ensemble{i}_200K.npz")['arr_0'].reshape(-1))
     test_force_maes.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_mae_ensemble{i}_600K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_forces_mae_ensemble{i}_200K.npz")['arr_0'])
 
 train_pred_forces = np.array(train_pred_forces)
 train_pred_energies = np.array(train_pred_energies)
