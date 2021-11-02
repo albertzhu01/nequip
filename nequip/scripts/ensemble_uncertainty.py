@@ -79,7 +79,7 @@ def main(args=None):
         pred_forces = out[AtomicDataDict.FORCE_KEY].detach().numpy()
         pred_tot_e = out[AtomicDataDict.TOTAL_ENERGY_KEY].detach().numpy()
         a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in data_list])
-        a_energies = np.array([atomic_data.energy.detach().numpy()] for atomic_data in data_list)
+        a_energies = np.array([atomic_data.energy.detach().numpy() for atomic_data in data_list])
         actual_forces = a_forces.reshape(-1, a_forces.shape[-1])
         actual_energies = a_energies.reshape(-1)
         print(f"{test_train}_pred_atomic_energies shape: {pred_energies.shape}")
