@@ -77,28 +77,41 @@ def main(args=None):
         out = model(AtomicData.to_AtomicDataDict(batch))
         pred_energies = out[AtomicDataDict.PER_ATOM_ENERGY_KEY].detach().numpy()
         pred_forces = out[AtomicDataDict.FORCE_KEY].detach().numpy()
+        pred_tot_e = out[AtomicDataDict.TOTAL_ENERGY_KEY].detach().numpy()
         a_forces = np.array([atomic_data.forces.detach().numpy() for atomic_data in data_list])
+        a_energies = np.array([atomic_data.energy.detach().numpy()] for atomic_data in data_list)
         actual_forces = a_forces.reshape(-1, a_forces.shape[-1])
-        print(f"{test_train}_pred_energies shape: {pred_energies.shape}")
+        actual_energies = a_energies.reshape(-1)
+        print(f"{test_train}_pred_atomic_energies shape: {pred_energies.shape}")
         print(f"{test_train}_pred_forces shape: {pred_forces.shape}")
         print(f"{test_train}_actual_forces shape: {actual_forces.shape}")
+        print(f"{test_train}_pred_tot_e shape: {pred_tot_e.shape}")
+        print(f"{test_train}_actual_energies shape: {actual_energies.shape}")
         force_maes = []
         for force in range(len(pred_forces)):
             force_maes.append(mean_absolute_error(pred_forces[force], actual_forces[force]))
         force_maes = np.array(force_maes)
-        return [pred_energies, pred_forces, force_maes]
+        tot_energy_err = []
+        for energy in range(len(pred_tot_e)):
+            tot_energy_err.append(abs(actual_energies[energy] - pred_tot_e[energy]))
+        tot_energy_err = np.array(tot_energy_err)
+        return [pred_energies, pred_forces, force_maes, pred_tot_e, tot_energy_err]
 
     # Evaluate model on batch of training data and test data
     train_out_e_f = evaluate(dataset_train, train_data_list, "train")
     test_out_e_f = evaluate(dataset_test, test_data_list, "test")
 
-    np.savez(f'train_atomic_e_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[0])
-    np.savez(f'train_forces_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[1])
-    np.savez(f'train_forces_mae_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[2])
+    # np.savez(f'train_atomic_e_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[0])
+    # np.savez(f'train_forces_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[1])
+    # np.savez(f'train_forces_mae_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[2])
+    np.savez(f'train_tot_e_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[3])
+    np.savez(f'train_tot_e_err_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[4])
 
-    np.savez(f'test_atomic_e_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[0])
-    np.savez(f'test_forces_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[1])
-    np.savez(f'test_forces_mae_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[2])
+    # np.savez(f'test_atomic_e_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[0])
+    # np.savez(f'test_forces_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[1])
+    # np.savez(f'test_forces_mae_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[2])
+    np.savez(f'test_tot_e_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[3])
+    np.savez(f'test_tot_e_err_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[4])
 
 
 if __name__ == "__main__":
