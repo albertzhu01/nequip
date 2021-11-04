@@ -22,22 +22,22 @@ test_pred_forces = []
 test_pred_tot_e = []
 for i in range(10):
     train_pred_forces.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_forces_ensemble{i}_200K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_forces_ensemble{i}_300K.npz")['arr_0'])
     # train_pred_energies.append(
-    #     np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_atomic_e_ensemble{i}_200K.npz")['arr_0'].reshape(-1))
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
     # train_force_maes.append(
-    #     np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_forces_mae_ensemble{i}_200K.npz")['arr_0'])
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_forces_mae_ensemble{i}_300K.npz")['arr_0'])
     train_pred_tot_e.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_tot_e_ensemble{i}_200K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
     test_pred_forces.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_forces_ensemble{i}_200K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_forces_ensemble{i}_300K.npz")['arr_0'])
     # test_pred_energies.append(
-    #     np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_atomic_e_ensemble{i}_200K.npz")['arr_0'].reshape(-1))
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
     # test_force_maes.append(
-    #     np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_forces_mae_ensemble{i}_200K.npz")['arr_0'])
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_forces_mae_ensemble{i}_300K.npz")['arr_0'])
     test_pred_tot_e.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_tot_e_ensemble{i}_200K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
 train_pred_forces = np.array(train_pred_forces)
 # train_pred_energies = np.array(train_pred_energies)
@@ -75,13 +75,13 @@ print(f"var_train_forces shape: {var_train_forces.shape}")
 print(f"max_var_train_forces shape: {max_var_train_forces.shape}")
 # print(f"var_train_energies shape: {var_train_energies.shape}")
 # print(f"mean_train_maes shape: {mean_train_maes.shape}")
-print(f"var_test_tot_e shape: {var_train_tot_e.shape}")
+print(f"var_train_tot_e shape: {var_train_tot_e.shape}")
 
 print(f"var_test_forces shape: {var_test_forces.shape}")
 print(f"max_var_test_forces shape: {max_var_test_forces.shape}")
 # print(f"var_test_energies shape: {var_test_energies.shape}")
 # print(f"mean_test_maes shape: {mean_test_maes.shape}")
-print(f"var_test_tot_e shape: {var_train_forces.shape}")
+print(f"var_test_tot_e shape: {var_test_tot_e.shape}")
 
 # Maximum Atomic Force Variance vs. Total Energy Variance
 plt.figure()
@@ -102,12 +102,12 @@ plt.scatter(
 )
 plt.legend(fontsize=14)
 plt.title(
-    f"Max Atomic Force Variance vs. Total Energy Variance (Train 300K, Test 1200K)",
+    f"Max Atomic Force Variance vs. Total Energy Variance (Train 300K, Test 300K)",
     fontsize=18
 )
 plt.xlabel("Total Energy Variance (eV^2)", fontsize=16)
 plt.ylabel("Max Atomic Force Variance ((eV/A)^2)", fontsize=16)
-plt.savefig(f"tot-e-var_vs_f-var_1200K.png")
+plt.savefig(f"tot-e-var_vs_f-var_300K.png")
 
 # for i in range(27):
 #
