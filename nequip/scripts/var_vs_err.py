@@ -170,13 +170,13 @@ for i in range(27):
         x=atom_i_maes,
         y=atom_i_var_forces,
         color='b',
-        label=f'Good Test Data ({false_pos / tot_test_atoms} false positives/total data points)'
+        label=f'Good Test Data ({false_pos} / {tot_test_atoms / num_bpa_atoms} false positives / total data points)'
     )
     plt.scatter(
         x=atom_i_maes,
         y=atom_i_var_forces,
         color='r',
-        label=f'Bad Test Data ({true_pos / tot_test_atoms} true positives/total data points)'
+        label=f'Bad Test Data ({true_pos} / {tot_test_atoms / num_bpa_atoms} true positives / total data points)'
     )
     plt.legend(fontsize=14)
     plt.title(
