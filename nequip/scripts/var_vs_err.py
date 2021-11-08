@@ -173,8 +173,8 @@ for i in range(27):
         label=f'Good Test Data ({false_pos} / {tot_test_atoms // num_bpa_atoms} false positives / total data points)'
     )
     plt.scatter(
-        x=atom_i_maes,
-        y=atom_i_var_forces,
+        x=bad_mean_maes,
+        y=bad_force_vars,
         color='r',
         label=f'Bad Test Data ({true_pos} / {tot_test_atoms // num_bpa_atoms} true positives / total data points)'
     )
