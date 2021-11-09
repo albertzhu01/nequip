@@ -151,7 +151,7 @@ for i in range(27):
 
     good_test_data_idxs = np.where(atom_i_maes <= mae_cutoff)
     good_force_vars = atom_i_var_forces[good_test_data_idxs]
-    var_cutoff = np.amin(bad_force_vars)
+    var_cutoff = np.amax(atom_i_var_forces) if len(bad_force_vars) == 0 else np.amin(bad_force_vars)
 
     true_pos = len(bad_mean_maes)
     false_pos = len(good_force_vars[np.where(good_force_vars > var_cutoff)])
