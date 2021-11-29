@@ -49,6 +49,12 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 # plt.legend(["test"])
 # plt.show()
 
-perm = torch.randperm(500)
-print('[' + ', '.join(str(e.item()) for e in perm[:450]) + ']')
-print('[' + ', '.join(str(e.item()) for e in perm[450:500]) + ']')
+# perm = torch.randperm(500)
+# print('[' + ', '.join(str(e.item()) for e in perm[:450]) + ']')
+# print('[' + ', '.join(str(e.item()) for e in perm[450:500]) + ']')
+
+nums = np.arange(24)
+nums = nums.reshape((2, 3, -1))
+print(nums)
+var_nums = np.var(nums, axis=0)
+print(var_nums)

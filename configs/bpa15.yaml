@@ -1,0 +1,108 @@
+# 3BPA yaml file
+# for a full yaml file containing all possible features check out full.yaml
+
+# Two folders will be used during the training: 'root'/process and 'root'/'run_name'
+# run_name contains logfiles and saved models
+# process contains processed data sets
+# if 'root'/'run_name' exists, 'root'/'run_name'_'year'-'month'-'day'-'hour'-'min'-'s' will be used instead.
+root: results/bpa
+run_name: ensemble8
+seed: 15                                                                          # random number seed for numpy and torch
+restart: false                                                                    # set True for a restarted run
+append: false                                                                     # set True if a restarted run should append to the previous log file
+default_dtype: float32                                                            # type of float to use, e.g. float32 and float64
+
+# network
+r_max: 4.0                                                                        # cutoff radius in length units
+
+num_layers: 6                                                                     # number of interaction blocks, we found 5-6 to work best
+chemical_embedding_irreps_out: 32x0e                                              # irreps for the chemical embedding of species
+feature_irreps_hidden: 32x0o + 32x0e + 32x1o + 32x1e + 32x2o + 32x2e              # irreps used for hidden features, here we go up to lmax=2, with even and odd parities
+irreps_edge_sh: 0e + 1o + 2e                                                      # irreps of the spherical harmonics used for edges. If a single integer, indicates the full SH up to L_max=that_integer
+conv_to_output_hidden_irreps_out: 16x0e                                           # irreps used in hidden layer of output block
+
+nonlinearity_type: gate                                                           # may be 'gate' or 'norm', 'gate' is recommended
+resnet: false                                                                     # set true to make interaction block a resnet-style update
+num_basis: 8                                                                      # number of basis functions used in the radial basis
+
+# radial network
+invariant_layers: 2                                                               # number of radial layers, we found it important to keep this small, 1 or 2
+invariant_neurons: 64                                                             # number of hidden neurons in radial function, smaller is faster
+avg_num_neighbors: null                                                           # number of neighbors to divide by, None => no normalization.
+use_sc: true                                                                      # use self-connection or not, usually gives big improvement
+
+# to specify different parameters for each convolutional layer, try examples below
+# layer1_use_sc: true                                                             # use "layer{i}_" prefix to specify parameters for only one of the layer,
+# priority for different definition:
+#   invariant_neurons < InteractionBlock_invariant_neurons < layer{i}_invariant_neurons
+
+# data set
+# the keys used need to be stated at least once in key_mapping, npz_fixed_field_keys or npz_keys
+# key_mapping is used to map the key in the npz file to the NequIP default values (see data/_key.py)
+# all arrays are expected to have the shape of (nframe, natom, ?) except the fixed fields
+# note that if your data set uses pbc, you need to also pass an array that maps to the nequip "pbc" key
+# dataset: npz                                                                     # type of data set, can be npz or ase
+# dataset_url: http://quantum-machine.org/gdml/data/npz/aspirin_ccsd.zip           # url to download the npz. optional
+# dataset_file_name: ./benchmark_data/aspirin_ccsd-train.npz                       # path to data set file
+# key_mapping:
+#   z: atomic_numbers                                                              # atomic species, integers
+#   E: total_energy                                                                # total potential eneriges to train to
+#   F: forces                                                                      # atomic forces to train to
+#   R: pos                                                                         # raw atomic positions
+# npz_fixed_field_keys:                                                            # fields that are repeated across different examples
+#   - atomic_numbers
+
+# As an alternative option to npz, you can also pass data ase ASE Atoms-objects
+# This can often be easier to work with, simply make sure the ASE Atoms object
+# has a calculator for which atoms.get_potential_energy() and atoms.get_forces() are defined
+dataset: ase
+dataset_file_name: ./configs_final/train_mixed.xyz                                 # need to be a format accepted by ase.io.read
+ase_args:                                                                          # any arguments needed by ase.io.read
+  format: extxyz
+
+# logging
+wandb: true                                                                        # we recommend using wandb for logging, we'll turn it off here as it's optional
+wandb_project: 3BPA                                                                # project name used in wandb
+wandb_resume: true                                                                 # if true and restart is true, wandb run data will be restarted and updated.
+                                                                                   # if false, a new wandb run will be generated
+verbose: info                                                                      # the same as python logging, e.g. warning, info, debug, error. case insensitive
+log_batch_freq: 10                                                                 # batch frequency, how often to print training errors withinin the same epoch
+log_epoch_freq: 1                                                                  # epoch frequency, how often to print and save the model
+
+# training
+train_idcs: [272, 453, 317, 134, 499, 142, 375, 137, 36, 299, 170, 309, 344, 101, 15, 324, 366, 152, 490, 163, 258, 193, 105, 99, 227, 433, 47, 119, 144, 167, 289, 418, 273, 327, 204, 121, 482, 452, 117, 24, 378, 290, 30, 470, 259, 361, 266, 162, 339, 164, 34, 421, 431, 340, 323, 55, 160, 93, 120, 304, 136, 171, 149, 141, 13, 46, 125, 44, 85, 356, 84, 263, 394, 285, 430, 154, 94, 23, 284, 52, 390, 240, 256, 104, 239, 434, 6, 364, 466, 216, 174, 218, 381, 382, 124, 312, 219, 126, 305, 237, 45, 222, 380, 20, 3, 230, 491, 282, 108, 71, 457, 135, 234, 113, 1, 397, 176, 122, 262, 463, 60, 308, 17, 352, 295, 242, 66, 424, 79, 497, 139, 360, 341, 250, 8, 469, 2, 296, 459, 427, 297, 161, 114, 224, 157, 185, 338, 316, 428, 369, 155, 371, 357, 192, 271, 464, 100, 61, 81, 178, 446, 276, 404, 233, 32, 331, 115, 229, 38, 253, 260, 31, 72, 334, 21, 41, 454, 319, 486, 80, 437, 467, 159, 417, 496, 10, 195, 476, 173, 98, 401, 300, 95, 261, 442, 235, 265, 275, 200, 103, 395, 11, 354, 281, 286, 249, 425, 4, 468, 432, 110, 474, 128, 188, 232, 294, 50, 280, 58, 386, 140, 231, 310, 54, 448, 257, 118, 479, 409, 63, 405, 106, 53, 212, 156, 335, 399, 148, 460, 402, 210, 169, 314, 332, 223, 132, 384, 92, 182, 28, 96, 298, 217, 82, 143, 398, 213, 443, 420, 458, 302, 389, 206, 35, 5, 201, 328, 78, 407, 480, 145, 40, 269, 483, 342, 445, 187, 436, 244, 403, 492, 456, 441, 426, 374, 465, 481, 251, 277, 383, 146, 116, 362, 109, 39, 270, 365, 440, 198, 475, 252, 372, 226, 225, 86, 400, 406, 477, 42, 325, 112, 493, 166, 138, 268, 243, 353, 301, 385, 429, 337, 62, 419, 254, 83, 127, 478, 90, 131, 203, 7, 321, 349, 59, 274, 65, 214, 414, 307, 75, 336, 26, 495, 391, 56, 215, 168, 439, 347, 343, 283, 67, 147, 488, 461, 279, 189, 22, 348, 18, 49, 287, 484, 396, 322, 29, 197, 209, 387, 202, 455, 130, 228, 48, 221, 373, 191, 111, 473, 37, 208, 236, 489, 471, 129, 158, 313, 180, 350, 25, 351, 392, 89, 450, 88, 9, 388, 255, 278, 186, 153, 241, 205, 183, 102, 444, 64, 165, 451, 57, 33, 449, 14, 150, 311, 151, 363, 413, 292, 346, 27, 330, 199, 70, 91, 306, 264, 238, 133, 246, 248, 211, 412, 416, 494, 367, 438, 51, 435, 410, 333, 358, 220, 393, 462, 472, 177, 247, 12, 74]
+val_idcs: [498, 181, 68, 370, 415, 73, 207, 97, 376, 329, 179, 303, 355, 345, 377, 194, 320, 288, 0, 123, 293, 245, 172, 423, 326, 368, 487, 76, 267, 69, 19, 175, 411, 16, 359, 422, 291, 408, 87, 107, 447, 315, 190, 77, 184, 43, 318, 485, 196, 379]
+learning_rate: 0.01                                                                # learning rate, we found values between 0.01 and 0.005 to work best - this is often one of the most important hyperparameters to tune
+batch_size: 5                                                                      # batch size, we found it important to keep this small for most applications (1-5)
+max_epochs: 1000000                                                                # stop training after _ number of epochs
+metrics_key: loss                                                                  # metrics used for scheduling and saving best model. Options: loss, or anything that appears in the validation batch step header, such as f_mae, f_rmse, e_mae, e_rmse
+use_ema: false                                                                     # if true, use exponential moving average on weights for val/test, usually helps a lot with training, in particular for energy errors
+ema_decay: 0.999                                                                   # ema weight, commonly set to 0.999
+
+# loss function
+loss_coeffs:                                                                       # different weights to use in a weighted loss functions
+  forces: 729                                                                      # for MD applications, we recommed a force weight of 100 and an energy weight of 1
+  total_energy: 1                                                                  # alternatively, if energies are not of importance, a force weight 1 and an energy weight of 0 also works.
+
+# output metrics
+metrics_components:
+  - - forces                               # key
+    - rmse                                 # "rmse" or "mse"
+    - PerSpecies: True                     # if true, per species contribution is counted separately
+      report_per_component: False          # if true, statistics on each component (i.e. fx, fy, fz) will be counted separately
+  - - forces
+    - mae
+    - PerSpecies: True
+      report_per_component: False
+  - - total_energy
+    - mae
+
+# optimizer, may be any optimizer defined in torch.optim
+# the name `optimizer_name`is case sensitive
+optimizer_name: Adam
+optimizer_amsgrad: true
+
+# lr scheduler, on plateau
+lr_scheduler_name: ReduceLROnPlateau
+lr_scheduler_patience: 100
+lr_scheduler_factor: 0.5
