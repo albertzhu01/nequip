@@ -101,17 +101,17 @@ def main(args=None):
     train_out_e_f = evaluate(dataset_train, train_data_list, "train")
     test_out_e_f = evaluate(dataset_test, test_data_list, "test")
 
-    np.savez(f'train_atomic_e_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[0])
-    np.savez(f'train_forces_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[1])
-    np.savez(f'train_forces_mae_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[2])
-    np.savez(f'train_tot_e_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[3])
-    np.savez(f'train_tot_e_err_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[4])
+    np.savez(f'train_atomic_e_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[0])
+    np.savez(f'train_forces_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[1])
+    np.savez(f'train_forces_mae_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[2])
+    np.savez(f'train_tot_e_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[3])
+    np.savez(f'train_tot_e_err_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[4])
 
-    np.savez(f'test_atomic_e_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[0])
-    np.savez(f'test_forces_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[1])
-    np.savez(f'test_forces_mae_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[2])
-    np.savez(f'test_tot_e_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[3])
-    np.savez(f'test_tot_e_err_{path[-9:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[4])
+    np.savez(f'test_atomic_e_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[0])
+    np.savez(f'test_forces_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[1])
+    np.savez(f'test_forces_mae_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[2])
+    np.savez(f'test_tot_e_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[3])
+    np.savez(f'test_tot_e_err_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[4])
 
 
 if __name__ == "__main__":
