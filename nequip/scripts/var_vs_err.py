@@ -20,41 +20,41 @@ test_pred_forces = []
 # test_pred_energies = []
 test_force_maes = []
 # test_pred_tot_e = []
-# for i in range(10):
-#     train_pred_forces.append(
-#         np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_ensemble{i}.npz")['arr_0'])
-#     # train_pred_energies.append(
-#     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
-#     train_force_maes.append(
-#         np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_mae_ensemble{i}.npz")['arr_0'])
-#     # train_pred_tot_e.append(
-#     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
-#
-#     test_pred_forces.append(
-#         np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_ensemble{i}.npz")['arr_0'])
-#     # test_pred_energies.append(
-#     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
-#     test_force_maes.append(
-#         np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_mae_ensemble{i}.npz")['arr_0'])
-#     # test_pred_tot_e.append(
-#     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
-
-for i in range(20):
+for i in range(10):
     train_pred_forces.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_ensemble{i}_600K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_ensemble{i}.npz")['arr_0'])
     # train_pred_energies.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
     train_force_maes.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_mae_ensemble{i}_600K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_mae_ensemble{i}.npz")['arr_0'])
     # train_pred_tot_e.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
     test_pred_forces.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_ensemble{i}_600K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_ensemble{i}.npz")['arr_0'])
     # test_pred_energies.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
     test_force_maes.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_mae_ensemble{i}_600K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_mae_ensemble{i}.npz")['arr_0'])
+    # test_pred_tot_e.append(
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+
+for i in range(10, 20):
+    train_pred_forces.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_ensemble{i}_300K.npz")['arr_0'])
+    # train_pred_energies.append(
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+    train_force_maes.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_mae_ensemble{i}_300K.npz")['arr_0'])
+    # train_pred_tot_e.append(
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+
+    test_pred_forces.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_ensemble{i}_300K.npz")['arr_0'])
+    # test_pred_energies.append(
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+    test_force_maes.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_mae_ensemble{i}_300K.npz")['arr_0'])
     # test_pred_tot_e.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
@@ -206,9 +206,9 @@ for i in range(num_bpa_atoms):
     plt.axvline(mae_cutoff ** 2, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.legend(fontsize=16)
     plt.title(
-        f"Atom Index {i} Atomic Force Variance vs. Force MSE (Train 300K, Test 600K)",
+        f"Atom Index {i} Atomic Force Variance vs. Force MSE (Train 300K, Test 300K)",
         fontsize=24
     )
     plt.xlabel("Force MSE ((eV/A)²)", fontsize=20)
     plt.ylabel("Variance of Predicted Atomic Forces ((eV/A)²)", fontsize=20)
-    plt.savefig(f"atom{i}_f-var_vs_mae_600K.png")
+    plt.savefig(f"atom{i}_f-var_vs_mae_300K.png")
