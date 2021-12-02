@@ -39,6 +39,25 @@ for i in range(10):
     # test_pred_tot_e.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
+for i in range(10, 20):
+    train_pred_forces.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_ensemble{i}_300K.npz")['arr_0'])
+    # train_pred_energies.append(
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+    train_force_maes.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_mae_ensemble{i}_300K.npz")['arr_0'])
+    # train_pred_tot_e.append(
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+
+    test_pred_forces.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_ensemble{i}_300K.npz")['arr_0'])
+    # test_pred_energies.append(
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+    test_force_maes.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_mae_ensemble{i}_300K.npz")['arr_0'])
+    # test_pred_tot_e.append(
+    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+
 train_pred_forces = np.array(train_pred_forces)
 # train_pred_energies = np.array(train_pred_energies)
 train_force_maes = np.array(train_force_maes)
@@ -59,16 +78,16 @@ print(f"test_pred_forces shape: {test_pred_forces.shape}")
 print(f"test_force_maes shape: {test_force_maes.shape}")
 # print(f"test_pred_tot_e shape: {test_pred_tot_e.shape}")
 
-var_train_forces = np.sum(np.var(train_pred_forces, axis=0), axis=1)
+var_train_forces = np.sum(np.var(train_pred_forces[0:10], axis=0), axis=1)
 max_var_train_forces = np.amax(var_train_forces.reshape(27, -1), axis=0)
 # var_train_energies = np.var(train_pred_energies, axis=0)
-mean_train_maes = np.mean(train_force_maes, axis=0)
+mean_train_maes = np.mean(train_force_maes[0:10], axis=0)
 # var_train_tot_e = np.var(train_pred_tot_e, axis=0)
 
-var_test_forces = np.sum(np.var(test_pred_forces, axis=0), axis=1)
+var_test_forces = np.sum(np.var(test_pred_forces[0:10], axis=0), axis=1)
 max_var_test_forces = np.amax(var_test_forces.reshape(27, -1), axis=0)
 # var_test_energies = np.var(test_pred_energies, axis=0)
-mean_test_maes = np.mean(test_force_maes, axis=0)
+mean_test_maes = np.mean(test_force_maes[0:10], axis=0)
 # var_test_tot_e = np.var(test_pred_tot_e, axis=0)
 
 print(f"var_train_forces shape: {var_train_forces.shape}")
@@ -114,7 +133,7 @@ mae_cutoff = 0.043
 # plt.ylabel("Max Atomic Force Variance ((eV/A)^2)", fontsize=16)
 # plt.savefig(f"tot-e-var_vs_f-var_300K.png")
 
-for i in range(27):
+for i in range(num_bpa_atoms):
 
     # Energy variance vs energy mae
     # plt.figure()
