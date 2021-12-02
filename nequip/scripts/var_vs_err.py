@@ -203,12 +203,12 @@ for i in range(num_bpa_atoms):
         linestyle='--',
         label='Variance cutoff (min variance of bad test data)'
     )
-    plt.axvline(mae_cutoff, color='m', linestyle='--', label='Chemical accuracy cutoff')
+    plt.axvline(mae_cutoff ** 2, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.legend(fontsize=16)
     plt.title(
-        f"Atom Index {i} Atomic Force Variance vs. Squared Force MAE (Train 300K, Test 1200K)",
+        f"Atom Index {i} Atomic Force Variance vs. Force MSE (Train 300K, Test 1200K)",
         fontsize=24
     )
-    plt.xlabel("Squared Force MAE ((eV/A)²)", fontsize=20)
+    plt.xlabel("Force MSE ((eV/A)²)", fontsize=20)
     plt.ylabel("Variance of Predicted Atomic Forces ((eV/A)²)", fontsize=20)
     plt.savefig(f"atom{i}_f-var_vs_mae_1200K.png")
