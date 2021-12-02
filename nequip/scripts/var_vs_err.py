@@ -139,7 +139,7 @@ for i in range(27):
     #     fontsize=18
     # )
     # plt.xlabel("Force MAE (eV/A)", fontsize=16)
-    # plt.ylabel("Variance of Predicted Atomic Energies (eV^2)", fontsize=16)
+    # plt.ylabel("Variance of Predicted Atomic Energies (eV²)", fontsize=16)
     # plt.savefig(f"atom{i}_e-var_vs_mae_1200K.png")
 
     # Force variance vs. energy mae
@@ -161,19 +161,19 @@ for i in range(27):
     plt.rc('xtick', labelsize=16)
     plt.rc('ytick', labelsize=16)
     plt.scatter(
-        x=mean_train_maes[i:tot_train_atoms:num_bpa_atoms],
+        x=np.square(mean_train_maes[i:tot_train_atoms:num_bpa_atoms]),
         y=var_train_forces[i:tot_train_atoms:num_bpa_atoms],
         color='k',
         label=f'Training Data'
     )
     plt.scatter(
-        x=atom_i_maes,
+        x=np.square(atom_i_maes),
         y=atom_i_var_forces,
         color='b',
         label=f'Good Test Data: {false_pos} / {tot_test_atoms // num_bpa_atoms} (false positives / total data points)'
     )
     plt.scatter(
-        x=bad_mean_maes,
+        x=np.square(bad_mean_maes),
         y=bad_force_vars,
         color='r',
         label=f'Bad Test Data: {true_pos} / {tot_test_atoms // num_bpa_atoms} (true positives / total data points)'
@@ -187,9 +187,9 @@ for i in range(27):
     plt.axvline(mae_cutoff, color='m', linestyle='--', label='Chemical accuracy cutoff')
     plt.legend(fontsize=16)
     plt.title(
-        f"Atom Index {i} Predicted Atomic Force Variance vs. Force MAE (Train 300K, Test 300K)",
+        f"Atom Index {i} Atomic Force Variance vs. Squared Force MAE (Train 300K, Test 300K)",
         fontsize=24
     )
-    plt.xlabel("Force MAE (eV/A)", fontsize=20)
-    plt.ylabel("Variance of Predicted Atomic Forces ((eV/A)^2)", fontsize=20)
+    plt.xlabel("Squared Force MAE ((eV/A)²)", fontsize=20)
+    plt.ylabel("Variance of Predicted Atomic Forces ((eV/A)²)", fontsize=20)
     plt.savefig(f"atom{i}_f-var_vs_mae_300K.png")
