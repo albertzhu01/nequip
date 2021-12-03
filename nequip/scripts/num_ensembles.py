@@ -183,7 +183,7 @@ for i in range(num_bpa_atoms):
 
     plt.legend(fontsize=16)
     plt.title(
-        f"Atom Index {i} Predicted Atomic Force Variance vs. Force MSE",
+        f"Atom Index {i} Atomic Force Variance vs. Force MSE (Train 300K, Test 300K)",
         fontsize=24
     )
     plt.xlabel("Force MSE ((eV/A)²)", fontsize=20)
