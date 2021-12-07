@@ -23,7 +23,7 @@ test_force_maes = []
 test_pred_tot_e = []
 test_tot_e_err = []
 
-for i in range(20):
+for i in range(10):
     # train_pred_forces.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_ensemble{i}.npz")['arr_0'])
     # train_pred_energies.append(
@@ -96,24 +96,28 @@ print(f"test_tot_e_err shape: {test_tot_e_err.shape}")
 # var_train_energies = np.var(train_pred_energies, axis=0)
 # mean_train_maes = np.mean(train_force_maes[0:10], axis=0)
 var_train_tot_e = np.var(train_pred_tot_e, axis=0)
+mean_train_tot_e_err = np.mean(train_tot_e_err, axis=0)
 
 # var_test_forces = np.sum(np.var(test_pred_forces[0:10], axis=0), axis=1)
 # max_var_test_forces = np.amax(var_test_forces.reshape(27, -1), axis=0)
 # var_test_energies = np.var(test_pred_energies, axis=0)
 # mean_test_maes = np.mean(test_force_maes[0:10], axis=0)
 var_test_tot_e = np.var(test_pred_tot_e, axis=0)
+mean_test_tot_e_err = np.mean(test_tot_e_err, axis=0)
 
 # print(f"var_train_forces shape: {var_train_forces.shape}")
 # print(f"max_var_train_forces shape: {max_var_train_forces.shape}")
 # print(f"var_train_energies shape: {var_train_energies.shape}")
 # print(f"mean_train_maes shape: {mean_train_maes.shape}")
 print(f"var_train_tot_e shape: {var_train_tot_e.shape}")
+print(f"mean_train_tot_e_err shape: {mean_train_tot_e_err.shape}")
 
 # print(f"var_test_forces shape: {var_test_forces.shape}")
 # print(f"max_var_test_forces shape: {max_var_test_forces.shape}")
 # print(f"var_test_energies shape: {var_test_energies.shape}")
 # print(f"mean_test_maes shape: {mean_test_maes.shape}")
 print(f"var_test_tot_e shape: {var_test_tot_e.shape}")
+print(f"mean_test_tot_e_err shape: {mean_test_tot_e_err.shape}")
 
 # tot_test_atoms = len(var_test_forces)
 # tot_train_atoms = len(var_train_forces)
@@ -152,25 +156,25 @@ plt.subplots(figsize=(16, 9))
 plt.rc('xtick', labelsize=14)
 plt.rc('ytick', labelsize=14)
 plt.scatter(
-    x=np.square(train_tot_e_err),
+    x=np.square(mean_train_tot_e_err),
     y=var_train_tot_e,
     color='k',
     label=f'Training Data'
 )
 plt.scatter(
-    x=np.square(test_tot_e_err),
+    x=np.square(mean_test_tot_e_err),
     y=var_test_tot_e,
     color='b',
     label=f'Test Data'
 )
 plt.legend(fontsize=16)
 plt.title(
-    f"Total Energy Variance vs. Total Energy MSE (Train 300K, Test 300K)",
+    f"Total Energy Variance vs. Total Energy Squared MAE (Train 300K, Test 300K)",
     fontsize=24
 )
 plt.xlabel("Total Energy MSE (eV²)", fontsize=20)
 plt.ylabel("Total Energy Variance (eV²)", fontsize=20)
-plt.savefig(f"tot-e_var_mse_300K.png")
+plt.savefig(f"tot-e_var_err_300K.png")
 
 # for i in range(num_bpa_atoms):
 
