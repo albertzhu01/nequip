@@ -91,34 +91,34 @@ print(f"train_tot_e_err shape: {train_tot_e_err.shape}")
 print(f"test_pred_tot_e shape: {test_pred_tot_e.shape}")
 print(f"test_tot_e_err shape: {test_tot_e_err.shape}")
 
-var_train_forces = np.sum(np.var(train_pred_forces[0:10], axis=0), axis=1)
-max_var_train_forces = np.amax(var_train_forces.reshape(27, -1), axis=0)
+# var_train_forces = np.sum(np.var(train_pred_forces[0:10], axis=0), axis=1)
+# max_var_train_forces = np.amax(var_train_forces.reshape(27, -1), axis=0)
 # var_train_energies = np.var(train_pred_energies, axis=0)
-mean_train_maes = np.mean(train_force_maes[0:10], axis=0)
+# mean_train_maes = np.mean(train_force_maes[0:10], axis=0)
 var_train_tot_e = np.var(train_pred_tot_e, axis=0)
 
-var_test_forces = np.sum(np.var(test_pred_forces[0:10], axis=0), axis=1)
-max_var_test_forces = np.amax(var_test_forces.reshape(27, -1), axis=0)
+# var_test_forces = np.sum(np.var(test_pred_forces[0:10], axis=0), axis=1)
+# max_var_test_forces = np.amax(var_test_forces.reshape(27, -1), axis=0)
 # var_test_energies = np.var(test_pred_energies, axis=0)
-mean_test_maes = np.mean(test_force_maes[0:10], axis=0)
+# mean_test_maes = np.mean(test_force_maes[0:10], axis=0)
 var_test_tot_e = np.var(test_pred_tot_e, axis=0)
 
-print(f"var_train_forces shape: {var_train_forces.shape}")
-print(f"max_var_train_forces shape: {max_var_train_forces.shape}")
+# print(f"var_train_forces shape: {var_train_forces.shape}")
+# print(f"max_var_train_forces shape: {max_var_train_forces.shape}")
 # print(f"var_train_energies shape: {var_train_energies.shape}")
-print(f"mean_train_maes shape: {mean_train_maes.shape}")
-# print(f"var_train_tot_e shape: {var_train_tot_e.shape}")
+# print(f"mean_train_maes shape: {mean_train_maes.shape}")
+print(f"var_train_tot_e shape: {var_train_tot_e.shape}")
 
-print(f"var_test_forces shape: {var_test_forces.shape}")
-print(f"max_var_test_forces shape: {max_var_test_forces.shape}")
+# print(f"var_test_forces shape: {var_test_forces.shape}")
+# print(f"max_var_test_forces shape: {max_var_test_forces.shape}")
 # print(f"var_test_energies shape: {var_test_energies.shape}")
-print(f"mean_test_maes shape: {mean_test_maes.shape}")
-# print(f"var_test_tot_e shape: {var_test_tot_e.shape}")
+# print(f"mean_test_maes shape: {mean_test_maes.shape}")
+print(f"var_test_tot_e shape: {var_test_tot_e.shape}")
 
-tot_test_atoms = len(var_test_forces)
-tot_train_atoms = len(var_train_forces)
-num_bpa_atoms = 27
-mae_cutoff = 0.043
+# tot_test_atoms = len(var_test_forces)
+# tot_train_atoms = len(var_train_forces)
+# num_bpa_atoms = 27
+# mae_cutoff = 0.043
 
 # Maximum Atomic Force Variance vs. Total Energy Variance
 # plt.figure()
