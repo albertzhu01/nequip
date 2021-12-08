@@ -25,26 +25,26 @@ test_tot_e_err = []
 
 for i in range(10):
     train_pred_forces.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_ensemble{i}.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_ensemble{i}_600K.npz")['arr_0'])
     train_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_atomic_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
     # train_force_maes.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_mae_ensemble{i}.npz")['arr_0'])
     train_pred_tot_e.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_tot_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
     train_tot_e_err.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_err_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_tot_e_err_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
 
     test_pred_forces.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_ensemble{i}.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_ensemble{i}_600K.npz")['arr_0'])
     test_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_atomic_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
     # test_force_maes.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_mae_ensemble{i}.npz")['arr_0'])
     test_pred_tot_e.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_tot_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
     test_tot_e_err.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_err_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_tot_e_err_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
 
 # for i in range(10, 20):
     # train_pred_forces.append(
@@ -172,12 +172,12 @@ plt.scatter(
 )
 plt.legend(fontsize=14)
 plt.title(
-    f"Max Atomic Force Variance vs. Total Energy Squared Error (Train 300K, Test 300K)",
+    f"Max Atomic Force Variance vs. Total Energy Squared Error (Train 300K, Test 600K)",
     fontsize=18
 )
 plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=16)
 plt.ylabel("Max Atomic Force Variance ((eV/A)²)", fontsize=16)
-plt.savefig(f"f-var_vs_tot-e-err_300K.png")
+plt.savefig(f"f-var_vs_tot-e-err_600K.png")
 
 # Total Energy Variance vs. Total Energy Squared MAE
 # plt.figure()
