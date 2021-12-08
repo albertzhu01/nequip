@@ -163,13 +163,13 @@ plt.scatter(
     color='b',
     label=f'Test Data'
 )
-plt.legend(fontsize=14)
+plt.legend(fontsize=16)
 plt.title(
-    f"Max Atomic Force Variance vs. Total Energy MAE (Train 300K, Test 1200K)",
-    fontsize=18
+    f"Min. GMM Log-Probability Density vs. Total Energy MAE (Train 300K, Test 1200K)",
+    fontsize=24
 )
-plt.xlabel("Total Energy MAE (eV)", fontsize=16)
-plt.ylabel("Minimum Log-Probability Density", fontsize=16)
+plt.xlabel("Total Energy MAE (eV)", fontsize=18)
+plt.ylabel("Minimum Log-Probability Density", fontsize=18)
 plt.savefig(f"logprob_vs_tot-e-err_1200K.png")
 
 # Maximum Atomic Force Variance vs. Total Energy Variance
@@ -215,13 +215,13 @@ plt.savefig(f"logprob_vs_tot-e-err_1200K.png")
 #     color='b',
 #     label=f'Test Data'
 # )
-# plt.legend(fontsize=14)
+# plt.legend(fontsize=16)
 # plt.title(
 #     f"Max Atomic Force Variance vs. Total Energy Squared Error (Train 300K, Test 1200K)",
-#     fontsize=18
+#     fontsize=24
 # )
-# plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=16)
-# plt.ylabel("Max Atomic Force Variance ((eV/A)²)", fontsize=16)
+# plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=18)
+# plt.ylabel("Max Atomic Force Variance ((eV/A)²)", fontsize=18)
 # plt.savefig(f"f-var_vs_tot-e-err_1200K.png")
 
 # Total Energy Variance vs. Total Energy Squared MAE
