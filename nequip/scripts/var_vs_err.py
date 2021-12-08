@@ -154,31 +154,31 @@ print(f"mean_test_tot_e_err shape: {mean_test_tot_e_err.shape}")
 # plt.ylabel("Max Atomic Force Variance ((eV/A)^2)", fontsize=16)
 # plt.savefig(f"tot-e-var_vs_f-var_300K.png")
 
-# Maximum Atomic Energy Variance vs. Total Energy MAE
+# Maximum Atomic Energy Variance vs. Total Energy MAE (or variance)
 plt.figure()
 plt.subplots(figsize=(16, 9))
 plt.rc('xtick', labelsize=14)
 plt.rc('ytick', labelsize=14)
 plt.scatter(
     x=np.square(mean_train_tot_e_err),
-    y=max_var_train_energies,
+    y=var_train_tot_e,
     color='k',
     label=f'Training Data'
 )
 plt.scatter(
     x=np.square(mean_test_tot_e_err),
-    y=max_var_test_energies,
+    y=var_test_tot_e,
     color='b',
     label=f'Test Data'
 )
 plt.legend(fontsize=16)
 plt.title(
-    f"Max. Atomic Energy Variance vs. Total Energy Squared MAE (Train 300K, Test 1200K)",
+    f"Max. Atomic Energy Variance vs. Total Energy Variance (Train 300K, Test 1200K)",
     fontsize=24
 )
-plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=20)
+plt.xlabel("Total Energy Variance (eV²)", fontsize=20)
 plt.ylabel("Maximum Local Energy Variance (eV²)", fontsize=20)
-plt.savefig(f"loc-e-var_tot-err_1200K.png")
+plt.savefig(f"loc-e-var_tot-var_1200K.png")
 
 # Total Energy Variance vs. Total Energy Squared MAE
 # plt.figure()
