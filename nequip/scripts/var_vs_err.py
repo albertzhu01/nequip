@@ -165,12 +165,12 @@ plt.scatter(
 )
 plt.legend(fontsize=16)
 plt.title(
-    f"Min. GMM Log-Probability Density vs. Total Energy Variance (Train 300K, Test 600K)",
+    f"Min. GMM Log-Probability Density vs. Total Energy MAE (Train 300K, Test 600K)",
     fontsize=24
 )
-plt.xlabel("Total Energy Variance (eV²)", fontsize=18)
+plt.xlabel("Total Energy MAE (eV)", fontsize=18)
 plt.ylabel("Minimum Log-Probability Density", fontsize=18)
-plt.savefig(f"logprob_vs_tot-e-var_600K.png")
+plt.savefig(f"logprob_vs_tot-e-err_600K.png")
 
 # Maximum Atomic Force Variance vs. Total Energy Variance
 # plt.figure()
