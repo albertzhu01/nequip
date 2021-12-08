@@ -12,13 +12,13 @@ from nequip.data import AtomicDataDict, AtomicData, Collater
 
 # Script for plotting variances vs. force MAE by loading data outputted from ensemble_uncertainty.py
 train_pred_forces = []
-# train_pred_energies = []
+train_pred_energies = []
 train_force_maes = []
 train_pred_tot_e = []
 train_tot_e_err = []
 
 test_pred_forces = []
-# test_pred_energies = []
+test_pred_energies = []
 test_force_maes = []
 test_pred_tot_e = []
 test_tot_e_err = []
@@ -26,8 +26,8 @@ test_tot_e_err = []
 for i in range(10):
     # train_pred_forces.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_ensemble{i}.npz")['arr_0'])
-    # train_pred_energies.append(
-    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+    train_pred_energies.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
     # train_force_maes.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_mae_ensemble{i}.npz")['arr_0'])
     train_pred_tot_e.append(
@@ -37,8 +37,8 @@ for i in range(10):
 
     # test_pred_forces.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_ensemble{i}.npz")['arr_0'])
-    # test_pred_energies.append(
-    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_atomic_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+    test_pred_energies.append(
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
     # test_force_maes.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_mae_ensemble{i}.npz")['arr_0'])
     test_pred_tot_e.append(
@@ -68,39 +68,41 @@ for i in range(10):
 
 
 # train_pred_forces = np.array(train_pred_forces)
-# train_pred_energies = np.array(train_pred_energies)
+train_pred_energies = np.array(train_pred_energies)
 # train_force_maes = np.array(train_force_maes)
 train_pred_tot_e = np.array(train_pred_tot_e)
 train_tot_e_err = np.array(train_tot_e_err)
 
 # test_pred_forces = np.array(test_pred_forces)
-# test_pred_energies = np.array(test_pred_energies)
+test_pred_energies = np.array(test_pred_energies)
 # test_force_maes = np.array(test_force_maes)
 test_pred_tot_e = np.array(test_pred_tot_e)
 test_tot_e_err = np.array(test_tot_e_err)
 
 # print(f"train_pred_forces shape: {train_pred_forces.shape}")
-# print(f"train_pred_energies shape: {train_pred_energies.shape}")
+print(f"train_pred_energies shape: {train_pred_energies.shape}")
 # print(f"train_force_maes shape: {train_force_maes.shape}")
 print(f"train_pred_tot_e shape: {train_pred_tot_e.shape}")
 print(f"train_tot_e_err shape: {train_tot_e_err.shape}")
 
 # print(f"test_pred_forces shape: {test_pred_forces.shape}")
-# print(f"test_pred_energies shape: {test_pred_energies.shape}")
+print(f"test_pred_energies shape: {test_pred_energies.shape}")
 # print(f"test_force_maes shape: {test_force_maes.shape}")
 print(f"test_pred_tot_e shape: {test_pred_tot_e.shape}")
 print(f"test_tot_e_err shape: {test_tot_e_err.shape}")
 
 # var_train_forces = np.sum(np.var(train_pred_forces[0:10], axis=0), axis=1)
 # max_var_train_forces = np.amax(var_train_forces.reshape(27, -1), axis=0)
-# var_train_energies = np.var(train_pred_energies, axis=0)
+var_train_energies = np.var(train_pred_energies, axis=0)
+max_var_train_energies = np.amax(var_train_energies.reshape(27, -1), axis=0)
 # mean_train_maes = np.mean(train_force_maes[0:10], axis=0)
 var_train_tot_e = np.var(train_pred_tot_e, axis=0)
 mean_train_tot_e_err = np.mean(train_tot_e_err, axis=0)
 
 # var_test_forces = np.sum(np.var(test_pred_forces[0:10], axis=0), axis=1)
 # max_var_test_forces = np.amax(var_test_forces.reshape(27, -1), axis=0)
-# var_test_energies = np.var(test_pred_energies, axis=0)
+var_test_energies = np.var(test_pred_energies, axis=0)
+max_var_test_energies = np.amax(var_test_energies.reshape(27, -1), axis=0)
 # mean_test_maes = np.mean(test_force_maes[0:10], axis=0)
 var_test_tot_e = np.var(test_pred_tot_e, axis=0)
 mean_test_tot_e_err = np.mean(test_tot_e_err, axis=0)
@@ -108,6 +110,7 @@ mean_test_tot_e_err = np.mean(test_tot_e_err, axis=0)
 # print(f"var_train_forces shape: {var_train_forces.shape}")
 # print(f"max_var_train_forces shape: {max_var_train_forces.shape}")
 # print(f"var_train_energies shape: {var_train_energies.shape}")
+print(f"max_var_train_forces shape: {max_var_train_energies.shape}")
 # print(f"mean_train_maes shape: {mean_train_maes.shape}")
 print(f"var_train_tot_e shape: {var_train_tot_e.shape}")
 print(f"mean_train_tot_e_err shape: {mean_train_tot_e_err.shape}")
@@ -115,6 +118,7 @@ print(f"mean_train_tot_e_err shape: {mean_train_tot_e_err.shape}")
 # print(f"var_test_forces shape: {var_test_forces.shape}")
 # print(f"max_var_test_forces shape: {max_var_test_forces.shape}")
 # print(f"var_test_energies shape: {var_test_energies.shape}")
+print(f"max_var_test_forces shape: {max_var_test_energies.shape}")
 # print(f"mean_test_maes shape: {mean_test_maes.shape}")
 print(f"var_test_tot_e shape: {var_test_tot_e.shape}")
 print(f"mean_test_tot_e_err shape: {mean_test_tot_e_err.shape}")
@@ -157,24 +161,50 @@ plt.rc('xtick', labelsize=14)
 plt.rc('ytick', labelsize=14)
 plt.scatter(
     x=np.square(mean_train_tot_e_err),
-    y=var_train_tot_e,
+    y=max_var_train_energies,
     color='k',
     label=f'Training Data'
 )
 plt.scatter(
     x=np.square(mean_test_tot_e_err),
-    y=var_test_tot_e,
+    y=max_var_test_energies,
     color='b',
     label=f'Test Data'
 )
 plt.legend(fontsize=16)
 plt.title(
-    f"Total Energy Variance vs. Total Energy Squared MAE (Train 300K, Test 300K)",
+    f"Max. Atomic Energy Variance vs. Total Energy Squared MAE (Train 300K, Test 300K)",
     fontsize=24
 )
 plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=20)
-plt.ylabel("Total Energy Variance (eV²)", fontsize=20)
-plt.savefig(f"tot-e_var_err_300K.png")
+plt.ylabel("Maximum Local Energy Variance (eV²)", fontsize=20)
+plt.savefig(f"loc-e-var_tot-err_300K.png")
+
+# Total Energy Variance vs. Total Energy Squared MAE
+# plt.figure()
+# plt.subplots(figsize=(16, 9))
+# plt.rc('xtick', labelsize=14)
+# plt.rc('ytick', labelsize=14)
+# plt.scatter(
+#     x=np.square(mean_train_tot_e_err),
+#     y=var_train_tot_e,
+#     color='k',
+#     label=f'Training Data'
+# )
+# plt.scatter(
+#     x=np.square(mean_test_tot_e_err),
+#     y=var_test_tot_e,
+#     color='b',
+#     label=f'Test Data'
+# )
+# plt.legend(fontsize=16)
+# plt.title(
+#     f"Total Energy Variance vs. Total Energy Squared MAE (Train 300K, Test 300K)",
+#     fontsize=24
+# )
+# plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=20)
+# plt.ylabel("Total Energy Variance (eV²)", fontsize=20)
+# plt.savefig(f"tot-e_var_err_300K.png")
 
 # for i in range(num_bpa_atoms):
 
