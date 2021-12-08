@@ -160,14 +160,14 @@ plt.subplots(figsize=(16, 9))
 plt.rc('xtick', labelsize=14)
 plt.rc('ytick', labelsize=14)
 plt.scatter(
-    x=np.square(mean_train_tot_e_err),
-    y=var_train_tot_e,
+    x=var_train_tot_e,
+    y=max_var_train_energies,
     color='k',
     label=f'Training Data'
 )
 plt.scatter(
-    x=np.square(mean_test_tot_e_err),
-    y=var_test_tot_e,
+    x=var_test_tot_e,
+    y=max_var_test_energies,
     color='b',
     label=f'Test Data'
 )
