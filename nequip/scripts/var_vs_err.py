@@ -26,26 +26,26 @@ test_tot_e_err = []
 
 for i in range(10):
     train_pred_forces.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_forces_ensemble{i}_600K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_ensemble{i}.npz")['arr_0'])
     train_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_atomic_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
     # train_force_maes.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_mae_ensemble{i}.npz")['arr_0'])
     train_pred_tot_e.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_tot_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
     train_tot_e_err.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_tot_e_err_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_err_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
     test_pred_forces.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_forces_ensemble{i}_600K.npz")['arr_0'])
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_ensemble{i}.npz")['arr_0'])
     test_pred_energies.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_atomic_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
     # test_force_maes.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_mae_ensemble{i}.npz")['arr_0'])
     test_pred_tot_e.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_tot_e_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
     test_tot_e_err.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_tot_e_err_ensemble{i}_600K.npz")['arr_0'].reshape(-1))
+        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_err_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
 # for i in range(10, 20):
     # train_pred_forces.append(
@@ -66,8 +66,8 @@ for i in range(10):
     # test_pred_tot_e.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
-train_features = np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_features_ensemble19_600K.npz")['arr_0']
-test_features = np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_features_ensemble19_600K.npz")['arr_0']
+train_features = np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_features_ensemble19_300K.npz")['arr_0']
+test_features = np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_features_ensemble19_300K.npz")['arr_0']
 
 n_components = np.arange(1, 28)
 models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
@@ -165,12 +165,12 @@ plt.scatter(
 )
 plt.legend(fontsize=16)
 plt.title(
-    f"Min. GMM Log-Probability Density vs. Total Energy MAE (Train 300K, Test 600K)",
+    f"Min. GMM Log-Probability Density vs. Total Energy MAE (Train 300K, Test 300K)",
     fontsize=24
 )
 plt.xlabel("Total Energy MAE (eV)", fontsize=18)
 plt.ylabel("Minimum Log-Probability Density", fontsize=18)
-plt.savefig(f"logprob_vs_tot-e-err_600K.png")
+plt.savefig(f"logprob_vs_tot-e-err_300K.png")
 
 # Minimum GMM Logprob vs. Total Energy Variance
 plt.figure()
@@ -191,12 +191,12 @@ plt.scatter(
 )
 plt.legend(fontsize=16)
 plt.title(
-    f"Min. GMM Log-Probability Density vs. Total Energy Variance (Train 300K, Test 600K)",
+    f"Min. GMM Log-Probability Density vs. Total Energy Variance (Train 300K, Test 300K)",
     fontsize=24
 )
 plt.xlabel("Total Energy MAE (eV²)", fontsize=18)
 plt.ylabel("Minimum Log-Probability Density", fontsize=18)
-plt.savefig(f"logprob_vs_tot-e-var_600K.png")
+plt.savefig(f"logprob_vs_tot-e-var_300K.png")
 
 # Maximum Atomic Force Variance vs. Total Energy Variance
 # plt.figure()
