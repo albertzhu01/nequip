@@ -165,7 +165,7 @@ plt.scatter(
 )
 plt.legend(fontsize=14)
 plt.title(
-    f"Max Atomic Force Variance vs. Total Energy Squared Error (Train 300K, Test 1200K)",
+    f"Max Atomic Force Variance vs. Total Energy MAE (Train 300K, Test 1200K)",
     fontsize=18
 )
 plt.xlabel("Total Energy MAE (eV)", fontsize=16)
