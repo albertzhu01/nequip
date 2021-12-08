@@ -152,25 +152,25 @@ plt.subplots(figsize=(16, 9))
 plt.rc('xtick', labelsize=14)
 plt.rc('ytick', labelsize=14)
 plt.scatter(
-    x=mean_train_tot_e_err,
+    x=var_train_tot_e,
     y=min_train_logprobs,
     color='k',
     label=f'Training Data'
 )
 plt.scatter(
-    x=mean_test_tot_e_err,
+    x=var_test_tot_e,
     y=min_test_logprobs,
     color='b',
     label=f'Test Data'
 )
 plt.legend(fontsize=16)
 plt.title(
-    f"Min. GMM Log-Probability Density vs. Total Energy MAE (Train 300K, Test 1200K)",
+    f"Min. GMM Log-Probability Density vs. Total Energy Variance (Train 300K, Test 1200K)",
     fontsize=24
 )
-plt.xlabel("Total Energy MAE (eV)", fontsize=18)
+plt.xlabel("Total Energy Variance (eV²)", fontsize=18)
 plt.ylabel("Minimum Log-Probability Density", fontsize=18)
-plt.savefig(f"logprob_vs_tot-e-err_1200K.png")
+plt.savefig(f"logprob_vs_tot-e-var_1200K.png")
 
 # Maximum Atomic Force Variance vs. Total Energy Variance
 # plt.figure()
