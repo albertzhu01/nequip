@@ -172,7 +172,7 @@ plt.title(
     f"Total Energy Variance vs. Total Energy Squared MAE (Train 300K, Test 1200K)",
     fontsize=24
 )
-plt.xlabel("Total Energy MSE (eV²)", fontsize=20)
+plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=20)
 plt.ylabel("Total Energy Variance (eV²)", fontsize=20)
 plt.savefig(f"tot-e_var_err_1200K.png")
 
