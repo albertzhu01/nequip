@@ -66,8 +66,8 @@ for i in range(10):
     # test_pred_tot_e.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
-train_features = np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_features_ensemble19_200K.npz")['arr_0']
-test_features = np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_features_ensemble19_200K.npz")['arr_0']
+train_features = np.load(f"/n/home10/axzhu/nequip/ensembles_600K/train_features_ensemble19_600K.npz")['arr_0']
+test_features = np.load(f"/n/home10/axzhu/nequip/ensembles_600K/test_features_ensemble19_600K.npz")['arr_0']
 
 n_components = np.arange(1, 28)
 models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
@@ -165,12 +165,12 @@ plt.scatter(
 )
 plt.legend(fontsize=16)
 plt.title(
-    f"Min. GMM Log-Probability Density vs. Total Energy Variance (Train 300K, Test 1200K)",
+    f"Min. GMM Log-Probability Density vs. Total Energy Variance (Train 300K, Test 600K)",
     fontsize=24
 )
 plt.xlabel("Total Energy Variance (eV²)", fontsize=18)
 plt.ylabel("Minimum Log-Probability Density", fontsize=18)
-plt.savefig(f"logprob_vs_tot-e-var_1200K.png")
+plt.savefig(f"logprob_vs_tot-e-var_600K.png")
 
 # Maximum Atomic Force Variance vs. Total Energy Variance
 # plt.figure()
