@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 import textwrap
+from sklearn import mixture
 
 from pathlib import Path
 from sklearn.metrics import mean_absolute_error
@@ -65,6 +66,24 @@ for i in range(10):
     # test_pred_tot_e.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
+train_features = np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/train_features_ensemble19_200K.npz")['arr_0']
+test_features = np.load(f"/n/home10/axzhu/nequip/ensembles_1200K/test_features_ensemble19_200K.npz")['arr_0']
+
+n_components = np.arange(1, 28)
+models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
+bics = [model.fit(train_features).bic(train_features) for model in models]
+print(f"Number of components with min BIC: {bics.index(min(bics))}")
+gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
+gmm.fit(train_features)
+print(f"GMM converged? {gmm.converged_}")
+
+
+train_log_probs = gmm.score_samples(train_features)
+test_log_probs = gmm.score_samples(test_features)
+print(f"train_log_probs shape: {train_log_probs.shape}")
+print(f"test_log_probs shape: {test_log_probs.shape}")
+min_train_logprobs = np.amin(train_log_probs.reshape(27, -1), axis=0)
+min_test_logprobs = np.amin(test_log_probs.reshape(27, -1), axis=0)
 
 train_pred_forces = np.array(train_pred_forces)
 train_pred_energies = np.array(train_pred_energies)
@@ -127,6 +146,32 @@ print(f"mean_test_tot_e_err shape: {mean_test_tot_e_err.shape}")
 # num_bpa_atoms = 27
 # mae_cutoff = 0.043
 
+# Minimum GMM Logprob vs. Total Energy Variance / Error
+plt.figure()
+plt.subplots(figsize=(16, 9))
+plt.rc('xtick', labelsize=14)
+plt.rc('ytick', labelsize=14)
+plt.scatter(
+    x=mean_train_tot_e_err,
+    y=min_train_logprobs,
+    color='k',
+    label=f'Training Data'
+)
+plt.scatter(
+    x=mean_test_tot_e_err,
+    y=min_test_logprobs,
+    color='b',
+    label=f'Test Data'
+)
+plt.legend(fontsize=14)
+plt.title(
+    f"Max Atomic Force Variance vs. Total Energy Squared Error (Train 300K, Test 1200K)",
+    fontsize=18
+)
+plt.xlabel("Total Energy MAE (eV)", fontsize=16)
+plt.ylabel("Minimum Log-Probability Density", fontsize=16)
+plt.savefig(f"logprob_vs_tot-e-err_1200K.png")
+
 # Maximum Atomic Force Variance vs. Total Energy Variance
 # plt.figure()
 # plt.subplots(figsize=(16, 9))
@@ -153,31 +198,31 @@ print(f"mean_test_tot_e_err shape: {mean_test_tot_e_err.shape}")
 # plt.ylabel("Max Atomic Force Variance ((eV/A)^2)", fontsize=16)
 # plt.savefig(f"tot-e-var_vs_f-var_300K.png")
 
-# Maximum Atomic Force Variance vs. Total Energy Variance / Error
-plt.figure()
-plt.subplots(figsize=(16, 9))
-plt.rc('xtick', labelsize=14)
-plt.rc('ytick', labelsize=14)
-plt.scatter(
-    x=np.square(mean_train_tot_e_err),
-    y=max_var_train_forces,
-    color='k',
-    label=f'Training Data'
-)
-plt.scatter(
-    x=np.square(mean_test_tot_e_err),
-    y=max_var_test_forces,
-    color='b',
-    label=f'Test Data'
-)
-plt.legend(fontsize=14)
-plt.title(
-    f"Max Atomic Force Variance vs. Total Energy Squared Error (Train 300K, Test 1200K)",
-    fontsize=18
-)
-plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=16)
-plt.ylabel("Max Atomic Force Variance ((eV/A)²)", fontsize=16)
-plt.savefig(f"f-var_vs_tot-e-err_1200K.png")
+# # Maximum Atomic Force Variance vs. Total Energy Variance / Error
+# plt.figure()
+# plt.subplots(figsize=(16, 9))
+# plt.rc('xtick', labelsize=14)
+# plt.rc('ytick', labelsize=14)
+# plt.scatter(
+#     x=np.square(mean_train_tot_e_err),
+#     y=max_var_train_forces,
+#     color='k',
+#     label=f'Training Data'
+# )
+# plt.scatter(
+#     x=np.square(mean_test_tot_e_err),
+#     y=max_var_test_forces,
+#     color='b',
+#     label=f'Test Data'
+# )
+# plt.legend(fontsize=14)
+# plt.title(
+#     f"Max Atomic Force Variance vs. Total Energy Squared Error (Train 300K, Test 1200K)",
+#     fontsize=18
+# )
+# plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=16)
+# plt.ylabel("Max Atomic Force Variance ((eV/A)²)", fontsize=16)
+# plt.savefig(f"f-var_vs_tot-e-err_1200K.png")
 
 # Total Energy Variance vs. Total Energy Squared MAE
 # plt.figure()
