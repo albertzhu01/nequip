@@ -29,23 +29,35 @@ for i in range(10):
         np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_ensemble{i}.npz")['arr_0'])
     train_pred_energies.append(
         np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
-    # train_force_maes.append(
-    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_mae_ensemble{i}.npz")['arr_0'])
+    train_force_maes.append(
+        np.square(
+            np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_forces_mae_ensemble{i}.npz")['arr_0']
+        )
+    )
     train_pred_tot_e.append(
         np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
     train_tot_e_err.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_err_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+        np.square(
+            np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_tot_e_err_ensemble{i}_300K.npz")['arr_0'].reshape(-1)
+        )
+    )
 
     test_pred_forces.append(
         np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_ensemble{i}.npz")['arr_0'])
     test_pred_energies.append(
         np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_atomic_e_ensemble{i}.npz")['arr_0'].reshape(-1))
-    # test_force_maes.append(
-    #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_mae_ensemble{i}.npz")['arr_0'])
+    test_force_maes.append(
+        np.square(
+            np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_forces_mae_ensemble{i}.npz")['arr_0']
+        )
+    )
     test_pred_tot_e.append(
         np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
     test_tot_e_err.append(
-        np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_err_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
+        np.square(
+            np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_err_ensemble{i}_300K.npz")['arr_0'].reshape(-1)
+        )
+    )
 
 # for i in range(10, 20):
     # train_pred_forces.append(
@@ -66,24 +78,24 @@ for i in range(10):
     # test_pred_tot_e.append(
     #     np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_tot_e_ensemble{i}_300K.npz")['arr_0'].reshape(-1))
 
-train_features = np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_features_ensemble19_300K.npz")['arr_0']
-test_features = np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_features_ensemble19_300K.npz")['arr_0']
+# train_features = np.load(f"/n/home10/axzhu/nequip/ensembles_300K/train_features_ensemble19_300K.npz")['arr_0']
+# test_features = np.load(f"/n/home10/axzhu/nequip/ensembles_300K/test_features_ensemble19_300K.npz")['arr_0']
+#
+# n_components = np.arange(1, 28)
+# models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
+# bics = [model.fit(train_features).bic(train_features) for model in models]
+# print(f"Number of components with min BIC: {bics.index(min(bics))}")
+# gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
+# gmm.fit(train_features)
+# print(f"GMM converged? {gmm.converged_}")
 
-n_components = np.arange(1, 28)
-models = [mixture.GaussianMixture(n_components=n, covariance_type='full', random_state=0) for n in n_components]
-bics = [model.fit(train_features).bic(train_features) for model in models]
-print(f"Number of components with min BIC: {bics.index(min(bics))}")
-gmm = mixture.GaussianMixture(n_components=bics.index(min(bics)), covariance_type='full', random_state=0)
-gmm.fit(train_features)
-print(f"GMM converged? {gmm.converged_}")
 
-
-train_log_probs = gmm.score_samples(train_features)
-test_log_probs = gmm.score_samples(test_features)
-print(f"train_log_probs shape: {train_log_probs.shape}")
-print(f"test_log_probs shape: {test_log_probs.shape}")
-min_train_logprobs = np.amin(train_log_probs.reshape(27, -1), axis=0)
-min_test_logprobs = np.amin(test_log_probs.reshape(27, -1), axis=0)
+# train_log_probs = gmm.score_samples(train_features)
+# test_log_probs = gmm.score_samples(test_features)
+# print(f"train_log_probs shape: {train_log_probs.shape}")
+# print(f"test_log_probs shape: {test_log_probs.shape}")
+# min_train_logprobs = np.amin(train_log_probs.reshape(27, -1), axis=0)
+# min_test_logprobs = np.amin(test_log_probs.reshape(27, -1), axis=0)
 
 train_pred_forces = np.array(train_pred_forces)
 train_pred_energies = np.array(train_pred_energies)
@@ -147,56 +159,56 @@ print(f"mean_test_tot_e_err shape: {mean_test_tot_e_err.shape}")
 # mae_cutoff = 0.043
 
 # Minimum GMM Logprob vs. Total Energy Variance / Error
-plt.figure()
-plt.subplots(figsize=(16, 9))
-plt.rc('xtick', labelsize=14)
-plt.rc('ytick', labelsize=14)
-plt.scatter(
-    x=mean_train_tot_e_err,
-    y=min_train_logprobs,
-    color='k',
-    label=f'Training Data'
-)
-plt.scatter(
-    x=mean_test_tot_e_err,
-    y=min_test_logprobs,
-    color='b',
-    label=f'Test Data'
-)
-plt.legend(fontsize=16)
-plt.title(
-    f"Min. GMM Log-Probability Density vs. Total Energy MAE (Train 300K, Test 300K)",
-    fontsize=24
-)
-plt.xlabel("Total Energy MAE (eV)", fontsize=18)
-plt.ylabel("Minimum Log-Probability Density", fontsize=18)
-plt.savefig(f"logprob_vs_tot-e-err_300K.png")
+# plt.figure()
+# plt.subplots(figsize=(16, 9))
+# plt.rc('xtick', labelsize=14)
+# plt.rc('ytick', labelsize=14)
+# plt.scatter(
+#     x=mean_train_tot_e_err,
+#     y=min_train_logprobs,
+#     color='k',
+#     label=f'Training Data'
+# )
+# plt.scatter(
+#     x=mean_test_tot_e_err,
+#     y=min_test_logprobs,
+#     color='b',
+#     label=f'Test Data'
+# )
+# plt.legend(fontsize=16)
+# plt.title(
+#     f"Min. GMM Log-Probability Density vs. Total Energy MAE (Train 300K, Test 300K)",
+#     fontsize=24
+# )
+# plt.xlabel("Total Energy MAE (eV)", fontsize=18)
+# plt.ylabel("Minimum Log-Probability Density", fontsize=18)
+# plt.savefig(f"logprob_vs_tot-e-err_300K.png")
 
 # Minimum GMM Logprob vs. Total Energy Variance
-plt.figure()
-plt.subplots(figsize=(16, 9))
-plt.rc('xtick', labelsize=14)
-plt.rc('ytick', labelsize=14)
-plt.scatter(
-    x=var_train_tot_e,
-    y=min_train_logprobs,
-    color='k',
-    label=f'Training Data'
-)
-plt.scatter(
-    x=var_test_tot_e,
-    y=min_test_logprobs,
-    color='b',
-    label=f'Test Data'
-)
-plt.legend(fontsize=16)
-plt.title(
-    f"Min. GMM Log-Probability Density vs. Total Energy Variance (Train 300K, Test 300K)",
-    fontsize=24
-)
-plt.xlabel("Total Energy MAE (eV²)", fontsize=18)
-plt.ylabel("Minimum Log-Probability Density", fontsize=18)
-plt.savefig(f"logprob_vs_tot-e-var_300K.png")
+# plt.figure()
+# plt.subplots(figsize=(16, 9))
+# plt.rc('xtick', labelsize=14)
+# plt.rc('ytick', labelsize=14)
+# plt.scatter(
+#     x=var_train_tot_e,
+#     y=min_train_logprobs,
+#     color='k',
+#     label=f'Training Data'
+# )
+# plt.scatter(
+#     x=var_test_tot_e,
+#     y=min_test_logprobs,
+#     color='b',
+#     label=f'Test Data'
+# )
+# plt.legend(fontsize=16)
+# plt.title(
+#     f"Min. GMM Log-Probability Density vs. Total Energy Variance (Train 300K, Test 300K)",
+#     fontsize=24
+# )
+# plt.xlabel("Total Energy MAE (eV²)", fontsize=18)
+# plt.ylabel("Minimum Log-Probability Density", fontsize=18)
+# plt.savefig(f"logprob_vs_tot-e-var_300K.png")
 
 # Maximum Atomic Force Variance vs. Total Energy Variance
 # plt.figure()
@@ -224,57 +236,109 @@ plt.savefig(f"logprob_vs_tot-e-var_300K.png")
 # plt.ylabel("Max Atomic Force Variance ((eV/A)²)", fontsize=16)
 # plt.savefig(f"tot-e-var_vs_f-var_300K.png")
 
-# # Maximum Atomic Force Variance vs. Total Energy Variance / Error
+# Maximum Atomic Force Variance vs. Total Energy Variance / Error
 # plt.figure()
 # plt.subplots(figsize=(16, 9))
 # plt.rc('xtick', labelsize=14)
 # plt.rc('ytick', labelsize=14)
 # plt.scatter(
-#     x=np.square(mean_train_tot_e_err),
+#     x=mean_train_tot_e_err,
 #     y=max_var_train_forces,
 #     color='k',
 #     label=f'Training Data'
 # )
 # plt.scatter(
-#     x=np.square(mean_test_tot_e_err),
+#     x=mean_test_tot_e_err,
 #     y=max_var_test_forces,
 #     color='b',
 #     label=f'Test Data'
 # )
 # plt.legend(fontsize=16)
 # plt.title(
-#     f"Max Atomic Force Variance vs. Total Energy Squared Error (Train 300K, Test 1200K)",
+#     f"Max Atomic Force Variance vs. Total MSE (Train 300K, Test 1200K)",
 #     fontsize=24
 # )
-# plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=18)
+# plt.xlabel("Total Energy MSE (eV²)", fontsize=18)
 # plt.ylabel("Max Atomic Force Variance ((eV/A)²)", fontsize=18)
 # plt.savefig(f"f-var_vs_tot-e-err_1200K.png")
 
-# Total Energy Variance vs. Total Energy Squared MAE
-# plt.figure()
-# plt.subplots(figsize=(16, 9))
-# plt.rc('xtick', labelsize=14)
-# plt.rc('ytick', labelsize=14)
-# plt.scatter(
-#     x=np.square(mean_train_tot_e_err),
-#     y=var_train_tot_e,
-#     color='k',
-#     label=f'Training Data'
-# )
-# plt.scatter(
-#     x=np.square(mean_test_tot_e_err),
-#     y=var_test_tot_e,
-#     color='b',
-#     label=f'Test Data'
-# )
-# plt.legend(fontsize=16)
-# plt.title(
-#     f"Total Energy Variance vs. Total Energy Squared MAE (Train 300K, Test 300K)",
-#     fontsize=24
-# )
-# plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=20)
-# plt.ylabel("Total Energy Variance (eV²)", fontsize=20)
-# plt.savefig(f"tot-e_var_err_300K.png")
+# Maximum Atomic Force Variance vs. Total Energy Variance / Error
+plt.figure()
+plt.subplots(figsize=(16, 9))
+plt.rc('xtick', labelsize=14)
+plt.rc('ytick', labelsize=14)
+plt.scatter(
+    x=mean_train_tot_e_err,
+    y=np.mean(var_train_energies.reshape(27, -1), axis=0),
+    color='k',
+    label=f'Training Data'
+)
+plt.scatter(
+    x=mean_test_tot_e_err,
+    y=np.mean(var_test_energies.reshape(27, -1), axis=0),
+    color='b',
+    label=f'Test Data'
+)
+plt.legend(fontsize=16)
+plt.title(
+    f"Mean Local Energy Variance vs. Total Energy Squared MAE (Train 300K, Test 300K)",
+    fontsize=24
+)
+plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=18)
+plt.ylabel("Mean Local Energy Variance ((eV/A)²)", fontsize=18)
+plt.savefig(f"mean-loc-e-var_tot-err_300K.png")
+
+# Maximum Atomic Force Variance vs. Total Energy Variance / Error
+plt.figure()
+plt.subplots(figsize=(16, 9))
+plt.rc('xtick', labelsize=14)
+plt.rc('ytick', labelsize=14)
+plt.scatter(
+    x=var_train_tot_e,
+    y=np.mean(var_train_energies.reshape(27, -1), axis=0),
+    color='k',
+    label=f'Training Data'
+)
+plt.scatter(
+    x=var_test_tot_e,
+    y=np.mean(var_test_energies.reshape(27, -1), axis=0),
+    color='b',
+    label=f'Test Data'
+)
+plt.legend(fontsize=16)
+plt.title(
+    f"Mean Local Energy Variance vs. Total Energy Variance (Train 300K, Test 300K)",
+    fontsize=24
+)
+plt.xlabel("Total Energy Variance (eV²)", fontsize=18)
+plt.ylabel("Mean Local Energy Variance ((eV/A)²)", fontsize=18)
+plt.savefig(f"mean-loc-e-var_tot-var_300K.png")
+
+# Total Energy Variance vs. Total Energy Mean MSE
+plt.figure()
+plt.subplots(figsize=(16, 9))
+plt.rc('xtick', labelsize=14)
+plt.rc('ytick', labelsize=14)
+plt.scatter(
+    x=mean_train_tot_e_err,
+    y=var_train_tot_e,
+    color='k',
+    label=f'Training Data'
+)
+plt.scatter(
+    x=np.square(mean_test_tot_e_err),
+    y=var_test_tot_e,
+    color='b',
+    label=f'Test Data'
+)
+plt.legend(fontsize=16)
+plt.title(
+    f"Total Energy Variance vs. Total Energy Squared MAE (Train 300K, Test 300K)",
+    fontsize=24
+)
+plt.xlabel("Total Energy Squared MAE (eV²)", fontsize=20)
+plt.ylabel("Total Energy Variance (eV²)", fontsize=20)
+plt.savefig(f"tot-e_var_err_300K.png")
 
 # for i in range(num_bpa_atoms):
 
