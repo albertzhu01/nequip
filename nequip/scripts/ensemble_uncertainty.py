@@ -5,7 +5,7 @@ import argparse
 import textwrap
 
 from pathlib import Path
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 from nequip.utils import Config, dataset_from_config
 from nequip.data import AtomicDataDict, AtomicData, Collater
 
@@ -89,14 +89,20 @@ def main(args=None):
         print(f"{test_train}_pred_tot_e shape: {pred_tot_e.shape}")
         print(f"{test_train}_actual_energies shape: {actual_energies.shape}")
         force_maes = []
+        force_mses = []
         for force in range(len(pred_forces)):
             force_maes.append(mean_absolute_error(pred_forces[force], actual_forces[force]))
+            force_mses.append(mean_squared_error(pred_forces[force], actual_forces[force]))
         force_maes = np.array(force_maes)
+        force_mses = np.array(force_mses)
         tot_energy_err = []
+        tot_energy_se = []
         for energy in range(len(pred_tot_e)):
             tot_energy_err.append(abs(actual_energies[energy] - pred_tot_e[energy]))
+            tot_energy_se.append((actual_energies[energy] - pred_tot_e[energy]) ** 2)
         tot_energy_err = np.array(tot_energy_err)
-        return [pred_energies, pred_forces, force_maes, pred_tot_e, tot_energy_err, features]
+        tot_energy_se = np.array(tot_energy_se)
+        return [pred_energies, pred_forces, force_maes, pred_tot_e, tot_energy_err, features, force_mses, tot_energy_se]
 
     # Evaluate model on batch of training data and test data
     train_out_e_f = evaluate(dataset_train, train_data_list, "train")
@@ -107,14 +113,18 @@ def main(args=None):
     # np.savez(f'train_forces_mae_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[2])
     # np.savez(f'train_tot_e_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[3])
     # np.savez(f'train_tot_e_err_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[4])
-    np.savez(f'train_features_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[5])
+    # np.savez(f'train_features_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[5])
+    np.savez(f'train_forces_mse_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[6])
+    np.savez(f'train_tot_e_se_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', train_out_e_f[7])
 
     # np.savez(f'test_atomic_e_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[0])
     # np.savez(f'test_forces_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[1])
     # np.savez(f'test_forces_mae_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[2])
     # np.savez(f'test_tot_e_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[3])
     # np.savez(f'test_tot_e_err_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[4])
-    np.savez(f'test_features_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[5])
+    # np.savez(f'test_features_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[5])
+    np.savez(f'test_forces_mse_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[6])
+    np.savez(f'test_tot_e_se_{path[-10:]}_{str(args.dataset_config_test)[-9:-5]}', test_out_e_f[7])
 
 
 if __name__ == "__main__":
