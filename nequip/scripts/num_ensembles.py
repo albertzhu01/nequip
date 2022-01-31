@@ -158,25 +158,25 @@ for i in range(num_bpa_atoms):
     plt.rc('ytick', labelsize=16)
     plt.scatter(
         x=mean_test_maes5[i:tot_test_atoms:num_bpa_atoms],
-        y=var_test_forces5[i:tot_test_atoms:num_bpa_atoms],
+        y=np.sqrt(var_test_forces5[i:tot_test_atoms:num_bpa_atoms]),
         color='r',
         label=f'5 ensembles'
     )
     plt.scatter(
         x=mean_test_maes10[i:tot_test_atoms:num_bpa_atoms],
-        y=var_test_forces10[i:tot_test_atoms:num_bpa_atoms],
+        y=np.sqrt(var_test_forces10[i:tot_test_atoms:num_bpa_atoms]),
         color='g',
         label=f'10 ensembles'
     )
     plt.scatter(
         x=mean_test_maes15[i:tot_test_atoms:num_bpa_atoms],
-        y=var_test_forces15[i:tot_test_atoms:num_bpa_atoms],
+        y=np.sqrt(var_test_forces15[i:tot_test_atoms:num_bpa_atoms]),
         color='b',
         label=f'15 ensembles'
     )
     plt.scatter(
         x=mean_test_maes20[i:tot_test_atoms:num_bpa_atoms],
-        y=var_test_forces20[i:tot_test_atoms:num_bpa_atoms],
+        y=np.sqrt(var_test_forces20[i:tot_test_atoms:num_bpa_atoms]),
         color='k',
         label=f'20 ensembles'
     )
