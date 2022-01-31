@@ -157,25 +157,25 @@ for i in range(num_bpa_atoms):
     plt.rc('xtick', labelsize=16)
     plt.rc('ytick', labelsize=16)
     plt.scatter(
-        x=np.square(mean_test_maes5[i:tot_test_atoms:num_bpa_atoms]),
+        x=mean_test_maes5[i:tot_test_atoms:num_bpa_atoms],
         y=var_test_forces5[i:tot_test_atoms:num_bpa_atoms],
         color='r',
         label=f'5 ensembles'
     )
     plt.scatter(
-        x=np.square(mean_test_maes10[i:tot_test_atoms:num_bpa_atoms]),
+        x=mean_test_maes10[i:tot_test_atoms:num_bpa_atoms],
         y=var_test_forces10[i:tot_test_atoms:num_bpa_atoms],
         color='g',
         label=f'10 ensembles'
     )
     plt.scatter(
-        x=np.square(mean_test_maes15[i:tot_test_atoms:num_bpa_atoms]),
+        x=mean_test_maes15[i:tot_test_atoms:num_bpa_atoms],
         y=var_test_forces15[i:tot_test_atoms:num_bpa_atoms],
         color='b',
         label=f'15 ensembles'
     )
     plt.scatter(
-        x=np.square(mean_test_maes20[i:tot_test_atoms:num_bpa_atoms]),
+        x=mean_test_maes20[i:tot_test_atoms:num_bpa_atoms],
         y=var_test_forces20[i:tot_test_atoms:num_bpa_atoms],
         color='k',
         label=f'20 ensembles'
@@ -183,9 +183,9 @@ for i in range(num_bpa_atoms):
 
     plt.legend(fontsize=16)
     plt.title(
-        f"Atom Index {i} Atomic Force Variance vs. Force MSE (Train 300K, Test 1200K)",
+        f"Atom Index {i} Atomic Force Stddev vs. Force MAE (Train 300K, Test 1200K)",
         fontsize=24
     )
-    plt.xlabel("Force MSE ((eV/A)²)", fontsize=20)
-    plt.ylabel("Variance of Predicted Atomic Forces ((eV/A)²)", fontsize=20)
-    plt.savefig(f"atom{i}_num_ensembles_1200K.png")
+    plt.xlabel("Force MAE (eV/A)", fontsize=20)
+    plt.ylabel("Standard Deviation of Predicted Atomic Forces ((eV/A)²)", fontsize=20)
+    plt.savefig(f"atom{i}_num_ensem_stddev_1200K.png")
