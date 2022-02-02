@@ -5,7 +5,7 @@
 #                 Please see `example.yaml` for a reasonable starting point.
 
 # general
-root: results/aspirin
+root: results/bpa
 run_name: minimal
 seed: 123
 dataset_seed: 456
