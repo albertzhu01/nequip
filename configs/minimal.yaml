@@ -9,6 +9,7 @@ root: results/aspirin
 run_name: minimal
 seed: 123
 dataset_seed: 456
+append: true
 
 # network
 num_basis: 8
