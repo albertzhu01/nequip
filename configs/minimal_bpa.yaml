@@ -42,6 +42,7 @@ chemical_symbols:
   - H
   - O
   - C
+  - N
 
 # logging
 wandb: false
