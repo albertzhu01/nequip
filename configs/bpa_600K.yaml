@@ -60,6 +60,12 @@ dataset_file_name: ./configs_final/test_600K.xyz                                
 ase_args:                                                                        # any arguments needed by ase.io.read
   format: extxyz
 
+chemical_symbols:
+  - H
+  - O
+  - C
+  - N
+
 # logging
 wandb: true                                                                        # we recommend using wandb for logging, we'll turn it off here as it's optional
 wandb_project: aspirin                                                             # project name used in wandb
