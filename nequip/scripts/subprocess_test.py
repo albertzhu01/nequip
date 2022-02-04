@@ -1,6 +1,6 @@
 import subprocess
 
-params = {"train-dir": "/n/home10/axzhu/nequip/results/bpa/minimal/",
+params = {"train-dir": "/n/home10/axzhu/nequip/results/bpa/minimal_sub-no-train/",
           "model": "/n/home10/axzhu/nequip/results/bpa/minimal_sub-no-train/last_model.pth",
           "dataset-config": "/n/home10/axzhu/nequip/configs/bpa_600K.yaml",
           "output": "bpasub-no-train-600K.xyz",
