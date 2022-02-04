@@ -6,7 +6,7 @@
 
 # general
 root: results/bpa
-run_name: minimal
+run_name: minimal_sub
 seed: 123
 dataset_seed: 456
 append: true
@@ -24,7 +24,7 @@ num_features: 16
 # all arrays are expected to have the shape of (nframe, natom, ?) except the fixed fields
 # note that if your data set uses pbc, you need to also pass an array that maps to the nequip "pbc" key
 dataset: ase
-dataset_file_name: ./configs_final/test_300K.xyz                                 # need to be a format accepted by ase.io.read
+dataset_file_name: ./configs_final/train_300K.xyz                                # need to be a format accepted by ase.io.read
 ase_args:                                                                        # any arguments needed by ase.io.read
   format: extxyz
 #dataset: npz                                                                       # type of data set, can be npz or ase
