@@ -9,7 +9,7 @@ from ase.visualize import view
 from ase.io import read
 from sklearn.metrics import mean_absolute_error
 
-from nequip.utils import Config, dataset_from_config
+from nequip.utils import Config
 from nequip.data import AtomicDataDict, AtomicData, Collater
 from nequip.nn import SequentialGraphNetwork, SaveForOutput
 # matplotlib.rc('xtick', labelsize=20)
@@ -26,10 +26,12 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 # print(idx)
 # print(arr[idx])
 
-# atoms = read("C:/Users/alber/nequip/configs_final/test_300K.xyz")
-# for idx, atom in enumerate(atoms):
-#     print(atom)
-#     print(idx)
+atoms = read("C:/Users/alber/nequip/bpasub-no-train-600K.xyz", index=":", format="extxyz")
+for idx, atom in enumerate(atoms[:2]):
+    print(atom)
+    print(atom.get_potential_energies())
+    for key in atom:
+        print(key)
 # print(atoms)
 # view(atoms)
 
@@ -53,8 +55,8 @@ from nequip.nn import SequentialGraphNetwork, SaveForOutput
 # print('[' + ', '.join(str(e.item()) for e in perm[:450]) + ']')
 # print('[' + ', '.join(str(e.item()) for e in perm[450:500]) + ']')
 
-nums = np.arange(24)
-nums = nums.reshape((2, 3, -1))
-print(nums)
-var_nums = np.var(nums, axis=0)
-print(var_nums)
+# nums = np.arange(24)
+# nums = nums.reshape((2, 3, -1))
+# print(nums)
+# var_nums = np.var(nums, axis=0)
+# print(var_nums)
