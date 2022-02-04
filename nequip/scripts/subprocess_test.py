@@ -1,7 +1,7 @@
 import subprocess
 
-params = {"train-dir": "/n/home10/axzhu/nequip/results/bpa/minimal/",
-          "output": "bpa-min-sub.xyz"}
+params = {"train-dir": " /n/home10/axzhu/nequip/results/bpa/minimal/",
+          "output": " bpa-min-sub.xyz"}
 
 tmpdir = "/n/home10/axzhu/nequip/results/bpa/minimal/"
 retcode = subprocess.run(
