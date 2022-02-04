@@ -2,7 +2,10 @@ import subprocess
 
 params = {"train-dir": "/n/home10/axzhu/nequip/results/bpa/minimal/",
           "model": "/n/home10/axzhu/nequip/results/bpa/minimal_sub-no-train/last_model.pth",
-          "output": "bpasub-no-train.xyz"}
+          "dataset-config": "/n/home10/axzhu/nequip/configs/bpa_600K.yaml",
+          "output": "bpasub-no-train-600K.xyz",
+          "output-fields": "node_features,atomic_energy",
+          "log": "bpasub-no-train-600K"}
 
 tmpdir = "/n/home10/axzhu/nequip/"
 retcode = subprocess.run(
