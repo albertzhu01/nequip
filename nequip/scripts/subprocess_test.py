@@ -2,7 +2,7 @@ import subprocess
 
 params = {"train-dir": "/n/home10/axzhu/nequip/results/bpa/minimal/",
           "model": "/n/home10/axzhu/nequip/results/bpa/minimal_sub-no-train/last_model.pth",
-          "output": "bpasub.xyz"}
+          "output": "bpasub-no-train.xyz"}
 
 tmpdir = "/n/home10/axzhu/nequip/"
 retcode = subprocess.run(
