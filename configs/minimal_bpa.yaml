@@ -52,7 +52,7 @@ wandb: false
 n_train: 5
 n_val: 5
 batch_size: 1
-max_epochs: 10
+max_epochs: 0
 
 # loss function
 loss_coeffs: forces
