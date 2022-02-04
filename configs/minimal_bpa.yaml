@@ -6,7 +6,7 @@
 
 # general
 root: results/bpa
-run_name: minimal_sub
+run_name: minimal_sub-no-train
 seed: 123
 dataset_seed: 456
 append: true
