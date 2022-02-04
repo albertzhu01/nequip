@@ -3,7 +3,7 @@ import subprocess
 params = {"train-dir": " /n/home10/axzhu/nequip/results/bpa/minimal/",
           "output": " bpa-min-sub.xyz"}
 
-tmpdir = "/n/home10/axzhu/nequip/"
+tmpdir = "/n/home10/axzhu/nequip/results/bpa/minimal/"
 retcode = subprocess.run(
             ["nequip-evaluate"]
             + sum(
