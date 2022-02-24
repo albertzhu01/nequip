@@ -6,8 +6,8 @@ import textwrap
 
 from pathlib import Path
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-from nequip.utils import Config, dataset_from_config
-from nequip.data import AtomicDataDict, AtomicData, Collater
+from nequip.utils import Config
+from nequip.data import AtomicDataDict, AtomicData, Collater, dataset_from_config
 
 
 def main(args=None):
