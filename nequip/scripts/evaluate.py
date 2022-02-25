@@ -127,10 +127,8 @@ def main(args=None, running_as_script: bool = True):
             trainer = torch.load(
                 str(args.train_dir / "trainer.pth"), map_location="cpu"
             )
-            print(trainer["train_idcs"])
-            print(trainer["val_idcs"])
-            train_idcs = set(trainer["train_idcs"])
-            val_idcs = set(trainer["val_idcs"])
+            train_idcs = set(trainer["train_idcs"].tolist())
+            val_idcs = set(trainer["val_idcs"].tolist())
         else:
             train_idcs = val_idcs = None
     # update
